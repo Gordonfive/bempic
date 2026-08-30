@@ -4,7 +4,7 @@
 
 **Date:** 2026-08-30
 
-**Implementation status:** no protocol implementation exists yet
+**Implementation status:** a non-normative executable semantic proof exists in `prototype/`; no reference implementation or stable wire format exists yet
 
 This document records the initial BEMPIC audit, prior-art comparison, smallest useful application model, measurement plan, and implementation recommendation. It is intentionally earlier than a wire-format decision. Names of operations and fields in this document describe semantics, not assigned wire values.
 
@@ -22,6 +22,12 @@ BEMPIC should not become:
 - an encoding of OceanMail product and service policy.
 
 No wire format, integer encoding, identifier width, compression algorithm, cryptographic suite, or version number is frozen by this plan.
+
+## Current executable proof
+
+The repository now contains a standard-library Python proof under `prototype/`. It implements the six abstract operations named in this plan using explicitly disposable generation-0 encodings. Two local endpoints can transfer one immutable message through multiple byte-constrained contact windows, reopen receiver state between contacts, resume at the retained prefix, verify the whole representation, and decode the original message.
+
+This artifact validates state-machine and accounting assumptions only. It is not the planned Rust reference implementation, an M4P binding, a security profile, or compatibility authority. See [`prototype/README.md`](../prototype/README.md) for its exact scope, commands, and measured demo output.
 
 ## Repository audit
 

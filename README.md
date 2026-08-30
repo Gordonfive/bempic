@@ -6,7 +6,7 @@ OceanMail is the first planned production application of BEMPIC and is the proje
 
 ## Project status
 
-**Stage:** protocol design / pre-implementation
+**Stage:** protocol design / executable semantic proof
 
 The wire format, protocol name expansion, compression profile, licensing, and versioning are not yet frozen.
 
@@ -87,6 +87,7 @@ See `docs/PRIOR-ART-AND-BOUNDARIES.md`.
 - [Prior art and boundaries](docs/PRIOR-ART-AND-BOUNDARIES.md)
 - [Initial protocol plan, feature matrix, and benchmarks](docs/INITIAL-PROTOCOL-PLAN.md)
 - [Open questions](docs/OPEN-QUESTIONS.md)
+- [Executable interrupted-transfer semantic proof](prototype/README.md)
 
 ## Relationship to OceanMail
 

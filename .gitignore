@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+
+# Optional retained state from the executable proof.
+prototype/.demo-state/
