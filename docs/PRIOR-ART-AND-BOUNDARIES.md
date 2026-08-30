@@ -6,6 +6,8 @@ This document records the major protocol research conclusions that define what B
 
 Git documentation is authoritative; these conclusions must not depend on chat history.
 
+The concrete feature matrix, exact borrow/reuse/omit/invent decisions, source list, and pre-wire implementation plan are in [`INITIAL-PROTOCOL-PLAN.md`](INITIAL-PROTOCOL-PLAN.md).
+
 ## Winlink B2F
 
 B2F is the closest direct predecessor for constrained email transfer.
@@ -21,6 +23,8 @@ Relevant ideas to study and potentially reuse where licensing permits:
 - partial recovery and forwarding concepts inherited from FBB-style systems.
 
 BEMPIC should not simply become B2F because BEMPIC is intended to be service-neutral, explicitly metered, modernly extensible, and able to continue logical application synchronization through different peers/transports over time.
+
+B2F remains the required initial performance baseline. It already proposes messages before payload, advertises compressed and uncompressed size, batches proposal/turn exchanges, packages attachments without MIME/base64 on the constrained transfer, and supports simple compressed-file offset recovery. BEMPIC must measure an actual improvement or document the specific metering/resumption benefit that justifies any additional bytes.
 
 ## IETF Bundle Protocol / DTN
 
@@ -45,7 +49,7 @@ LTP closely resembles the selective repair design independently discussed for Oc
 
 However, PACTOR, VARA HF, and ARDOP ARQ already perform reliable point-to-point link repair. BEMPIC must not add a second fine-grained retransmission layer over these transports.
 
-LTP-style recovery is relevant only for transport profiles that are unreliable/broadcast/FEC or otherwise do not provide adequate ARQ.
+LTP-style recovery is relevant only for carrier bindings that are unreliable/broadcast/FEC or otherwise do not provide adequate repair below BEMPIC.
 
 ## CCSDS File Delivery Protocol (CFDP)
 

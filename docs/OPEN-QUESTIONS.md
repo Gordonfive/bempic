@@ -9,10 +9,11 @@ These items are deliberately unresolved and should be tested or decided before a
 
 ## Wire model
 
-- Byte-stream framing versus discrete records?
-- Byte-offset resume, fixed blocks, variable blocks, or negotiated combinations?
-- When does per-block CRC provide enough accidental-error detection?
-- When is whole-record authenticated integrity sufficient?
+- Deterministic operation encoding and length-delimited extension envelope?
+- Contiguous-prefix resume, compact missing extents, or a measured combination for immutable application representations?
+- What application extent sizes minimize resume waste without recreating generic fragmentation?
+- When is a whole-representation digest sufficient on an integrity-preserving carrier?
+- Does an optional unreliable-carrier profile need per-extent integrity or reception claims?
 - What compact integer encoding should be normative?
 - How are session-local object identifiers assigned and recycled?
 
@@ -39,16 +40,17 @@ These items are deliberately unresolved and should be tested or decided before a
 - Authentication tag size and record sizing.
 - Regulatory/security profiles for amateur radio and other restricted transports.
 
-## Transport profiles
+## Carrier bindings
 
 Initial candidates:
 
-- ordinary IP/TCP for development and testing;
-- HTTP-compatible/IP profile where infrastructure benefits justify it;
-- serial/byte-stream adapter;
-- satellite-IP links;
-- HF/SSB modem integrations;
-- amateur-radio integrations where legal constraints are understood.
+- M4P application payload binding for OceanMail production use;
+- deterministic opaque-record simulator for development and testing;
+- non-normative local/IP record adapter for the first proof;
+- a direct byte-stream binding only if independent non-M4P deployments require one;
+- optional unreliable/broadcast binding only after proving the carrier below BEMPIC lacks suitable recovery.
+
+PACTOR, VARA, ARDOP, satellite, serial, TCP/IP, and future link technologies belong behind M4P/DataLink or another carrier. They are not separate BEMPIC modem/transport profiles.
 
 ## Standardization and licensing
 

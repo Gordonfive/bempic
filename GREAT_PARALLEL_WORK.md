@@ -16,6 +16,8 @@ Entries should identify whether a project is primarily:
 
 Licensing must be checked before copying implementation code. Protocol ideas and software source licenses are separate questions.
 
+The dated concrete feature matrix and initial measured-development plan are maintained in [`docs/INITIAL-PROTOCOL-PLAN.md`](docs/INITIAL-PROTOCOL-PLAN.md).
+
 ## Winlink B2F
 
 **Role:** Borrow / study; OceanMail interoperability target.
@@ -25,12 +27,14 @@ B2F is Winlink's published message-forwarding protocol and is the closest direct
 Relevant ideas include:
 
 - bandwidth-conscious email transfer;
-- batching multiple messages before compression;
+- proposal/turn batching of up to five messages;
 - LZH-based compression;
 - attachments;
 - radio/modem independence;
 - independent compatible client implementations;
 - partial/recovery concepts inherited from the FBB forwarding family.
+
+B2F also advertises each proposed message's uncompressed and compressed sizes before payload transfer. FBB B1 recovery can request one offset in the exact compressed image and validates the reconstructed image with a whole-file CRC. These are concrete baselines for BEMPIC's cost quotation and contiguous-prefix resume fast path.
 
 BEMPIC should establish what B2F already does efficiently before inventing an alternative mechanism. BEMPIC is intended to be service-neutral and more explicitly focused on metering, synchronization, resumability, capability/version negotiation, and modern application/object handling rather than becoming a renamed Winlink protocol.
 
@@ -44,7 +48,7 @@ BPv7 is major prior art for Delay/Disruption Tolerant Networking.
 
 Relevant concepts include:
 
-- persistent message/bundle identity;
+- stable identification of one network transmission request;
 - expiration/lifetime;
 - disruption tolerance;
 - delivery/status reporting;
@@ -52,7 +56,7 @@ Relevant concepts include:
 - late/intermittent connectivity;
 - convergence-layer separation.
 
-BEMPIC should borrow appropriate application-continuity concepts but should not embed a second generic DTN network beneath itself when M4P already owns mesh/store-carry-forward behavior.
+BEMPIC should borrow appropriate application-continuity concepts but should not embed a second generic DTN network beneath itself when M4P already owns mesh/store-carry-forward behavior. BPv7's source-node-plus-creation-timestamp identity is not itself BEMPIC's logical message or immutable representation identity.
 
 ## NASA/JPL ION-DTN
 
@@ -76,6 +80,8 @@ Relevant ideas include:
 - retransmission of missing ranges rather than complete objects;
 - extreme-delay/disruption operation.
 
+LTP is an adjacent-engine, stateful ARQ convergence protocol. Its red/green segmentation, checkpoint timers, report acknowledgements, engine IDs, and sessions are not BEMPIC core features.
+
 Important boundary: do **not** duplicate fine-grained LTP-style retransmission over reliable PACTOR, VARA HF ARQ, or ARDOP ARQ sessions. Those modem/link protocols already own RF-level ACK/retry behavior. LTP-like recovery is potentially useful only for unreliable/broadcast/FEC transports or other links that do not already provide suitable reliability.
 
 ## CCSDS File Delivery Protocol (CFDP)
@@ -95,6 +101,8 @@ Relevant ideas include:
 - retransmission of only missing data.
 
 This is particularly relevant to future BEMPIC attachment/object resumption.
+
+For BEMPIC's reliable-carrier core, borrow metadata-before-data, offsets, persistent transaction state, and final verification. Do not copy CFDP entity routing, filestore operations, proxy operations, or its complete Class 2 ACK/NAK/FIN state machine.
 
 ## M4P — Multi-Modal Maritime Mesh Protocol
 

@@ -85,6 +85,7 @@ See `docs/PRIOR-ART-AND-BOUNDARIES.md`.
 - [Design principles](docs/DESIGN-PRINCIPLES.md)
 - [Security model](docs/SECURITY-MODEL.md)
 - [Prior art and boundaries](docs/PRIOR-ART-AND-BOUNDARIES.md)
+- [Initial protocol plan, feature matrix, and benchmarks](docs/INITIAL-PROTOCOL-PLAN.md)
 - [Open questions](docs/OPEN-QUESTIONS.md)
 
 ## Relationship to OceanMail

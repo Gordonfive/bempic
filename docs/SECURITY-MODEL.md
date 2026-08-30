@@ -47,9 +47,15 @@ Candidate algorithms and handshake mechanisms must be evaluated for:
 - suitability for low-power software implementations;
 - session resumption;
 - resistance to nonce misuse and replay;
-- ability to separate application cryptographic records from smaller retransmittable transport blocks.
+- ability to protect stable application representations while M4P or another carrier independently packetizes and retransmits them.
 
 No algorithm is selected by this document.
+
+## Initial proof boundary
+
+The first encode/synchronize/decode proof may run in a clear simulator with a whole-representation integrity digest. That validates identity, resumption, metering, parsing, and state-machine behavior; it does not constitute an authenticated or confidential deployment profile.
+
+Real user traffic must not rely on the experimental proof as a security protocol. Clear/monitorable, authenticated-public, and confidential profiles need explicit capabilities, downgrade behavior, replay rules, test vectors, and measured byte overhead before they are standardized.
 
 ## Compression
 

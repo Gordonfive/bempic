@@ -20,15 +20,19 @@ Peers must expect interruption. Transfer state should survive disconnects, reboo
 
 ## 4. Resume cheaply
 
-A peer that already possesses part of an object should request only what remains. Simple byte-offset resumption is preferred where it is cheaper than elaborate chunk metadata. Content-addressed chunking is optional and must justify its overhead.
+A peer that already possesses part of an immutable application representation should request only what remains. A contiguously stored prefix bound to the exact representation identity is preferred where it is cheaper than elaborate range metadata. Compact missing extents may be used when real holes exist. Content-addressed chunking is optional and must justify its overhead.
+
+This is persistent application continuation after a lost session or changed source. It is not generic packet fragmentation and it is not per-frame ARQ.
 
 ## 5. Do not retransmit known context
 
 Session-local identifiers, compact integer encodings, negotiated capabilities, and cached metadata should replace repeated long identifiers and descriptive fields whenever safe.
 
-## 6. Separate application objects from transport blocks
+## 6. Separate application representations from carrier packets
 
-An application object may be compressed and protected as a logical record while being carried in smaller transport blocks. This permits selective retransmission without requiring expensive application-level repetition.
+An immutable application representation may be compressed and protected as a logical record while BEMPIC exposes persistent application extents for continuation. M4P may independently fragment and reassemble each BEMPIC operation to suit its network path.
+
+BEMPIC extents are not transport blocks. On reliable carriers they are not individually acknowledged or retransmitted by BEMPIC during a healthy session. Their purpose is to avoid restarting a logical application transfer after the prior session/path is gone. Fine-grained selective repair belongs only in an optional unreliable-carrier profile when the layers below BEMPIC do not already provide it.
 
 ## 7. Compress before encryption
 
@@ -64,4 +68,6 @@ Peers should be able to negotiate capabilities without large exchanges. Unknown 
 
 ## 15. Optimize empirically
 
-A protocol simulator and byte-accounting test suite should compare candidate encodings, block sizes, acknowledgement strategies, compression modes, encryption overhead, resumability schemes, retransmission costs, and metering accuracy under realistic link loss and throughput conditions before the wire format is frozen.
+A protocol simulator and byte-accounting test suite should compare candidate encodings, application extent sizes, resume summaries, compression modes, security overhead, batching, resumability schemes, and metering accuracy under realistic carrier loss and throughput conditions before the wire format is frozen.
+
+Carrier and link retransmission costs should be measured when exposed, but BEMPIC must not implement a competing RF/link retransmission system merely to optimize the measurement.

@@ -48,6 +48,8 @@ BEMPIC must not duplicate those mechanisms unnecessarily.
 
 BEMPIC resumption applies above the modem session. A logical transfer can continue after a session has disappeared, potentially hours later and through another node or another modem technology.
 
+For this purpose, BEMPIC may describe persisted byte extents of an immutable application representation. Those extents are synchronization state, not M4P fragments or modem frames. On reliable carriers BEMPIC does not acknowledge every extent during a healthy transfer.
+
 For broadcast/FEC or otherwise unreliable links, a BEMPIC profile may use selective-range/checkpoint recovery inspired by LTP/CFDP where measurement shows that it is worthwhile.
 
 ## Application data model
@@ -61,6 +63,8 @@ BEMPIC initially operates on messaging-oriented objects and state changes, inclu
 - provider/service envelope information where needed.
 
 The constrained link should not require MIME, JSON, HTTP, SMTP, IMAP, or another verbose Internet-facing representation.
+
+The first application model distinguishes a stable logical message from each immutable body, preview, or attachment representation. This allows a receiver to defer or resume exact bytes without confusing a transformed preview with the original message.
 
 ## Explicit non-goals
 
