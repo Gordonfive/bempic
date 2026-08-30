@@ -4,54 +4,64 @@
 
 Protocol decisions must be evaluated by total bytes transmitted on representative constrained links. Convenient but verbose encodings are not acceptable merely because they are common elsewhere.
 
-## 2. Disconnection is normal
+## 2. Metering and byte budgets are first-class
+
+BEMPIC is intended for links where bytes may be scarce because of throughput, airtime, power, monetary cost, connection windows, or all of these at once. Implementations must be able to measure actual bytes consumed and expose that cost to applications.
+
+A session or operation should be able to express a byte budget and track bytes used and remaining. Applications should be able to make transfer decisions before consuming the budget—for example, fetching message metadata while deferring an attachment or image.
+
+Budgeting must account for protocol overhead as well as application payload whenever practical. BEMPIC should not advertise a 10 KB transfer as 10 KB if framing, acknowledgements, cryptographic material, retransmissions, or other protocol traffic materially increase the actual link cost.
+
+Metering also enables prioritization. OceanMail may spend a limited budget on urgent text messages before optional attachments, previews, bulk mail, or other lower-priority data.
+
+## 3. Disconnection is normal
 
 Peers must expect interruption. Transfer state should survive disconnects, reboots, transport changes, and long pauses where practical.
 
-## 3. Resume cheaply
+## 4. Resume cheaply
 
 A peer that already possesses part of an object should request only what remains. Simple byte-offset resumption is preferred where it is cheaper than elaborate chunk metadata. Content-addressed chunking is optional and must justify its overhead.
 
-## 4. Do not retransmit known context
+## 5. Do not retransmit known context
 
 Session-local identifiers, compact integer encodings, negotiated capabilities, and cached metadata should replace repeated long identifiers and descriptive fields whenever safe.
 
-## 5. Separate application objects from transport blocks
+## 6. Separate application objects from transport blocks
 
 An application object may be compressed and protected as a logical record while being carried in smaller transport blocks. This permits selective retransmission without requiring expensive application-level repetition.
 
-## 6. Compress before encryption
+## 7. Compress before encryption
 
 When compression is appropriate, normalization/deduplication occurs before compression, and compression occurs before encryption. Tiny payloads may be sent uncompressed when compression framing would increase size.
 
-## 7. Security strength is not traded for convenience
+## 8. Security strength is not traded for convenience
 
 Use established cryptographic constructions rather than custom cryptography. Optimize framing, negotiation, session resumption, and metadata rather than weakening algorithms.
 
-## 8. Observable transport is assumed
+## 9. Observable transport is assumed
 
 Radio and other shared media may be passively recorded by anyone in range. Sensitive application metadata should be protected along with payload content whenever legal and technically possible.
 
-## 9. Transport law and capability matter
+## 10. Transport law and capability matter
 
 Some transports or jurisdictions may prohibit encrypted amateur-radio traffic or impose other restrictions. Security modes therefore belong to negotiated transport/security profiles; applications must not assume every transport permits confidentiality.
 
-## 10. Integrity and confidentiality are distinct
+## 11. Integrity and confidentiality are distinct
 
 Unencrypted data may still require authentication or integrity protection. Public broadcast, authenticated-public, and confidential modes may have different overhead and policy profiles.
 
-## 11. Existing layers should be reused
+## 12. Existing layers should be reused
 
 BEMPIC should integrate with existing radio modems, satellite links, TCP/IP, serial transports, compression libraries, and established cryptography instead of replacing mature technology without measurable benefit.
 
-## 12. The core remains application-neutral
+## 13. Messaging first, extensible later
 
-Email, weather, files, telemetry, forms, and other data types should be implemented as application profiles or object types rather than hard-coded assumptions in the protocol core.
+BEMPIC is being developed first to support OceanMail and highly efficient email/messaging. The protocol should avoid unnecessary assumptions that would prevent later expansion, but general-purpose file synchronization, telemetry, forms, commands, or arbitrary application data are not initial requirements. Future expansion may be undertaken by OceanMail or independent implementers through compatible extensions or later protocol versions.
 
-## 13. Extensions must degrade cleanly
+## 14. Extensions must degrade cleanly
 
 Peers should be able to negotiate capabilities without large exchanges. Unknown optional extensions must not prevent core interoperability.
 
-## 14. Optimize empirically
+## 15. Optimize empirically
 
-A protocol simulator and byte-accounting test suite should compare candidate encodings, block sizes, acknowledgement strategies, compression modes, and resumability schemes under realistic link loss and throughput conditions before the wire format is frozen.
+A protocol simulator and byte-accounting test suite should compare candidate encodings, block sizes, acknowledgement strategies, compression modes, encryption overhead, resumability schemes, retransmission costs, and metering accuracy under realistic link loss and throughput conditions before the wire format is frozen.
