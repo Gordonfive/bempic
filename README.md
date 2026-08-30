@@ -1,8 +1,8 @@
 # BEMPIC
 
-BEMPIC is an open protocol suite for bandwidth-efficient messaging across severely bandwidth-constrained, high-latency, expensive, metered, and intermittently connected networks.
+BEMPIC is an open extreme-efficiency application synchronization protocol for messaging across severely bandwidth-constrained, high-latency, expensive, metered, and intermittently connected networks.
 
-OceanMail is the first planned production application of BEMPIC and is the project's primary focus. BEMPIC defines interoperable mechanisms; OceanMail decides how and when to use those mechanisms.
+OceanMail is the first planned production application of BEMPIC and is the project's primary focus.
 
 ## Project status
 
@@ -10,50 +10,89 @@ OceanMail is the first planned production application of BEMPIC and is the proje
 
 The wire format, protocol name expansion, compression profile, licensing, and versioning are not yet frozen.
 
-## Protocol-suite structure
+## Architectural role
 
-BEMPIC is expected to contain two separately specified but cooperating areas:
+BEMPIC no longer attempts to define a mesh-routing/network protocol. OceanMail intends to adopt **M4P (Multi-Modal Maritime Mesh Protocol)** for peer/network coordination, store-carry-forward mesh behavior, cross-modality forwarding, generic fragmentation, TTL, network-level deduplication, and DataLink abstraction.
 
-1. **Routing and discovery mechanisms** — compact primitives that applications can use to discover gateways/peers, advertise route information, identify freshness, and support relay-capable topologies.
-2. **Low-bandwidth intermittent transport/messaging mechanisms** — compact transfer, metering, resumption, selective acknowledgement, retransmission, delivery state, and store-carry-forward primitives.
+BEMPIC sits above M4P and focuses on application/message efficiency and continuity.
 
-Neither area defines OceanMail's user-facing relay policy.
+```text
+OceanMail
+   |
+ BEMPIC
+   |  extreme-efficiency application synchronization
+   v
+  M4P
+   |  multi-modal delay-tolerant mesh/networking
+   v
+PACTOR / VARA / ARDOP / IP / other links
+```
 
 ## Core goals
 
-- Minimize total bytes and, for half-duplex transports, total airtime and unnecessary direction changes.
-- Make byte metering and transfer budgets first-class protocol concepts.
-- Treat disconnection and resumption as normal protocol states.
-- Optimize first for messaging and OceanMail's email use case.
-- Remain transport-independent while permitting transport-specific profiles.
-- Avoid unnecessary metadata, repeated identifiers, verbose framing, and mandatory heavyweight exchanges.
-- Permit independent interoperable implementations through an open specification and conformance tests.
+BEMPIC should provide compact interoperable mechanisms for:
 
-## Mechanism, not product policy
+- extremely efficient email/message representation;
+- mailbox/message synchronization with minimal metadata exchange;
+- message/object identity at the application layer;
+- batching and compression negotiation;
+- explicit byte metering and transfer budgets;
+- attachment metadata, deferred retrieval, and reduced representations;
+- application-level continuation/resumption after interruption, even through a different peer or transport;
+- logical/end-to-end delivery receipts;
+- capability and version negotiation;
+- provider/service-neutral envelopes where needed;
+- optional recovery mechanisms for unreliable/broadcast transports when the underlying link does not already provide reliable ARQ.
 
-BEMPIC may define interoperable primitives such as route advertisements, route epochs, scores, hop information, latency fields, discovery requests, selective acknowledgements, packet/range identifiers, delivery receipts, cache/custody state, and relay offers.
+## Explicit non-goals
 
-BEMPIC does **not** decide whether a particular application should eagerly relay traffic, reluctantly relay traffic, cache overheard messages, volunteer Internet access, retain data for a particular duration, spend additional airtime repairing another transfer, provide user incentives, or request weather. Those are application policies.
+BEMPIC does **not** own:
 
-OceanMail may implement sophisticated cooperative HF behavior using BEMPIC primitives without making that behavior mandatory for every BEMPIC implementation.
+- mesh routing or peer discovery;
+- node/network addressing;
+- generic store-carry-forward forwarding mechanics;
+- generic network TTL handling;
+- generic cross-modality forwarding;
+- RF modulation, FEC, ARQ, fine-grained modem retransmission, or half-duplex turnaround control;
+- OceanMail relay/gateway participation policy;
+- OceanMail business logic.
 
-## Non-goals
+Those concerns belong primarily to M4P, DataLink/modem layers, or OceanMail itself.
 
-BEMPIC is not intended to replace SMTP, IMAP, radio modem waveforms, IP, or existing physical/link-layer protocols. Applications and gateways may bridge those systems to BEMPIC.
+## Reliability boundary
 
-BEMPIC is not presently intended to solve every constrained-network synchronization problem. Broader non-messaging uses may be standardized later without making them requirements for OceanMail's initial development.
+PACTOR, VARA HF, and ARDOP ARQ already provide sophisticated RF-link reliability. BEMPIC should not duplicate their frame acknowledgements, FEC, retransmission loops, or adaptive modulation behavior.
+
+BEMPIC remains responsible for continuity above a failed session. For example, a logical message transfer may resume hours later through a different peer or modem even though the original ARQ session is gone.
+
+For unreliable/broadcast transports, BEMPIC may define an optional recovery profile inspired by selective-range/checkpoint designs such as LTP and CFDP, but only where this does not duplicate a reliable underlying link.
+
+## Prior art and research direction
+
+BEMPIC is intentionally not greenfield. Development should study and borrow compatible ideas from:
+
+- Winlink B2F, especially constrained email packaging, batching, compression, and attachments;
+- IETF Bundle Protocol / DTN concepts for disruption tolerance and delivery state;
+- NASA/JPL LTP for checkpoint/selective-range recovery on unreliable links;
+- CCSDS CFDP for resumable object/file transfer and missing-range repair;
+- other open constrained-network protocols where useful.
+
+See `docs/PRIOR-ART-AND-BOUNDARIES.md`.
 
 ## Documents
 
 - [Protocol scope](docs/SCOPE.md)
 - [Design principles](docs/DESIGN-PRINCIPLES.md)
 - [Security model](docs/SECURITY-MODEL.md)
+- [Prior art and boundaries](docs/PRIOR-ART-AND-BOUNDARIES.md)
 - [Open questions](docs/OPEN-QUESTIONS.md)
 
 ## Relationship to OceanMail
 
-OceanMail is a proprietary hosted service and application suite that implements BEMPIC. BEMPIC development is driven first by OceanMail's need for exceptionally efficient email and messaging over constrained links. The open BEMPIC specification must nevertheless remain implementable without OceanMail-specific services, code, credentials, policies, or infrastructure.
+OceanMail is the first application and commercial service built around BEMPIC. BEMPIC must remain independently implementable and service-neutral even though OceanMail drives its initial requirements.
+
+OceanMail's M4P/mesh behavior, gateway scoring, eager/reluctant relay policy, Winlink/SailMail interoperability, and product UI are not BEMPIC requirements unless an interoperability need proves they belong in the open protocol.
 
 ## Licensing
 
-Licensing is intentionally not yet finalized. The project intends to publish the protocol specification under terms suitable for an open standard and to permit independent implementations. No implementation license should be inferred until an explicit LICENSE file is adopted.
+Licensing is intentionally not yet finalized. The project intends to publish the protocol specification under terms suitable for an open standard and to permit independent interoperable implementations. No implementation license should be inferred until an explicit LICENSE file is adopted.
