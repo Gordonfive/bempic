@@ -44,6 +44,7 @@ class Summary:
 @dataclass(frozen=True, slots=True)
 class Offer:
     representation_id: bytes
+    representation_kind: int
     size: int
     digest: bytes
 
@@ -104,9 +105,18 @@ def encode_operation(operation: Operation) -> bytes:
         return _envelope(Kind.SUMMARY, struct.pack(">Q", operation.generation) + operation.digest)
     if isinstance(operation, Offer):
         _validate_id(operation.representation_id, "representation_id")
+        if not 0 <= operation.representation_kind <= 0xFF:
+            raise ValueError("representation_kind must fit one byte")
         if len(operation.digest) != 32:
             raise ValueError("offer digest must be 32 bytes")
-        payload = operation.representation_id + struct.pack(">Q", operation.size) + operation.digest
+        payload = b"".join(
+            (
+                operation.representation_id,
+                bytes((operation.representation_kind,)),
+                struct.pack(">Q", operation.size),
+                operation.digest,
+            )
+        )
         return _envelope(Kind.OFFER, payload)
     if isinstance(operation, Request):
         _validate_id(operation.representation_id, "representation_id")
@@ -153,9 +163,14 @@ def decode_operation(record: bytes) -> Operation:
             raise OperationError("invalid summary length")
         return Summary(struct.unpack(">Q", payload[:8])[0], payload[8:])
     if kind is Kind.OFFER:
-        if len(payload) != 56:
+        if len(payload) != 57:
             raise OperationError("invalid offer length")
-        return Offer(payload[:16], struct.unpack(">Q", payload[16:24])[0], payload[24:])
+        return Offer(
+            payload[:16],
+            payload[16],
+            struct.unpack(">Q", payload[17:25])[0],
+            payload[25:],
+        )
     if kind is Kind.REQUEST:
         if len(payload) != 28:
             raise OperationError("invalid request length")

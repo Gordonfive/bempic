@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .codec import decode_message
-from .model import Message, PreparedRepresentation
+from .model import Message, PreparedRepresentation, RepresentationKind
 
 
 class StoreError(RuntimeError):
@@ -41,6 +41,7 @@ class ReceiverStore:
             "representation_id": self.representation.representation_id.hex(),
             "digest": self.representation.digest.hex(),
             "size": self.representation.size,
+            "kind": int(self.representation.kind),
             "sender_caps_received": False,
             "receiver_caps_sent": False,
             "summary_seen": False,
@@ -60,7 +61,7 @@ class ReceiverStore:
         except (OSError, json.JSONDecodeError) as error:
             raise StoreError("receiver state is unreadable") from error
         expected = self._new_state()
-        for key in ("representation_id", "digest", "size"):
+        for key in ("representation_id", "digest", "size", "kind"):
             if state.get(key) != expected[key]:
                 raise StoreError("persisted state belongs to another representation")
         return state
@@ -160,7 +161,14 @@ class ReceiverStore:
         self._save()
         return len(payload), 0
 
-    def verify_and_commit(self) -> Message | None:
+    def _decode_committed(self, encoded: bytes) -> Message | bytes:
+        if self.representation.kind is RepresentationKind.MESSAGE:
+            return decode_message(encoded)
+        if self.representation.kind is RepresentationKind.BINARY:
+            return encoded
+        raise StoreError("unsupported representation kind")
+
+    def verify_and_commit(self) -> Message | bytes | None:
         if self.is_complete:
             return self.read_complete()
         if self.progress != self.representation.size:
@@ -179,18 +187,18 @@ class ReceiverStore:
             self._state["result_sent"] = False
             self._save()
             raise IntegrityError("whole-representation digest mismatch")
-        message = decode_message(encoded)
+        value = self._decode_committed(encoded)
         os.replace(self.part_path, self.complete_path)
         self._state["status"] = "complete"
         self._state["accepted_bytes"] = self.representation.size
         self._save()
-        return message
+        return value
 
-    def read_complete(self) -> Message:
+    def read_complete(self) -> Message | bytes:
         if not self.is_complete:
             raise StoreError("representation is not committed")
         committed = self.complete_path.read_bytes()
         digest = hashlib.sha256(committed).digest()
         if not hmac.compare_digest(digest, self.representation.digest):
             raise IntegrityError("committed representation digest mismatch")
-        return decode_message(committed)
+        return self._decode_committed(committed)

@@ -97,6 +97,7 @@ class ProofExchange:
             encode_operation(
                 Offer(
                     representation.representation_id,
+                    int(representation.kind),
                     representation.size,
                     representation.digest,
                 )
@@ -150,6 +151,7 @@ class ProofExchange:
         if not self.receiver.flag("offer_seen") and not self.receiver.is_complete:
             operation = Offer(
                 self.representation.representation_id,
+                int(self.representation.kind),
                 self.representation.size,
                 self.representation.digest,
             )

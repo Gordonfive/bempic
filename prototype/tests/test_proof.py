@@ -9,12 +9,20 @@ from prototype.bempic_proof import (
     Accounting,
     IntegrityError,
     Message,
+    PreparedRepresentation,
     ProofExchange,
     ReceiverStore,
+    RepresentationKind,
     StoreError,
+    collection_digest,
+    compare_collections,
     decode_message,
     encode_message,
+    prepare_attachment,
+    prepare_binary,
     prepare_message,
+    missing_representations,
+    offer_page,
 )
 from prototype.bempic_proof.codec import DecodeError
 from prototype.bempic_proof.operations import (
@@ -28,6 +36,8 @@ from prototype.bempic_proof.operations import (
     decode_operation,
     encode_operation,
 )
+from prototype.benchmark import build_report
+from prototype.fixtures import build_fixtures
 
 
 def fixture_message(body: str | None = None) -> Message:
@@ -57,12 +67,28 @@ class CodecTests(unittest.TestCase):
         with self.assertRaises(DecodeError):
             decode_message(encoded + b"x")
 
+    def test_prepared_representation_rejects_false_integrity_metadata(self) -> None:
+        encoded = b"integrity invariant"
+        digest = hashlib.sha256(encoded).digest()
+        with self.assertRaises(ValueError):
+            PreparedRepresentation(
+                representation_id=digest[:16],
+                digest=b"\x00" * 32,
+                encoded=encoded,
+                kind=RepresentationKind.BINARY,
+            )
+
     def test_all_proof_operations_round_trip(self) -> None:
         representation = prepare_message(fixture_message())
         operations = (
             Capabilities(0, 96, 0),
             Summary(1, representation.representation_id),
-            Offer(representation.representation_id, representation.size, representation.digest),
+            Offer(
+                representation.representation_id,
+                int(representation.kind),
+                representation.size,
+                representation.digest,
+            ),
             Request(representation.representation_id, 17, 31),
             Data(representation.representation_id, 17, b"payload"),
             Result(representation.representation_id, True, representation.digest),
@@ -74,6 +100,20 @@ class CodecTests(unittest.TestCase):
     def test_unknown_operation_is_rejected(self) -> None:
         with self.assertRaises(OperationError):
             decode_operation(b"B0\xff\x00\x00")
+
+    def test_attachment_part_id_must_be_unique_within_message(self) -> None:
+        descriptor, _ = prepare_attachment("same.txt", "text/plain", b"same")
+        message = fixture_message("duplicate part identity")
+        with self.assertRaises(ValueError):
+            Message(
+                logical_id=message.logical_id,
+                created_at=message.created_at,
+                sender=message.sender,
+                recipients=message.recipients,
+                subject=message.subject,
+                body=message.body,
+                attachments=(descriptor, descriptor),
+            )
 
 
 class ExchangeTests(unittest.TestCase):
@@ -177,6 +217,174 @@ class ExchangeTests(unittest.TestCase):
             store.complete_path.write_bytes(committed)
             with self.assertRaises(IntegrityError):
                 ReceiverStore(root, representation)
+
+    def test_attachment_bytes_are_deferred_until_explicitly_selected(self) -> None:
+        attachment_content = (b"weather-routing-data\n" * 64) + bytes(range(64))
+        descriptor, attachment = prepare_attachment(
+            "routing.txt", "text/plain", attachment_content
+        )
+        message = fixture_message("The attachment is available on request.")
+        message = Message(
+            logical_id=message.logical_id,
+            created_at=message.created_at,
+            sender=message.sender,
+            recipients=message.recipients,
+            subject=message.subject,
+            body=message.body,
+            attachments=(descriptor,),
+        )
+        manifest = prepare_message(message)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            manifest_total = Accounting()
+            for _ in range(30):
+                store = ReceiverStore(root, manifest)
+                report = ProofExchange(manifest, store).run_contact(256)
+                manifest_total.merge(report.accounting)
+                if report.result_sent:
+                    break
+            else:
+                self.fail("manifest transfer did not complete")
+
+            decoded = ReceiverStore(root, manifest).read_complete()
+            self.assertEqual(decoded, message)
+            self.assertEqual(manifest_total.representation_payload_bytes, manifest.size)
+            self.assertFalse((root / f"{attachment.representation_id.hex()}.part").exists())
+            self.assertFalse((root / f"{attachment.representation_id.hex()}.complete").exists())
+
+            attachment_total = Accounting()
+            for _ in range(30):
+                store = ReceiverStore(root, attachment)
+                report = ProofExchange(
+                    attachment, store, max_record_size=512
+                ).run_contact(1024)
+                attachment_total.merge(report.accounting)
+                if report.result_sent:
+                    break
+            else:
+                self.fail("selected attachment transfer did not complete")
+
+            self.assertEqual(
+                ReceiverStore(root, attachment).read_complete(), attachment_content
+            )
+            self.assertEqual(
+                attachment_total.representation_payload_bytes, len(attachment_content)
+            )
+            self.assertEqual(attachment_total.duplicate_payload_bytes, 0)
+
+    def test_binary_representation_round_trip(self) -> None:
+        content = bytes(range(256)) * 4
+        representation = prepare_binary(content)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for _ in range(20):
+                store = ReceiverStore(root, representation)
+                report = ProofExchange(
+                    representation, store, max_record_size=512
+                ).run_contact(1024)
+                if report.result_sent:
+                    break
+            else:
+                self.fail("binary transfer did not complete")
+            self.assertEqual(ReceiverStore(root, representation).read_complete(), content)
+
+
+class BenchmarkTests(unittest.TestCase):
+    def test_synthetic_corpus_and_report_are_deterministic(self) -> None:
+        first_fixtures = build_fixtures()
+        second_fixtures = build_fixtures()
+        self.assertEqual(first_fixtures, second_fixtures)
+        self.assertEqual(build_report(), build_report())
+
+    def test_attachment_benchmarks_defer_content_until_selection(self) -> None:
+        report = build_report()
+        attachment_fixtures = [
+            fixture
+            for fixture in report["fixtures"]
+            if fixture["attachment_representation_bytes"]
+        ]
+        self.assertGreaterEqual(len(attachment_fixtures), 2)
+        for fixture in attachment_fixtures:
+            self.assertEqual(fixture["metadata_attachment_payload_bytes"], 0)
+            self.assertEqual(
+                fixture["selected_attachment_payload_bytes"],
+                fixture["attachment_representation_bytes"],
+            )
+            self.assertEqual(fixture["full_exchange_duplicate_payload_bytes"], 0)
+
+    def test_no_change_summary_meets_initial_byte_gates(self) -> None:
+        collection = tuple(
+            prepare_message(fixture.message) for fixture in build_fixtures()
+        )
+        warm = compare_collections(
+            collection, reversed(collection), cached_capabilities=True
+        )
+        cold = compare_collections(
+            collection, collection, cached_capabilities=False
+        )
+        self.assertTrue(warm.equal)
+        self.assertTrue(cold.equal)
+        self.assertLessEqual(warm.accounting.total_bempic_bytes, 64)
+        self.assertLessEqual(cold.accounting.total_bempic_bytes, 128)
+        self.assertEqual(warm.accounting.total_bempic_bytes, 58)
+        self.assertEqual(cold.accounting.total_bempic_bytes, 76)
+
+    def test_collection_summary_detects_one_added_representation(self) -> None:
+        collection = tuple(
+            prepare_message(fixture.message) for fixture in build_fixtures()
+        )
+        changed = collection + (prepare_binary(b"one additional object"),)
+        comparison = compare_collections(
+            collection, changed, cached_capabilities=True
+        )
+        self.assertFalse(comparison.equal)
+        self.assertNotEqual(collection_digest(collection), collection_digest(changed))
+        self.assertEqual(comparison.accounting.total_bempic_bytes, 58)
+
+    def test_incremental_discovery_offers_only_one_added_representation(self) -> None:
+        known = tuple(
+            prepare_binary(f"known-{number}".encode()) for number in range(100)
+        )
+        added = prepare_binary(b"one new representation")
+        missing = missing_representations(known + (added,), known)
+        self.assertEqual(missing, (added,))
+
+        too_small = offer_page(missing, budget_bytes=61)
+        self.assertEqual(too_small.offered, ())
+        self.assertEqual(too_small.next_cursor, 0)
+        self.assertEqual(too_small.accounting.total_bempic_bytes, 0)
+
+        exact = offer_page(missing, budget_bytes=62)
+        self.assertEqual(exact.offered, (added,))
+        self.assertTrue(exact.complete)
+        self.assertEqual(exact.accounting.total_bempic_bytes, 62)
+
+    def test_offer_pages_are_deterministic_and_budget_bounded(self) -> None:
+        missing = tuple(
+            prepare_binary(f"missing-{number}".encode()) for number in range(5)
+        )
+        missing = missing_representations(reversed(missing), ())
+        cursor = 0
+        observed = []
+        while cursor is not None:
+            page = offer_page(missing, cursor=cursor, budget_bytes=124)
+            self.assertLessEqual(page.accounting.total_bempic_bytes, 124)
+            self.assertLessEqual(len(page.offered), 2)
+            observed.extend(page.offered)
+            cursor = page.next_cursor
+        self.assertEqual(tuple(observed), missing)
+
+    def test_reconciliation_rejects_short_identifier_collision(self) -> None:
+        message = prepare_message(fixture_message("collision check"))
+        conflicting = PreparedRepresentation(
+            representation_id=message.representation_id,
+            digest=message.digest,
+            encoded=message.encoded,
+            kind=RepresentationKind.BINARY,
+        )
+        with self.assertRaises(ValueError):
+            missing_representations((message,), (conflicting,))
 
 
 if __name__ == "__main__":

@@ -5,7 +5,12 @@ from __future__ import annotations
 import hashlib
 import struct
 
-from .model import Message, PreparedRepresentation
+from .model import (
+    AttachmentDescriptor,
+    Message,
+    PreparedRepresentation,
+    RepresentationKind,
+)
 
 MESSAGE_MAGIC = b"BMSG0"
 MAX_TEXT_BYTES = 1 << 20
@@ -38,6 +43,21 @@ def encode_message(message: Message) -> bytes:
     if len(body) > MAX_TEXT_BYTES:
         raise ValueError("body exceeds the proof's one-MiB safety limit")
 
+    attachments = []
+    for attachment in message.attachments:
+        attachments.append(
+            b"".join(
+                (
+                    attachment.part_id,
+                    _encode_short_text(attachment.filename, "attachment filename"),
+                    _encode_short_text(attachment.media_type, "attachment media type"),
+                    attachment.representation_id,
+                    struct.pack(">Q", attachment.size),
+                    attachment.digest,
+                )
+            )
+        )
+
     return b"".join(
         (
             MESSAGE_MAGIC,
@@ -49,6 +69,8 @@ def encode_message(message: Message) -> bytes:
             subject,
             struct.pack(">I", len(body)),
             body,
+            struct.pack(">B", len(attachments)),
+            b"".join(attachments),
         )
     )
 
@@ -112,6 +134,19 @@ def decode_message(data: bytes) -> Message:
         body = reader.take(body_length).decode("utf-8")
     except UnicodeDecodeError as error:
         raise DecodeError("body is not valid UTF-8") from error
+    attachment_count = reader.u8()
+    attachments = []
+    for _ in range(attachment_count):
+        attachments.append(
+            AttachmentDescriptor(
+                part_id=reader.take(16),
+                filename=reader.short_text("attachment filename"),
+                media_type=reader.short_text("attachment media type"),
+                representation_id=reader.take(16),
+                size=reader.u64(),
+                digest=reader.take(32),
+            )
+        )
     if reader.offset != len(data):
         raise DecodeError("trailing bytes after message representation")
 
@@ -122,6 +157,7 @@ def decode_message(data: bytes) -> Message:
         recipients=recipients,
         subject=subject,
         body=body,
+        attachments=tuple(attachments),
     )
 
 
@@ -134,4 +170,49 @@ def prepare_message(message: Message) -> PreparedRepresentation:
         representation_id=digest[:16],
         digest=digest,
         encoded=encoded,
+        kind=RepresentationKind.MESSAGE,
     )
+
+
+def prepare_binary(content: bytes) -> PreparedRepresentation:
+    """Prepare one opaque binary representation for optional retrieval."""
+
+    encoded = bytes(content)
+    digest = hashlib.sha256(encoded).digest()
+    return PreparedRepresentation(
+        representation_id=digest[:16],
+        digest=digest,
+        encoded=encoded,
+        kind=RepresentationKind.BINARY,
+    )
+
+
+def prepare_attachment(
+    filename: str,
+    media_type: str,
+    content: bytes,
+    *,
+    part_id: bytes | None = None,
+) -> tuple[AttachmentDescriptor, PreparedRepresentation]:
+    """Create metadata plus the separately selectable attachment bytes."""
+
+    representation = prepare_binary(content)
+    if part_id is None:
+        identity_input = b"\0".join(
+            (
+                b"BEMPIC-PART0",
+                filename.encode("utf-8"),
+                media_type.encode("utf-8"),
+                representation.digest,
+            )
+        )
+        part_id = hashlib.sha256(identity_input).digest()[:16]
+    descriptor = AttachmentDescriptor(
+        part_id=part_id,
+        filename=filename,
+        media_type=media_type,
+        representation_id=representation.representation_id,
+        size=representation.size,
+        digest=representation.digest,
+    )
+    return descriptor, representation

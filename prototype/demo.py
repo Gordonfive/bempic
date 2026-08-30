@@ -8,14 +8,25 @@ import json
 import tempfile
 from pathlib import Path
 
-from .bempic_proof import Accounting, Message, ProofExchange, ReceiverStore, prepare_message
+from .bempic_proof import (
+    Message,
+    PreparedRepresentation,
+    TransferRun,
+    prepare_attachment,
+    prepare_message,
+    run_until_complete,
+)
 
 DEFAULT_WINDOWS = (128, 71, 83, 67, 96)
 
 
-def _message() -> Message:
+def _message() -> tuple[Message, bytes, PreparedRepresentation]:
     identity = hashlib.sha256(b"bempic-proof-message-1").digest()[:16]
-    return Message(
+    attachment_content = b"UTC,wind_knots\n" + b"2026-08-30T20:00Z,12\n" * 48
+    descriptor, attachment = prepare_attachment(
+        "route-weather.csv", "text/csv", attachment_content
+    )
+    message = Message(
         logical_id=identity,
         created_at=1_788_112_800,
         sender="shore@example.test",
@@ -26,53 +37,70 @@ def _message() -> Message:
             "The receiver is reopened from disk between contacts and requests "
             "only the unreceived suffix of the immutable representation."
         ),
+        attachments=(descriptor,),
     )
+    return message, attachment_content, attachment
 
 
-def run_demo(root: Path, windows: tuple[int, ...] = DEFAULT_WINDOWS) -> dict[str, object]:
-    message = _message()
-    representation = prepare_message(message)
-    total = Accounting()
-    reports: list[dict[str, object]] = []
-
-    for contact_number in range(1, 101):
-        window = windows[(contact_number - 1) % len(windows)]
-        receiver = ReceiverStore(root, representation)
-        exchange = ProofExchange(representation, receiver, max_record_size=96)
-        report = exchange.run_contact(window)
-        total.merge(report.accounting)
-        reports.append(
+def _run_report(run: TransferRun) -> dict[str, object]:
+    accounting = run.accounting
+    return {
+        "contacts": run.contacts,
+        "simulated_restarts": run.simulated_restarts,
+        "bempic_sender_to_receiver_bytes": accounting.sender_to_receiver_bytes,
+        "bempic_receiver_to_sender_bytes": accounting.receiver_to_sender_bytes,
+        "bempic_total_bytes": accounting.total_bempic_bytes,
+        "representation_payload_bytes": accounting.representation_payload_bytes,
+        "duplicate_payload_bytes": accounting.duplicate_payload_bytes,
+        "useful_committed_bytes": accounting.useful_committed_bytes,
+        "integrity_failures": accounting.integrity_failures,
+        "operation_bytes": dict(sorted(accounting.operation_bytes.items())),
+        "contact_reports": [
             {
-                "contact": contact_number,
-                "budget": window,
+                "contact": number,
+                "budget": report.budget_bytes,
                 "spent": report.spent_bytes,
                 "progress_before": report.progress_before,
                 "progress_after": report.progress_after,
                 "complete": report.complete,
                 "result_sent": report.result_sent,
             }
-        )
-        if report.result_sent:
-            break
-    else:
-        raise RuntimeError("proof did not complete within 100 contacts")
+            for number, report in enumerate(run.reports, start=1)
+        ],
+    }
 
-    receiver = ReceiverStore(root, representation)
-    decoded = receiver.read_complete()
+
+def run_demo(root: Path, windows: tuple[int, ...] = DEFAULT_WINDOWS) -> dict[str, object]:
+    message, attachment_content, attachment = _message()
+    manifest = prepare_message(message)
+    manifest_run = run_until_complete(
+        root,
+        manifest,
+        windows,
+        max_record_size=96,
+    )
+    attachment_part = root / f"{attachment.representation_id.hex()}.part"
+    attachment_complete = root / f"{attachment.representation_id.hex()}.complete"
+    deferred_content_files = int(attachment_part.exists()) + int(attachment_complete.exists())
+
+    attachment_run = run_until_complete(
+        root,
+        attachment,
+        (256, 384, 512),
+        max_record_size=256,
+    )
     return {
-        "status": "complete" if decoded == message else "decode-mismatch",
-        "contacts": len(reports),
-        "simulated_restarts": max(0, len(reports) - 1),
-        "representation_bytes": representation.size,
-        "bempic_sender_to_receiver_bytes": total.sender_to_receiver_bytes,
-        "bempic_receiver_to_sender_bytes": total.receiver_to_sender_bytes,
-        "bempic_total_bytes": total.total_bempic_bytes,
-        "representation_payload_bytes": total.representation_payload_bytes,
-        "duplicate_payload_bytes": total.duplicate_payload_bytes,
-        "useful_committed_bytes": total.useful_committed_bytes,
-        "integrity_failures": total.integrity_failures,
-        "operation_bytes": dict(sorted(total.operation_bytes.items())),
-        "contact_reports": reports,
+        "status": (
+            "complete"
+            if manifest_run.value == message and attachment_run.value == attachment_content
+            else "decode-mismatch"
+        ),
+        "manifest_representation_bytes": manifest.size,
+        "attachment_representation_bytes": attachment.size,
+        "deferred_attachment_content_files_before_selection": deferred_content_files,
+        "deferred_attachment_payload_bytes_before_selection": 0,
+        "manifest_transfer": _run_report(manifest_run),
+        "selected_attachment_transfer": _run_report(attachment_run),
     }
 
 
