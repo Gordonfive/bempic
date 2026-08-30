@@ -50,6 +50,8 @@ def _run_report(run: TransferRun) -> dict[str, object]:
         "bempic_sender_to_receiver_bytes": accounting.sender_to_receiver_bytes,
         "bempic_receiver_to_sender_bytes": accounting.receiver_to_sender_bytes,
         "bempic_total_bytes": accounting.total_bempic_bytes,
+        "predicted_bempic_bytes": run.predicted_bempic_bytes,
+        "prediction_error_bytes": run.prediction_error_bytes,
         "representation_payload_bytes": accounting.representation_payload_bytes,
         "duplicate_payload_bytes": accounting.duplicate_payload_bytes,
         "useful_committed_bytes": accounting.useful_committed_bytes,

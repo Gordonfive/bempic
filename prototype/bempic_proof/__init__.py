@@ -7,7 +7,7 @@ from .codec import (
     prepare_binary,
     prepare_message,
 )
-from .exchange import Accounting, ContactReport, ProofExchange
+from .exchange import Accounting, ContactQuote, ContactReport, ProofExchange
 from .model import (
     AttachmentDescriptor,
     Message,
@@ -23,6 +23,7 @@ __all__ = [
     "Accounting",
     "AttachmentDescriptor",
     "ContactReport",
+    "ContactQuote",
     "IntegrityError",
     "Message",
     "OfferPage",

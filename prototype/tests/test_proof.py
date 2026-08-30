@@ -117,6 +117,54 @@ class CodecTests(unittest.TestCase):
 
 
 class ExchangeTests(unittest.TestCase):
+    def test_contact_quotes_are_exact_and_side_effect_free(self) -> None:
+        representation = prepare_message(fixture_message("metering quote " * 12))
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            windows = (0, 8, 17, 62, 96, 128, 77)
+            for contact_number in range(1, 100):
+                store = ReceiverStore(root, representation)
+                exchange = ProofExchange(representation, store)
+                state_before = {
+                    path.name: path.read_bytes()
+                    for path in root.iterdir()
+                    if path.is_file()
+                }
+                budget = windows[(contact_number - 1) % len(windows)]
+                quote = exchange.quote_contact(budget)
+                state_after_quote = {
+                    path.name: path.read_bytes()
+                    for path in root.iterdir()
+                    if path.is_file()
+                }
+                self.assertEqual(state_after_quote, state_before)
+
+                report = exchange.run_contact(budget)
+                self.assertEqual(quote.predicted_spent_bytes, report.spent_bytes)
+                self.assertEqual(
+                    quote.predicted_progress_after, report.progress_after
+                )
+                self.assertEqual(quote.predicted_complete, report.complete)
+                self.assertEqual(quote.predicted_result_sent, report.result_sent)
+                self.assertEqual(quote.accounting, report.accounting)
+                if report.result_sent:
+                    break
+            else:
+                self.fail("quoted exchange did not complete")
+
+    def test_contact_quote_predicts_corruption_failure(self) -> None:
+        representation = prepare_binary(b"corruption quote" * 8)
+        with tempfile.TemporaryDirectory() as temporary:
+            store = ReceiverStore(Path(temporary), representation)
+            exchange = ProofExchange(representation, store, max_record_size=512)
+            quote = exchange.quote_contact(1024, corrupt_next_data=True)
+            report = exchange.run_contact(1024, corrupt_next_data=True)
+            self.assertEqual(quote.predicted_spent_bytes, report.spent_bytes)
+            self.assertEqual(quote.predicted_progress_after, report.progress_after)
+            self.assertEqual(quote.predicted_complete, report.complete)
+            self.assertEqual(quote.accounting, report.accounting)
+            self.assertEqual(report.accounting.integrity_failures, 1)
+
     def test_interrupted_contacts_resume_without_payload_retransmission(self) -> None:
         message = fixture_message()
         representation = prepare_message(message)

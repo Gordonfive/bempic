@@ -116,6 +116,14 @@ def build_report() -> dict[str, object]:
                     ),
                     "metadata_attachment_payload_bytes": 0,
                     "full_exchange_bytes": full_accounting.total_bempic_bytes,
+                    "full_exchange_predicted_bytes": sum(
+                        run.predicted_bempic_bytes
+                        for run in (manifest_run,) + attachment_runs
+                    ),
+                    "full_exchange_prediction_error_bytes": sum(
+                        run.prediction_error_bytes
+                        for run in (manifest_run,) + attachment_runs
+                    ),
                     "full_exchange_contacts": sum(
                         run.contacts for run in (manifest_run,) + attachment_runs
                     ),
@@ -166,6 +174,13 @@ def build_report() -> dict[str, object]:
         "totals": {
             "rfc5322_mime_bytes": total_mime,
             "full_exchange_bytes": total_full_exchange,
+            "full_exchange_predicted_bytes": sum(
+                result["full_exchange_predicted_bytes"] for result in results
+            ),
+            "full_exchange_prediction_error_bytes": sum(
+                result["full_exchange_prediction_error_bytes"]
+                for result in results
+            ),
             "compression_candidate_bytes": compression_totals,
         },
         "collection_summary": {

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import shutil
+import tempfile
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from .model import PreparedRepresentation
 from .operations import (
@@ -65,6 +68,19 @@ class ContactReport:
     accounting: Accounting
 
 
+@dataclass(frozen=True, slots=True)
+class ContactQuote:
+    """Side-effect-free prediction for one contact in the proof harness."""
+
+    budget_bytes: int
+    predicted_spent_bytes: int
+    progress_before: int
+    predicted_progress_after: int
+    predicted_complete: bool
+    predicted_result_sent: bool
+    accounting: Accounting
+
+
 class _Budget:
     def __init__(self, limit: int) -> None:
         if limit < 0:
@@ -109,6 +125,46 @@ class ProofExchange:
         self.representation = representation
         self.receiver = receiver
         self.max_record_size = max_record_size
+
+    def quote_contact(
+        self,
+        budget_bytes: int,
+        *,
+        corrupt_next_data: bool = False,
+    ) -> ContactQuote:
+        """Predict an exact contact result without mutating receiver state.
+
+        This intentionally expensive clone-and-execute oracle belongs to the
+        measurement harness. It is not a proposed protocol mechanism.
+        """
+
+        with tempfile.TemporaryDirectory(prefix="bempic-quote-") as temporary:
+            shadow_root = Path(temporary)
+            for source in (
+                self.receiver.state_path,
+                self.receiver.part_path,
+                self.receiver.complete_path,
+            ):
+                if source.exists():
+                    shutil.copy2(source, shadow_root / source.name)
+            shadow_receiver = ReceiverStore(shadow_root, self.representation)
+            report = ProofExchange(
+                self.representation,
+                shadow_receiver,
+                max_record_size=self.max_record_size,
+            ).run_contact(
+                budget_bytes,
+                corrupt_next_data=corrupt_next_data,
+            )
+        return ContactQuote(
+            budget_bytes=report.budget_bytes,
+            predicted_spent_bytes=report.spent_bytes,
+            progress_before=report.progress_before,
+            predicted_progress_after=report.progress_after,
+            predicted_complete=report.complete,
+            predicted_result_sent=report.result_sent,
+            accounting=report.accounting,
+        )
 
     def run_contact(
         self,
