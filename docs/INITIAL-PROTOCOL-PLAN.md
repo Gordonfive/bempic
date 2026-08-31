@@ -1,12 +1,20 @@
 # BEMPIC Initial Protocol Plan
 
-**Status:** pre-wire-format planning baseline
+**Status:** historical pre-wire-format planning baseline; superseded for current
+requirements by [`../SPECIFICATION.md`](../SPECIFICATION.md) and
+[`ROADMAP-v0.1.0.md`](ROADMAP-v0.1.0.md)
 
 **Date:** 2026-08-30
 
-**Implementation status:** a non-normative executable semantic proof exists in `prototype/`; no reference implementation or stable wire format exists yet
+**Implementation status:** the non-normative executable semantic proof remains
+in `prototype/` as a transitional oracle; executable reference work belongs in
+the sibling `bempic-reference` repository; no stable wire format exists yet
 
-This document records the initial BEMPIC audit, prior-art comparison, smallest useful application model, measurement plan, and implementation recommendation. It is intentionally earlier than a wire-format decision. Names of operations and fields in this document describe semantics, not assigned wire values.
+This document records the initial BEMPIC audit, prior-art comparison, smallest
+useful application model, measurement plan, and implementation recommendation.
+It is retained as design rationale, not current release authority. Names,
+bounds, operations, identifiers, and fields here do not override the v0.1
+specification and do not assign stable wire values.
 
 ## Outcome
 
@@ -21,7 +29,11 @@ BEMPIC should not become:
 - a compressed clone of SMTP, IMAP, MIME, BPv7, LTP, or CFDP;
 - an encoding of OceanMail product and service policy.
 
-No wire format, integer encoding, identifier width, compression algorithm, cryptographic suite, or version number is frozen by this plan.
+This historical plan froze no wire format, integer encoding, identifier width,
+compression algorithm, cryptographic suite, or version. The current v0.1
+specification now fixes semantic generation `0.1`, full identifier and schema
+fingerprint construction, bounds, and codec obligations while continuing to
+defer a permanent codec and cryptographic suite.
 
 ## Current executable proof
 
@@ -29,7 +41,11 @@ The repository now contains a standard-library Python proof under `prototype/`. 
 
 The initial recorded corpus result is `prototype/results/baseline-2026-08-30.json`. It establishes a measurement baseline rather than a performance claim: tiny and reply-chain uncompressed exchanges still slightly exceed their MIME inputs, while attachment deferral and text compression candidates show substantial gains. Warm no-change comparison is 58 bytes, cold no-change comparison is 76 bytes, and detecting then offering one new representation is 120 bytes. Pre-contact quotes predict all 24,984 recorded exchange bytes with zero-byte error. The B2F baseline is not yet integrated.
 
-This artifact validates state-machine and accounting assumptions only. It is not the planned Rust reference implementation, an M4P binding, a security profile, or compatibility authority. See [`prototype/README.md`](../prototype/README.md) for its exact scope, commands, and measured demo output.
+This artifact validates state-machine and accounting assumptions only. It is
+not the sibling reference implementation, an M4P binding, a security profile,
+or compatibility authority. See
+[`prototype/README.md`](../prototype/README.md) for its exact scope, commands,
+and measured demo output.
 
 ## Repository audit
 
@@ -46,7 +62,7 @@ The audit found several areas that needed refinement before implementation:
 | Resumption | The documents correctly require continuation across sessions but do not sharply separate it from M4P fragmentation and link ARQ. | Persist completed application extents. Do not ACK every extent on reliable carriers. |
 | Security | The public/authenticated/confidential classes are directionally correct. The first proof does not need to select a cryptographic suite, and must not falsely claim security when running clear. | Build integrity-checked clear simulation first; design optional legal/security profiles before real user traffic. |
 | Prior art | Existing notes identify the correct projects but are not a feature-by-feature decision record. | The matrix and dispositions below are the initial design baseline. |
-| Implementation boundary | OceanMail already proposes separate specification and reference repositories, but BEMPIC has no implementation structure or license. | Keep normative work here; create `bempic-reference` only when implementation begins and after licensing is chosen. |
+| Implementation boundary | Specification and executable reference work need separate authority. | Normative work remains here; executable work belongs in sibling `bempic-reference`; Apache-2.0 is adopted; retain the Python proof until parity. |
 
 ## Authoritative layer boundary
 
@@ -122,7 +138,10 @@ BEMPIC should improve or generalize the areas B2F does not target: service-neutr
 - `wl2k-go` as an MIT-licensed independent B2F interoperability reference and comparator, not as the BEMPIC architecture.
 - Existing fuzzing, property-testing, and deterministic network-simulation libraries where their dependency cost is justified.
 
-No third-party source should be copied into BEMPIC until the BEMPIC reference implementation license is adopted and compatibility/notices are recorded.
+No third-party source should be copied into this specification repository
+without a documented need, compatible license, provenance, and notices.
+Executable third-party dependencies belong in `bempic-reference` and require
+the sibling's own recorded license and dependency notices.
 
 ### Omit
 
@@ -413,7 +432,7 @@ This repository remains authoritative for:
 
 ### `Gordonfive/bempic-reference`
 
-Create this repository when coding begins. It should contain:
+The sibling repository owns executable reference work. It should contain:
 
 - the Rust workspace;
 - deterministic fixtures and simulator;
@@ -425,14 +444,22 @@ Create this repository when coding begins. It should contain:
 
 It must not contain OceanMail accounts, Mailcow integration, proprietary service logic, product UI, infrastructure, gateway scoring, or relay policy.
 
-The specification and reference implementation need explicit licenses before code or third-party source is added. A permissive implementation license is recommended; the exact license remains an owner decision.
+This specification repository has adopted Apache-2.0. The sibling must record
+its own explicit license and third-party notices before v0.1.0; the release
+roadmap requires Apache-2.0 there as well. No third-party source is copied merely
+because this historical plan recommends studying it.
 
-## Work plan before wire freeze
+## Historical work plan before wire freeze
+
+The active release plan is [`ROADMAP-v0.1.0.md`](ROADMAP-v0.1.0.md). The phases
+below are retained to explain the sequence that produced the prototype and must
+not be read as current repository ownership or tag criteria.
 
 ### Phase 0 — Measurement foundation
 
-1. Adopt licenses and contribution rules.
-2. Create `bempic-reference` with the Rust workspace and CI.
+1. Adopt licenses and contribution rules. **Completed here for the public
+   specification; sibling evidence remains a release gate.**
+2. Establish `bempic-reference` with the implementation workspace and CI.
 3. Add deterministic fixtures and byte-accounting schema.
 4. Integrate a B2F/LZHUF comparison oracle without making it a runtime dependency.
 5. Implement the deterministic opaque-record carrier simulator.
@@ -489,7 +516,8 @@ Do not freeze the first wire generation until:
 - at least two independent decoders agree on test vectors;
 - the M4P binding does not duplicate M4P fragmentation, deduplication, TTL, or routing;
 - clear operation and optional security profiles have an explicit design;
-- the specification and implementation licenses are adopted.
+- the specification and implementation licenses are adopted in their owning
+  repositories.
 
 ## Cross-project handoff notes
 
@@ -525,7 +553,7 @@ Primary specifications and maintained implementations reviewed for this plan:
 - [wl2k-go independent B2F implementation](https://github.com/la5nta/wl2k-go)
 - [RFC 9171 — Bundle Protocol Version 7](https://www.rfc-editor.org/rfc/rfc9171.html)
 - [RFC 5326 — Licklider Transmission Protocol](https://www.rfc-editor.org/rfc/rfc5326.html)
-- [CCSDS 727.0-B-5 — CCSDS File Delivery Protocol, Issue 5](https://ccsds.org/Pubs/727x0b5.pdf)
+- [CCSDS 727.0-B-5 — CCSDS File Delivery Protocol, Issue 5 with Editorial Change 1](https://ccsds.org/Pubs/727x0b5e1.pdf)
 - [NASA F Prime CFDP Manager design](https://fprime.jpl.nasa.gov/latest/Svc/Ccsds/CfdpManager/docs/sdd/)
 - [M4P specification repository](https://github.com/Poseidons-Forge/m4p-spec), reviewed at `main` commit `4977dfc`
 

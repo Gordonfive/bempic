@@ -1,92 +1,69 @@
-# BEMPIC Protocol Scope
+# BEMPIC v0.1 Scope
+
+This document summarizes scope. [`SPECIFICATION.md`](../SPECIFICATION.md) is
+normative if wording differs.
 
 ## Purpose
 
-BEMPIC is an extreme-efficiency application synchronization protocol for messaging over links and networks where bandwidth, airtime, latency, reliability, or transfer cost is severely constrained.
+BEMPIC synchronizes messaging-oriented application state with extreme byte
+efficiency across interrupted contacts. It remains service-neutral even though
+OceanMail drives the initial requirements.
 
-BEMPIC is messaging-first and is being developed to serve OceanMail. It should remain independently implementable and service-neutral.
+## Included in v0.1
 
-## Layer boundary
+- Immutable logical messages with one body and optional attachments.
+- Independently selectable representations, including application-supplied
+  previews or reduced forms.
+- Deterministic preparation, exact size, full digest, representation ID, schema
+  fingerprint, codec identity, and strict bounds.
+- Append-only single-authority collection checkpoints, bounded delta offers, and
+  deterministic full reconciliation.
+- Explicit selection and deferral; an offer never authorizes content.
+- Hard BEMPIC-byte budgets and separate semantic, BEMPIC, carrier, and link
+  accounting.
+- Reliable-carrier contiguous-prefix transfer, interruption, durable state,
+  process reopen, changed-source/carrier resume, verification, and atomic
+  commit.
+- Distinct representation-committed, application-accepted, and
+  application-delivered receipts.
+- Protocol/schema/codec/extension negotiation and fail-closed compatibility.
+- A contract for pluggable deterministic codecs without selecting a permanent
+  wire codec.
 
-BEMPIC is not the mesh/network layer.
+## Excluded from v0.1
 
-OceanMail intends to use M4P for:
+- Mutable mailbox flags, folders, labels, deletion, drafts, edits, or
+  multi-writer conflict resolution.
+- Application content transformation or preview generation.
+- A mandatory compression algorithm or permanent wire encoding.
+- A production cryptographic suite, identity system, or key distribution.
+- Missing-range/selective repair on unreliable carriers.
+- Internet email delivery semantics, external-provider integration, or account
+  policy.
+- General file synchronization, telemetry, commands, forms, and arbitrary
+  mutable application state.
 
-- peer/network discovery;
-- network addressing;
-- generic store-carry-forward;
-- cross-modality forwarding;
-- generic fragmentation/reassembly;
-- network-level deduplication;
-- TTL and forwarding policy primitives;
-- DataLink abstraction.
+## Permanent layer boundary
 
-BEMPIC sits above that layer and represents application state efficiently.
+BEMPIC does not define routing, addressing, discovery, mesh coordination,
+store-carry-forward, forwarding, generic fragmentation/reassembly, network
+deduplication, network TTL, cross-modality behavior, or DataLink abstraction.
+M4P owns those concerns for OceanMail.
 
-## Required BEMPIC capabilities
+BEMPIC also does not define modem framing, FEC, ARQ, retransmission, modulation,
+RF turnaround, or hardware control. DataLink adapters and modems own them.
 
-BEMPIC should ultimately provide:
+BEMPIC persists application representation progress because it must outlive a
+lost network path or contact. That extent state is not a packet fragment and
+does not acknowledge every reliable-carrier record.
 
-1. Compact email/message representation that avoids verbose Internet-facing formats on constrained links.
-2. Minimal mailbox/message discovery and synchronization.
-3. Stable application-level message/object identity.
-4. Batching and compression negotiation optimized for small text-heavy messages.
-5. Explicit byte metering, predicted transfer cost, and transfer budgets.
-6. Attachment metadata and selective/deferred attachment retrieval.
-7. Reduced representations such as thumbnails or downsampled content where an application requests them.
-8. Application-level continuation/resumption after interruption, including continuation through a different peer or transport.
-9. Logical/end-to-end delivery receipts and synchronization state.
-10. Capability and protocol-version negotiation suitable for independently upgraded implementations.
-11. Service/provider-neutral envelopes where an application needs to carry messages toward different external systems.
-12. Optional unreliable-link recovery mechanisms only when the underlying transport does not already provide adequate reliable ARQ.
+OceanMail owns gateway/relay policy, prioritization, user approval, billing,
+quotas, normalization, transforms, product UI, and external mail-service
+behavior.
 
-## Reliability boundary
+## Repository scope
 
-Reliable point-to-point modems such as PACTOR, VARA HF, and ARDOP ARQ own RF-level frame reliability, acknowledgement, retransmission, FEC, adaptive modulation, and TX/RX turnaround behavior.
-
-BEMPIC must not duplicate those mechanisms unnecessarily.
-
-BEMPIC resumption applies above the modem session. A logical transfer can continue after a session has disappeared, potentially hours later and through another node or another modem technology.
-
-For this purpose, BEMPIC may describe persisted byte extents of an immutable application representation. Those extents are synchronization state, not M4P fragments or modem frames. On reliable carriers BEMPIC does not acknowledge every extent during a healthy transfer.
-
-For broadcast/FEC or otherwise unreliable links, a BEMPIC profile may use selective-range/checkpoint recovery inspired by LTP/CFDP where measurement shows that it is worthwhile.
-
-## Application data model
-
-BEMPIC initially operates on messaging-oriented objects and state changes, including:
-
-- compact email/message bodies and metadata;
-- mailbox state;
-- attachment metadata and requested content;
-- delivery/synchronization state;
-- provider/service envelope information where needed.
-
-The constrained link should not require MIME, JSON, HTTP, SMTP, IMAP, or another verbose Internet-facing representation.
-
-The first application model distinguishes a stable logical message from each immutable body, preview, or attachment representation. This allows a receiver to defer or resume exact bytes without confusing a transformed preview with the original message.
-
-## Explicit non-goals
-
-BEMPIC does not define:
-
-- M4P mesh routing/network behavior;
-- OceanMail gateway scoring or route advertisements;
-- eager/reluctant relay policy;
-- modem waveforms or physical-layer behavior;
-- Internet email delivery semantics;
-- mailbox spam policy;
-- user-interface behavior;
-- billing/subscription policy;
-- weather policy;
-- OceanMail business logic.
-
-## Constrained-link assumption
-
-BEMPIC must remain useful on links where throughput can be extremely low, sessions can be brief, interruptions are normal, and the cost of unnecessary bytes is material.
-
-A lost connection is not a failed application transaction. Persistent synchronization state and later continuation are normal behavior.
-
-## Open-standard requirement
-
-A conforming BEMPIC implementation must not require proprietary OceanMail components. The normative specification and conformance behavior must be sufficient for independent interoperable implementations.
+This repository owns public semantics, architecture, governance, conformance,
+vector definitions, security requirements, roadmap, and rationale. Executable
+reference work belongs in `bempic-reference`. The existing Python proof remains
+here only as a transitional oracle until the documented parity gate passes.

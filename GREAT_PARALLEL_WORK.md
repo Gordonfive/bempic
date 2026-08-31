@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the durable research register for existing protocols, software, standards, and projects that overlap BEMPIC's goals.
+This document is the durable research register for existing protocols, software, standards, and projects that overlap BEMPIC's goals. It records influence and disposition; it is not the normative protocol specification.
 
 Git is authoritative. Discoveries that materially influence BEMPIC architecture, provide reusable code, establish prior art, or prevent unnecessary reinvention should be recorded here even when they are not adopted directly.
 
@@ -16,7 +16,11 @@ Entries should identify whether a project is primarily:
 
 Licensing must be checked before copying implementation code. Protocol ideas and software source licenses are separate questions.
 
-The dated concrete feature matrix and initial measured-development plan are maintained in [`docs/INITIAL-PROTOCOL-PLAN.md`](docs/INITIAL-PROTOCOL-PLAN.md).
+Current normative behavior is in [`SPECIFICATION.md`](SPECIFICATION.md). The
+dated feature matrix and pre-wire rationale remain in
+[`docs/INITIAL-PROTOCOL-PLAN.md`](docs/INITIAL-PROTOCOL-PLAN.md), and repository
+ownership is in
+[`docs/REPOSITORY-BOUNDARY.md`](docs/REPOSITORY-BOUNDARY.md).
 
 ## Winlink B2F
 
@@ -104,6 +108,25 @@ This is particularly relevant to future BEMPIC attachment/object resumption.
 
 For BEMPIC's reliable-carrier core, borrow metadata-before-data, offsets, persistent transaction state, and final verification. Do not copy CFDP entity routing, filestore operations, proxy operations, or its complete Class 2 ACK/NAK/FIN state machine.
 
+## Dynamic Compact Control Language (DCCL)
+
+**Role:** Borrow / study codec discipline; influence only.
+
+Primary project: [GobySoft DCCL](https://github.com/GobySoft/dccl).
+
+DCCL demonstrates useful requirements for highly compact, analyzable codecs:
+
+- declarative type, range, count, length, and numeric-precision bounds;
+- a mandatory maximum encoded size;
+- schema fingerprints;
+- pluggable codecs; and
+- exact encoded-size analysis.
+
+BEMPIC incorporates those qualities into its codec-profile contract. It does
+not depend on DCCL, adopt the DCCL wire format or encryption, require its C++
+implementation, or require Protobuf. A BEMPIC codec receives its own registry
+identity, schema fingerprints, specification, analysis, and vectors.
+
 ## M4P — Multi-Modal Maritime Mesh Protocol
 
 **Role:** Adopt below BEMPIC; upstream dependency/partner.
@@ -123,6 +146,22 @@ M4P already covers functionality that must therefore **not** be reinvented in BE
 - peer/network behavior.
 
 BEMPIC should remain useful over other networking substrates as well, but OceanMail's planned grid architecture uses M4P.
+
+This is now a fixed architectural boundary for v0.1, not merely a research
+preference. Proposed routing, mesh coordination, forwarding, generic
+fragmentation, network deduplication, TTL, or DataLink behavior is redirected to
+M4P rather than added to BEMPIC.
+
+## BEMPIC reference implementation
+
+**Role:** Adopt as executable conformance and measurement evidence; separate
+repository.
+
+The sibling `bempic-reference` repository owns executable model, codec,
+persistence, simulator, benchmark, fuzz/property, vector-runner, carrier-trait,
+and binding work. This repository owns the requirements and vector definitions.
+The retained Python proof is transitional until behavioral parity is recorded;
+its generation-0 bytes are not prior art to be standardized.
 
 ## Reticulum
 

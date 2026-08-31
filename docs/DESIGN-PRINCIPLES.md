@@ -1,5 +1,8 @@
 # BEMPIC Design Principles
 
+These principles guide tradeoffs. [`SPECIFICATION.md`](../SPECIFICATION.md) is
+normative when a principle and a v0.1 requirement differ.
+
 ## 1. Count bytes, not abstractions
 
 Protocol decisions must be evaluated by total bytes transmitted on representative constrained links. Convenient but verbose encodings are not acceptable merely because they are common elsewhere.
@@ -20,7 +23,7 @@ Peers must expect interruption. Transfer state should survive disconnects, reboo
 
 ## 4. Resume cheaply
 
-A peer that already possesses part of an immutable application representation should request only what remains. A contiguously stored prefix bound to the exact representation identity is preferred where it is cheaper than elaborate range metadata. Compact missing extents may be used when real holes exist. Content-addressed chunking is optional and must justify its overhead.
+A peer that already possesses part of an immutable application representation should request only what remains. The v0.1 core uses a contiguously stored prefix bound to the exact representation identity. A future compact missing-extent extension may be considered when real holes exist. Content-addressed chunking is optional future work and must justify its overhead.
 
 This is persistent application continuation after a lost session or changed source. It is not generic packet fragmentation and it is not per-frame ARQ.
 
@@ -68,6 +71,27 @@ Peers should be able to negotiate capabilities without large exchanges. Unknown 
 
 ## 15. Optimize empirically
 
-A protocol simulator and byte-accounting test suite should compare candidate encodings, application extent sizes, resume summaries, compression modes, security overhead, batching, resumability schemes, and metering accuracy under realistic carrier loss and throughput conditions before the wire format is frozen.
+The simulator, candidate codecs, and executable benchmark suite belong in
+`bempic-reference`. They should compare encodings, application extent sizes,
+resume summaries, compression modes, security overhead, batching, resumability
+schemes, and metering accuracy under realistic carrier loss and throughput
+conditions before a stable wire format is frozen.
 
 Carrier and link retransmission costs should be measured when exposed, but BEMPIC must not implement a competing RF/link retransmission system merely to optimize the measurement.
+
+## 16. Bounds and size analysis are protocol behavior
+
+Every schema and codec must declare field bounds, numeric precision when
+applicable, a maximum encoded size, strict decoder limits, and an exact encoded
+size for each concrete value. A convenient serializer is not a protocol design
+unless its worst-case allocation and byte cost are known.
+
+Schema fingerprints and codec revisions make those claims independently
+verifiable. Pluggability is required; no library or language becomes part of
+the semantic core merely because it inspired the rules.
+
+## 17. Specification and implementation evidence are separate
+
+This repository defines public behavior and conformance evidence. The sibling
+`bempic-reference` repository implements and measures it. The retained Python
+prototype remains a transitional oracle and never overrides normative text.

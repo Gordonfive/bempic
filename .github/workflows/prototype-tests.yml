@@ -1,4 +1,4 @@
-name: Prototype tests
+name: Repository checks
 
 on:
   push:
@@ -22,5 +22,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Run semantic proof tests
         run: python3 -m unittest prototype.tests.test_proof -v
+      - name: Validate documentation and repository consistency
+        run: python3 -m scripts.validate_docs
+      - name: Run interrupted-transfer demo
+        run: python3 -m prototype.demo > /dev/null
       - name: Run deterministic benchmark
         run: python3 -m prototype.benchmark

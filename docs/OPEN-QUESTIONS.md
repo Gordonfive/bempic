@@ -1,60 +1,61 @@
 # BEMPIC Open Questions
 
-These items are deliberately unresolved and should be tested or decided before a 1.0 wire format is frozen.
+This register contains only decisions not settled by the v0.1 semantic
+specification. Items marked **release-blocking** must be resolved or explicitly
+deferred by an accepted decision before `v0.1.0` is tagged.
 
-## Naming
+## Release-blocking
 
-- Keep `BEMPIC` as the project/protocol name or adopt a shorter 4–5 character name?
-- If BEMPIC remains, what is its final expansion now that the protocol is broader than messaging?
+- **Experimental codec selection:** Which candidate codec ID/revision will
+  provide the v0.1 interoperability evidence while remaining explicitly
+  non-stable?
+- **Independent verifier:** Which implementation, language, and ownership will
+  provide decoder/vector independence from the primary reference codec?
+- **B2F oracle:** Which licensed implementation and version will produce the
+  reproducible B2F/LZHUF comparison, and what notices are required?
+- **M4P binding review:** What exact opaque-record API, maximum-opportunity,
+  persistence, duplicate, and cost-reporting guarantees will the first binding
+  consume? This must be coordinated upstream, not invented here.
+- **Object-ID application profile:** What collision-resistant generation rule
+  will the OceanMail application profile require for the core's 32-octet opaque
+  object ID?
+- **Protocol name:** Keep `BEMPIC` without an expansion, or adopt a durable
+  expansion? The acronym's expansion has no wire consequence.
 
-## Wire model
+## Deliberately deferred beyond v0.1
 
-- Deterministic operation encoding and length-delimited extension envelope?
-- Contiguous-prefix resume, compact missing extents, or a measured combination for immutable application representations?
-- What application extent sizes minimize resume waste without recreating generic fragmentation?
-- When is a whole-representation digest sufficient on an integrity-preserving carrier?
-- Does an optional unreliable-carrier profile need per-extent integrity or reception claims?
-- What compact integer encoding should be normative?
-- How are session-local object identifiers assigned and recycled?
+- Missing-extent or selective-range resume extension.
+- Unreliable/broadcast carrier recovery and its ownership boundary with M4P.
+- Mutable mailbox state, deletion, read/unread, folders, labels, edits, and
+  multi-writer conflict semantics.
+- Delta representations and cross-object content deduplication policy.
+- Standard compression codecs and static dictionaries.
+- Authenticated-public and confidential cryptographic profiles, identity/key
+  enrollment, replay epochs, revocation, and regulatory profiles.
+- Provider/service envelopes for external delivery intent.
+- Direct byte-stream binding for non-M4P deployments.
+- IETF or another formal standards-track publication path.
 
-## Synchronization
+Deferred items are not permission for an implementation to assign conflicting
+core meanings. Experimental work uses registered extensions or later protocol
+generations.
 
-- Minimal manifest representation.
-- Conflict semantics for bidirectional synchronization.
-- Whether delta encoding belongs in core or application profiles.
-- Whether content-addressed deduplication is worthwhile for any constrained-link profiles.
+## Resolved for v0.1
 
-## Compression
-
-- Zstandard, Brotli, or multiple negotiated algorithms?
-- Shared static dictionaries by application profile?
-- Minimum payload size before compression is attempted?
-- Rules preventing compression side-channel problems with secrets.
-
-## Security
-
-- Cryptographic suite(s).
-- Identity model and key enrollment.
-- Full handshake versus pre-provisioned keys for extremely short contacts.
-- Session resumption mechanism.
-- Authentication tag size and record sizing.
-- Regulatory/security profiles for amateur radio and other restricted transports.
-
-## Carrier bindings
-
-Initial candidates:
-
-- M4P application payload binding for OceanMail production use;
-- deterministic opaque-record simulator for development and testing;
-- non-normative local/IP record adapter for the first proof;
-- a direct byte-stream binding only if independent non-M4P deployments require one;
-- optional unreliable/broadcast binding only after proving the carrier below BEMPIC lacks suitable recovery.
-
-PACTOR, VARA, ARDOP, satellite, serial, TCP/IP, and future link technologies belong behind M4P/DataLink or another carrier. They are not separate BEMPIC modem/transport profiles.
-
-## Standardization and licensing
-
-- Specification document license.
-- Reference implementation license (permissive licensing is the current direction).
-- Governance model and contribution process.
-- Whether future publication should pursue an IETF Internet-Draft/RFC path or remain an independent open specification initially.
+- Architecture is OceanMail → BEMPIC → M4P → DataLink adapters.
+- BEMPIC does not own routing, forwarding, mesh, generic fragmentation,
+  network TTL, generic deduplication, or modem reliability.
+- The core uses deterministic prepared representations and a durable contiguous
+  prefix; missing ranges are deferred.
+- Full 32-octet SHA-256 schema fingerprints, content digests, and
+  representation IDs are specified.
+- Canonical v0.1 core-operation, message-manifest, and opaque-binary schema
+  descriptors and their exact fingerprints are published.
+- Operation, schema, field, count, and resource bounds are mandatory.
+- Protocol/schema/codec/extension negotiation and unknown-extension behavior
+  are specified.
+- Codecs are pluggable and must publish maximum and exact encoded-size analysis.
+- DCCL is prior art only, with no dependency, wire, crypto, C++, or Protobuf
+  adoption.
+- The public specification remains here; executable reference work belongs in
+  `bempic-reference`; the Python proof remains transitional pending parity.

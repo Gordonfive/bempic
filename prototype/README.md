@@ -1,13 +1,20 @@
 # BEMPIC Executable Semantic Proof
 
+**Lifecycle:** retained transitional oracle. Do not delete or move this
+directory until the behavioral-parity gate in
+[`../docs/ROADMAP-v0.1.0.md`](../docs/ROADMAP-v0.1.0.md) passes and a later
+maintainer decision authorizes the change. New executable reference work
+belongs in the sibling `bempic-reference` repository.
+
 This directory contains the first runnable BEMPIC artifact. It proves that two local application endpoints can transfer one immutable message through multiple byte-constrained contact windows, persist a received prefix, reopen the receiver between contacts, resume at the retained offset, verify the whole representation, and decode the original message. Message manifests can describe independently retrievable attachments without carrying their content; a later explicit selection runs the same persistent transfer for the binary representation.
 
-It is deliberately **non-normative**:
+It is deliberately **non-normative** and cannot satisfy a v0.1 conformance
+claim by itself:
 
 - the operation names follow the semantic plan, but their byte assignments are disposable;
 - `BMSG0` and `B0` are experimental markers, not protocol identifiers;
 - the 16-byte identifiers, integer widths, SHA-256 digest, record sizes, and state files are not frozen;
-- this is a Python measurement/state-machine proof, not the planned Rust reference implementation;
+- this is a Python measurement/state-machine proof, not the reference implementation;
 - it implements no mesh, routing, M4P, modem, generic fragmentation, RF reliability, encryption, or real transport binding.
 
 The proof uses only the Python standard library so it can run without installing dependencies.
@@ -75,4 +82,16 @@ The detail matters more than the aggregate: the tiny uncompressed proof exchange
 
 ## What remains
 
-The exact quote currently uses an intentionally expensive clone-and-execute oracle; it establishes an accounting target, not an implementation strategy. The reconciliation cursor is local harness state rather than a serialized protocol field. This proof still postpones compression negotiation and actual compressed transfer, the B2F baseline, security profiles, unreliable-carrier repair, independent decoding, continuation from a different authorized source, and M4P binding. The next implementation phase should create the separate Rust reference repository once its repository and license are established, then port these tested semantics rather than treating this encoding as compatibility authority.
+The exact quote currently uses an intentionally expensive clone-and-execute
+oracle; it establishes an accounting target, not an implementation strategy.
+The reconciliation cursor is local harness state rather than the durable
+cursor required by v0.1. This proof also uses 16-byte IDs instead of v0.1's
+full-length identifiers and does not implement the specified append-only
+checkpoint model, bounds, negotiation, failures, or receipts.
+
+It still postpones compression negotiation and actual compressed transfer, the
+B2F baseline, security profiles, unreliable-carrier repair, independent
+decoding, continuation from a different authorized source, and M4P binding.
+Those executable tasks belong in `bempic-reference`. Port the proven behavior
+there and measure/document normative differences; never treat this encoding as
+compatibility authority.
