@@ -30,14 +30,22 @@ class Kind(IntEnum):
 
 @dataclass(frozen=True, slots=True)
 class Capabilities:
-    generation: int
+    """Disposable proof encoding generation and local record capabilities.
+
+    ``encoding_generation`` identifies the experimental operation encoding only;
+    it is not mailbox state, a collection revision, or a protocol version.
+    """
+
+    encoding_generation: int
     max_record_size: int
     features: int = 0
 
 
 @dataclass(frozen=True, slots=True)
 class Summary:
-    generation: int
+    """Collection cardinality plus its order-independent digest."""
+
+    item_count: int
     digest: bytes
 
 
@@ -86,23 +94,25 @@ def _envelope(kind: Kind, payload: bytes) -> bytes:
 
 def encode_operation(operation: Operation) -> bytes:
     if isinstance(operation, Capabilities):
-        if not 0 <= operation.generation <= 0xFF:
-            raise ValueError("generation must fit one byte")
+        if not 0 <= operation.encoding_generation <= 0xFF:
+            raise ValueError("encoding_generation must fit one byte")
         if not ENVELOPE_SIZE <= operation.max_record_size <= 0xFFFF:
             raise ValueError("max_record_size is outside proof limits")
         if not 0 <= operation.features <= 0xFF:
             raise ValueError("features must fit one byte")
         payload = struct.pack(
             ">BHB",
-            operation.generation,
+            operation.encoding_generation,
             operation.max_record_size,
             operation.features,
         )
         return _envelope(Kind.CAPABILITIES, payload)
     if isinstance(operation, Summary):
+        if not 0 <= operation.item_count <= (1 << 64) - 1:
+            raise ValueError("item_count must fit an unsigned 64-bit integer")
         if len(operation.digest) != 16:
             raise ValueError("summary digest must be 16 bytes")
-        return _envelope(Kind.SUMMARY, struct.pack(">Q", operation.generation) + operation.digest)
+        return _envelope(Kind.SUMMARY, struct.pack(">Q", operation.item_count) + operation.digest)
     if isinstance(operation, Offer):
         _validate_id(operation.representation_id, "representation_id")
         if not 0 <= operation.representation_kind <= 0xFF:
@@ -156,8 +166,8 @@ def decode_operation(record: bytes) -> Operation:
     if kind is Kind.CAPABILITIES:
         if len(payload) != 4:
             raise OperationError("invalid capabilities length")
-        generation, max_record_size, features = struct.unpack(">BHB", payload)
-        return Capabilities(generation, max_record_size, features)
+        encoding_generation, max_record_size, features = struct.unpack(">BHB", payload)
+        return Capabilities(encoding_generation, max_record_size, features)
     if kind is Kind.SUMMARY:
         if len(payload) != 24:
             raise OperationError("invalid summary length")
