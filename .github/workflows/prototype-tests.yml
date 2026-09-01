@@ -26,6 +26,10 @@ jobs:
         run: python3 -m unittest prototype.tests.test_proof -v
       - name: Validate documentation and repository consistency
         run: python3 -m scripts.validate_docs
+      - name: Validate normative release-gate artifacts
+        run: python3 -m scripts.validate_release_gates
+      - name: Run independent Node verification
+        run: node scripts/independent_verify.mjs
       - name: Run interrupted-transfer demo
         run: python3 -m prototype.demo > /dev/null
       - name: Run deterministic benchmark

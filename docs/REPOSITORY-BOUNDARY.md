@@ -38,7 +38,7 @@ separate review and are never made indirectly from this repository.
 ## Transitional Python prototype
 
 `prototype/` predates the repository split. It is retained in place as a
-non-normative semantic and measurement oracle. It MUST NOT be deleted, moved,
+non-normative semantic and measurement oracle. [REQ-REPO-001] It MUST NOT be deleted, moved,
 or described as the reference implementation until `bempic-reference` passes
 the behavioral-parity gate in [`ROADMAP-v0.1.0.md`](ROADMAP-v0.1.0.md).
 

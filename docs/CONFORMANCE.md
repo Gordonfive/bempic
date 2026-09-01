@@ -2,7 +2,7 @@
 
 ## Claims
 
-Conformance is scoped. An implementation MUST state each class and profile it
+[REQ-CLAIM-001] Conformance is scoped. An implementation MUST state each class and profile it
 claims, the exact specification commit or tag, supported protocol generation,
 schema fingerprints, codec IDs/revisions, extensions, limits, security class,
 and carrier bindings.
@@ -32,7 +32,7 @@ profile without changing core receipt meanings.
 
 ## Required semantic checklist
 
-A semantic core conformer MUST pass all applicable checks:
+[REQ-CONF-001] A semantic core conformer MUST pass all applicable checks:
 
 - [ ] Enforce every core bound before allocation or durable mutation.
 - [ ] Normalize metadata and prepare identical inputs deterministically.
@@ -68,7 +68,8 @@ A semantic core conformer MUST pass all applicable checks:
 
 ## Required codec checklist
 
-- [ ] Registered ID/revision and status (`experimental` or `stable`) published.
+- [ ] Registered ID/revision and status (`experimental`, `approved`,
+  `mandatory`, or `deprecated`) published under `REGISTRIES.md`.
 - [ ] Exact supported schema fingerprints published.
 - [ ] Field types, presence, order, bounds, precision, and rounding documented.
 - [ ] Every operation is complete and length-delimited.
@@ -81,9 +82,12 @@ A semantic core conformer MUST pass all applicable checks:
 - [ ] Mandatory valid, boundary, malformed, and non-canonical vectors pass.
 - [ ] At least one independent decoder/verifier agrees on the vector bundle.
 
+Codec allocation, status progression, approval evidence, and worst-case proof
+requirements are normative in [`REGISTRIES.md`](REGISTRIES.md).
+
 ## Required persistence and crash cases
 
-Tests MUST interrupt before and after every durable transition, including offer
+[REQ-CONF-002] Tests MUST interrupt before and after every durable transition, including offer
 page commit, prefix-length update, final byte, digest verification, object
 commit, and receipt commit. On reopen, the implementation may roll back to the
 last reported durable state but may not advance beyond recoverable bytes,
@@ -102,6 +106,9 @@ bytes by direction. Verify exact no-fault plan quotes, hard total/directional
 budgets, zero unselected payload, useful bytes to first body, resume control
 cost, and full-restart versus persistent-resume cost.
 
+The counter names, measurement envelope, first-body definitions, aggregation,
+and pass thresholds are normative in [`METRICS.md`](METRICS.md).
+
 ## Evidence
 
 A conformance report is machine-readable and includes:
@@ -115,5 +122,8 @@ A conformance report is machine-readable and includes:
 - benchmark input/result digests; and
 - deviations linked to accepted decisions.
 
-Self-attestation is permitted during major-zero development, but the report
+Self-attestation is permitted during major-zero development, but [REQ-CLAIM-002] the report
 MUST NOT use “BEMPIC v0.1.0 conformant” until the specification tag exists.
+
+Every normative requirement and its evidence class is indexed in
+[`CONFORMANCE-MATRIX.md`](CONFORMANCE-MATRIX.md).

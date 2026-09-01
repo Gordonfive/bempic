@@ -7,7 +7,7 @@ representation-identity checks. It does **not** by itself provide origin
 authentication, confidentiality, authorization, non-repudiation, traffic-flow
 confidentiality, or replay protection against an active attacker.
 
-The transitional Python proof is cleartext experimental software and MUST NOT
+[REQ-SEC-001] The transitional Python proof is cleartext experimental software and MUST NOT
 carry real private user traffic. A deployment MUST describe its application
 security profile and lower-layer assumptions truthfully.
 
@@ -36,7 +36,7 @@ Capability negotiation names exactly one applicable class for an exchange:
 - **Confidential:** a separately registered profile authenticates and encrypts
   content and sensitive application metadata.
 
-An implementation MUST NOT claim authenticated or confidential behavior unless
+[REQ-SEC-002] An implementation MUST NOT claim authenticated or confidential behavior unless
 the negotiated profile defines keys, algorithms, nonces, replay windows,
 protected associated data, failure behavior, and test vectors. Failing to find
 an acceptable class is an incompatibility; silent downgrade is forbidden.
@@ -69,7 +69,7 @@ whether attacker-controlled and secret fields may share a context. Profiles
 SHOULD separate such contexts or disable compression to mitigate compression
 side channels.
 
-A decoder MUST cap output independently of the compressed input length and
+[REQ-SEC-003] A decoder MUST cap output independently of the compressed input length and
 abort before exceeding its declared decoded maximum. Compression is selected
 only when total encoded exchange cost, including framing and parameters, is no
 larger than the selected uncompressed alternative unless the application

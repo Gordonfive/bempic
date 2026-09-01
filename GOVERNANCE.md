@@ -41,7 +41,7 @@ conformance decision.
 5. **Release:** changes status, tag gates, changelog, or release artifacts.
    Requires the release procedure below.
 
-Normative changes MUST update the specification, conformance/vector impact, and
+[REQ-GOV-001] Normative changes MUST update the specification, conformance/vector impact, and
 changelog together. Implementation behavior in another repository cannot
 silently redefine this specification.
 

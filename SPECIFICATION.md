@@ -17,7 +17,7 @@ encodings and byte assignments for these semantics. No encoding in
 `prototype/`, including `BMSG0`, `B0`, generation `0`, or its 16-byte digest
 prefixes, is a BEMPIC wire standard.
 
-The repository MUST NOT be tagged `v0.1.0` until every gate in
+[REQ-REL-001] The repository MUST NOT be tagged `v0.1.0` until every gate in
 [`docs/ROADMAP-v0.1.0.md`](docs/ROADMAP-v0.1.0.md) is satisfied.
 
 ## 1. Purpose and scope
@@ -66,7 +66,7 @@ M4P owns peer and network addressing, discovery, route selection, mesh
 coordination, store-carry-forward, forwarding, generic fragmentation and
 reassembly, network-level deduplication, network TTL, cross-modality behavior,
 and the DataLink abstraction. BEMPIC operations are opaque application payloads
-to M4P. BEMPIC MUST NOT infer application delivery from M4P forwarding or
+to M4P. [REQ-LAYER-001] BEMPIC MUST NOT infer application delivery from M4P forwarding or
 packet delivery.
 
 DataLink adapters and modems own waveforms, framing, FEC, ARQ, retransmission,
@@ -119,7 +119,7 @@ The complete boundary is recorded in
 
 ## 4. Core bounds and scalar rules
 
-All conforming v0.1 implementations MUST enforce these limits before allocating
+[REQ-BOUNDS-001] All conforming v0.1 implementations MUST enforce these limits before allocating
 or mutating durable state. A local policy MAY advertise smaller limits.
 
 | Item | v0.1 core limit |
@@ -145,11 +145,11 @@ or mutating durable state. A local policy MAY advertise smaller limits.
 | Human-readable failure detail | 256 UTF-8 octets |
 
 Integers are unsigned unless explicitly stated. Semantic values are limited to
-the indicated range even when a codec can express a larger integer. Encodings
+the indicated range even when a codec can express a larger integer. [REQ-CANON-001] Encodings
 MUST reject non-minimal or ambiguous integer forms when their codec defines a
 minimal form.
 
-Metadata strings MUST be valid UTF-8, normalized to Unicode NFC, and MUST NOT
+[REQ-META-001] Metadata strings MUST be valid UTF-8, normalized to Unicode NFC, and MUST NOT
 contain NUL. Sender, recipient, filename, media type, and subject fields MUST
 NOT contain C0 or C1 controls. Message-body representations are governed by
 their media type and schema instead of the metadata control-character rule.
@@ -169,7 +169,7 @@ A v0.1 message manifest contains:
 
 Each part contains a unique unsigned 32-bit `part_id`, a role (`body` or
 `attachment`), media type, optional filename, and one to 16 representation
-descriptors. The body filename MUST be absent. An attachment filename MAY be
+descriptors. [REQ-PART-001] The body filename MUST be absent. An attachment filename MAY be
 absent. Transformation of HTML, images, or other content into reduced forms is
 an application responsibility. BEMPIC only relates and transfers the resulting
 immutable representations.
@@ -191,14 +191,14 @@ It is not an M4P forwarding TTL and does not direct a network route.
 
 ## 6. Deterministic preparation and identifiers
 
-Preparation MUST perform these steps in order:
+[REQ-PREP-001] Preparation MUST perform these steps in order:
 
 1. Validate the application object and every bound in Section 4.
 2. Normalize metadata as specified in Section 4 while preserving recipient and
    part order supplied by the application.
 3. Select an exact registered schema descriptor, codec revision, and canonical
    codec parameter block.
-4. Encode once using deterministic codec and compression settings. A codec MUST
+4. Encode once using deterministic codec and compression settings. [REQ-PREP-002] A codec MUST
    produce identical bytes for identical normalized input and parameters.
 5. Confirm the actual encoded length does not exceed both the schema's declared
    maximum and the v0.1 representation limit.
@@ -221,7 +221,7 @@ SHA-256(
 
 Schema descriptors are canonical JSON documents represented as UTF-8 using
 [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) JSON Canonicalization Scheme.
-They MUST satisfy RFC 8785's I-JSON input constraints and exact ECMAScript
+[REQ-JCS-001] They MUST satisfy RFC 8785's I-JSON input constraints and exact ECMAScript
 primitive serialization and UTF-16 property-ordering rules; ordinary
 language-runtime sorted JSON is not a substitute.
 If `S` is the canonical descriptor, its fingerprint is:
@@ -233,7 +233,7 @@ SHA-256("BEMPIC-SCHEMA-FINGERPRINT-v0.1\0" || U32(length(S)) || S)
 JSON is used only to publish and fingerprint schema descriptions. BEMPIC does
 not require JSON on a constrained carrier.
 
-An application generates `object_id` and MUST ensure stability and collision
+[REQ-ID-001] An application generates `object_id` and MUST ensure stability and collision
 resistance. A sender MUST fail with `METADATA_CONFLICT` if a known object ID is
 associated with different immutable manifest semantics. A receiver MUST apply
 the same rule. This preserves logical identity across alternative encodings
@@ -303,7 +303,7 @@ authority's target checkpoint. A mismatched computed digest is
 
 ## 8. Protocol operations
 
-Every codec profile MUST represent these seven core operation types. Operations
+[REQ-OPS-001] Every codec profile MUST represent these seven core operation types. Operations
 are complete, length-delimited, and independently size-checkable.
 
 ### 8.1 `CAPABILITIES`
@@ -311,7 +311,7 @@ are complete, length-delimited, and independently size-checkable.
 Carries supported protocol generations, schema fingerprints, codec IDs and
 revisions in preference order, maximum encoded operation size, maximum data
 payload, supported receipt levels, security class, and extension declarations.
-Lists MUST obey Section 4. Capabilities MAY be cached only with a peer/profile
+[REQ-CAPS-001] Lists MUST obey Section 4. Capabilities MAY be cached only with a peer/profile
 identity and an expiry. Stale cache use MUST fall back to fresh negotiation on
 any incompatibility.
 
@@ -325,7 +325,7 @@ Section 7.
 ### 8.3 `OFFER`
 
 Carries one bounded reconciliation page and complete descriptors for offered
-representations. It MUST expose exact prepared byte lengths before content.
+[REQ-OFFER-001] Representations in an offer MUST expose exact prepared byte lengths before content.
 An offer never authorizes payload transfer and MUST NOT contain deferred
 attachment payload bytes.
 
@@ -339,18 +339,18 @@ Has one of two variants:
   Each selection contains `representation_id` (exactly 32 octets),
   `durable_prefix_offset` (unsigned 64-bit octet offset, 0 through 1,073,741,824),
   and `max_desired_payload_octets` (unsigned 64-bit integer, 1 through
-  1,073,741,824). The offset MUST NOT exceed the offered encoded length, and
+  1,073,741,824). [REQ-REQUEST-001] The offset MUST NOT exceed the offered encoded length, and
   the desired payload count MUST NOT exceed the encoded length minus that
   offset. Representation IDs MUST be unique within the request. The operation
   also states total and directional BEMPIC-byte limits for the budget scope.
 
-A request is explicit authorization. Unselected representations, including
+A request is explicit authorization. [REQ-SELECTION-001] Unselected representations, including
 attachments, MUST NOT be sent.
 
 ### 8.5 `DATA`
 
 Carries representation ID, unsigned 64-bit offset, and non-empty payload. In
-the core reliable-carrier profile, the offset MUST be at or below the durable
+[REQ-DATA-001] In the core reliable-carrier profile, the offset MUST be at or below the durable
 prefix. A matching overlap is idempotently discarded. A conflicting overlap is
 `METADATA_CONFLICT`; a gap is `RANGE_INVALID`. Each operation MUST fit the
 negotiated maximum. No per-`DATA` acknowledgement exists in the core.
@@ -366,7 +366,7 @@ idempotency identifier. Core statuses are:
   delivery; and
 - `APPLICATION_REJECTED`: the application rejected it, with a bounded reason.
 
-Receipt levels are independent. A carrier or M4P delivery indication MUST NOT
+Receipt levels are independent. [REQ-RECEIPT-001] A carrier or M4P delivery indication MUST NOT
 be translated into any of these statuses. Duplicate receipts have no additional
 effect.
 
@@ -414,18 +414,18 @@ ABSENT -> OFFERED -> PARTIAL -> COMPLETE_UNVERIFIED -> VERIFIED -> COMMITTED
 `PARTIAL -> PARTIAL` accepts only a contiguous suffix or matching duplicate.
 `COMPLETE_UNVERIFIED` is never externally receipted as success. Verification
 failure moves staged bytes to quarantine or discards them and returns to
-`OFFERED`; it MUST NOT retain a false durable prefix. `COMMITTED` is immutable.
+`OFFERED`; [REQ-STATE-001] it MUST NOT retain a false durable prefix. `COMMITTED` is immutable.
 `REJECTED` records application policy and does not imply byte corruption.
 
 The sender's observable progression is `AVAILABLE -> OFFERED -> REQUESTED ->
 SENDING -> AWAITING_RECEIPT -> RECEIPTED`. Interruption from `REQUESTED`,
 `SENDING`, or `AWAITING_RECEIPT` returns to `AVAILABLE` while preserving the
-receiver-reported prefix and any received receipt. A repeated request or
+receiver-reported prefix and any received receipt. [REQ-IDEMP-001] A repeated request or
 receipt MUST be safe.
 
 ## 10. Interruption, persistence, reopen, and resume
 
-Contact interruption is normal and has no implicit rollback. Before advertising
+Contact interruption is normal and has no implicit rollback. [REQ-PERSIST-001] Before advertising
 a retained prefix or positive receipt, a receiver MUST durably store:
 
 - the full prepared descriptor and its collection/object/part association;
@@ -436,12 +436,12 @@ a retained prefix or positive receipt, a receiver MUST durably store:
 - committed receipt idempotency identifiers; and
 - the complete/verified/committed state.
 
-Durable updates MUST be crash-consistent. A write-ahead journal, copy-on-write
+[REQ-CRASH-001] Durable updates MUST be crash-consistent. A write-ahead journal, copy-on-write
 record, or atomic replace is acceptable. A crash may lose bytes that were not
 reported durable; it MUST NOT create a prefix longer than the bytes recoverable
 on reopen.
 
-On reopen, an implementation MUST validate metadata, bounds, persisted length,
+[REQ-REOPEN-001] On reopen, an implementation MUST validate metadata, bounds, persisted length,
 and committed content digest before using the state. Conflict or corruption
 fails closed. The next request names the recovered contiguous prefix. Any peer
 authorized by the application and holding the identical representation ID may
@@ -449,18 +449,18 @@ provide the suffix. A different carrier or M4P path does not change identity or
 progress.
 
 The core supports one contiguous prefix. A compact missing-range extension MAY
-be standardized later, but it MUST remain application resumption rather than
+be standardized later, but [REQ-RESUME-001] it MUST remain application resumption rather than
 generic fragmentation or reliable-carrier ARQ.
 
 ## 11. Integrity and exact reconstruction
 
-The receiver accepts bytes only for an offered descriptor. Offset arithmetic
+The receiver accepts bytes only for an offered descriptor. [REQ-INTEGRITY-001] Offset arithmetic
 MUST be checked for overflow. Completion requires exactly the advertised byte
 length and a constant-time comparison of the computed SHA-256 digest with the
 descriptor digest. It then recomputes the representation ID and compares it
 with the offered ID.
 
-For a manifest, deterministic decoding MUST produce a value valid under the
+[REQ-DECODE-001] For a manifest, deterministic decoding MUST produce a value valid under the
 advertised schema and with the offered object/part relationships. For an opaque
 binary part, exact reconstruction is byte equality with the prepared bytes.
 Only after all checks may storage atomically transition to `COMMITTED` and emit
@@ -479,12 +479,12 @@ limits are defined in [`docs/SECURITY-MODEL.md`](docs/SECURITY-MODEL.md).
 
 Every `REPRESENTATION_DATA` request defines a budget scope. Its request bytes,
 all responsive `DATA`, `RECEIPT`, and `FAILURE` operations, and any extension
-fields inside those operations count toward `bempic_total_bytes`. Both peers
+fields inside those operations count toward `bempic_total_bytes`. [REQ-BUDGET-001] Both peers
 MUST compute encoded sizes before emission. An operation that would make total
 or directional use exceed the request limit MUST NOT be emitted or split. The
 scope pauses without failure when no next complete operation fits.
 
-Implementations MUST expose at least:
+[REQ-ACCOUNT-001] Implementations MUST expose at least:
 
 - `semantic_bytes`: decoded bytes selected by the application;
 - `bempic_tx_bytes` and `bempic_rx_bytes`: every encoded BEMPIC octet, including
@@ -498,10 +498,13 @@ Implementations MUST expose at least:
 - `link_tx_bytes` and `link_rx_bytes`, only when measured or estimated by the
   DataLink, with the estimate method identified.
 
-Counters MUST identify their direction, scope, and whether they are exact or
+[REQ-ACCOUNT-002] Counters MUST identify their direction, scope, and whether they are exact or
 estimated. BEMPIC MUST NOT label carrier or RF cost as exact when the lower
 layer did not report it. A BEMPIC budget cannot retroactively cap M4P headers,
 FEC, modem retransmissions, or bytes already accepted below the BEMPIC API.
+
+The exact v0.1 measurement envelopes, counter names, first-body definitions,
+and release thresholds are in [`docs/METRICS.md`](docs/METRICS.md).
 
 A carrier binding MAY expose a carrier-byte or link-byte opportunity budget.
 BEMPIC may use an exact binding cost function or a labeled conservative
@@ -524,7 +527,7 @@ their advertised preference indexes; ties use the lower codec ID, then lower
 revision, then lexicographically lower schema fingerprint. Failure to find a
 complete common tuple is incompatible, never an invitation to guess.
 
-Every codec profile MUST publish:
+[REQ-CODEC-001] Every codec profile MUST publish:
 
 1. a registry ID and revision;
 2. every supported schema fingerprint;
@@ -543,7 +546,7 @@ Codecs are pluggable. No v0.1 codec may be assumed merely because another
 implementation uses it. DCCL is prior art for these requirements, not a BEMPIC
 dependency or wire format.
 
-Extensions use unsigned 32-bit IDs and a critical bit. Extension contents MUST
+Extensions use unsigned 32-bit IDs and a critical bit. [REQ-EXT-001] Extension contents MUST
 be length-delimited and included in size limits. Unknown optional extensions
 are skipped without side effects. An unknown critical extension fails before
 any operation state mutation. Extensions MUST NOT weaken bounds, redefine core
@@ -553,17 +556,18 @@ generation, or introduce M4P/network behavior into BEMPIC.
 Current protocol, operation, receipt, failure, schema, codec, extension, and
 security-profile allocations are recorded in
 [`docs/REGISTRIES.md`](docs/REGISTRIES.md). Absence from that registry is not an
-implicit allocation.
+implicit allocation. The registry also defines codec status progression and
+the proof required for maximum encoded sizes.
 
 ## 14. Failure and recovery rules
 
 Malformed, truncated, oversized, ambiguous, non-canonical, unsupported, or
-integrity-invalid input fails closed. A decoder MUST finish structural and
+integrity-invalid input fails closed. [REQ-FAIL-001] A decoder MUST finish structural and
 bound validation before durable protocol mutation. Staged payload writes are
 the sole exception and remain uncommitted until Section 11 succeeds.
 
 Failures are scoped to the smallest affected operation, representation,
-collection target, or compatibility attempt. An unrelated committed object
+collection target, or compatibility attempt. [REQ-FAIL-002] An unrelated committed object
 MUST remain usable. Retrying is allowed only when the failure code is marked
 retryable and the conflicting input or local condition has changed. Automatic
 retry MUST be bounded by application or carrier policy.
@@ -575,7 +579,7 @@ attacker-controlled text.
 
 ## 15. Non-goals and prohibited duplication
 
-A v0.1 implementation MUST NOT claim core conformance for behavior that depends
+[REQ-LAYER-002] A v0.1 implementation MUST NOT claim core conformance for behavior that depends
 on BEMPIC performing routing, peer discovery, mesh coordination, forwarding,
 network custody, network TTL, generic fragmentation/reassembly, generic
 network deduplication, modem ARQ/FEC, RF scheduling, Internet mail delivery,
@@ -590,7 +594,12 @@ not already provide suitable recovery.
 Conformance classes, required evidence, and the checklist are in
 [`docs/CONFORMANCE.md`](docs/CONFORMANCE.md). Test-vector bundle requirements
 are in [`docs/TEST-VECTORS.md`](docs/TEST-VECTORS.md). Security requirements are
-in [`docs/SECURITY-MODEL.md`](docs/SECURITY-MODEL.md).
+in [`docs/SECURITY-MODEL.md`](docs/SECURITY-MODEL.md). The normative
+requirement-to-evidence index is in
+[`docs/CONFORMANCE-MATRIX.md`](docs/CONFORMANCE-MATRIX.md); M4P confirmation and
+release-record requirements are in
+[`docs/M4P-CONFIRMATION.md`](docs/M4P-CONFIRMATION.md) and
+[`docs/RELEASE-RECORD.md`](docs/RELEASE-RECORD.md).
 
 This document is prepared for v0.1.0, but the release is not complete. In
 particular, the sibling `bempic-reference` repository must demonstrate this

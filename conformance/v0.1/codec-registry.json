@@ -1,0 +1,38 @@
+{
+  "format": "bempic-codec-registry-v0.1",
+  "identifier_bits": 32,
+  "revision_minimum": 1,
+  "ranges": [
+    {
+      "class": "reserved",
+      "first": 0,
+      "last": 0,
+      "public_interoperability": false
+    },
+    {
+      "class": "standards-action",
+      "first": 1,
+      "last": 65535,
+      "public_interoperability": true
+    },
+    {
+      "class": "experimental",
+      "first": 65536,
+      "last": 2147483647,
+      "public_interoperability": true
+    },
+    {
+      "class": "private-use",
+      "first": 2147483648,
+      "last": 4294967294,
+      "public_interoperability": false
+    },
+    {
+      "class": "reserved",
+      "first": 4294967295,
+      "last": 4294967295,
+      "public_interoperability": false
+    }
+  ],
+  "allocations": []
+}

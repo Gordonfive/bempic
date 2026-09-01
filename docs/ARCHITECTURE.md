@@ -63,7 +63,7 @@ receipt.
 M4P may persist packets for forwarding. BEMPIC separately persists application
 representation progress because that progress must survive the loss of an M4P
 packet, route, peer, contact, or carrier. These stores have different identity,
-retention, and completion rules and MUST NOT be conflated.
+retention, and completion rules and [REQ-ARCH-001] MUST NOT be conflated.
 
 ## Reliability boundary
 
@@ -85,6 +85,6 @@ does not automatically provide end-to-end application protection.
 ## Dependency direction
 
 The public specification may name M4P requirements and coordinate a binding,
-but it MUST NOT import M4P routing data structures into the BEMPIC application
+but [REQ-ARCH-002] it MUST NOT import M4P routing data structures into the BEMPIC application
 model. The reference implementation may depend on carrier traits or bindings;
 the specification remains independently implementable.

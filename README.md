@@ -68,8 +68,13 @@ DCCL, adopt its wire format or encryption, require C++, or require Protobuf.
 - [Design principles](docs/DESIGN-PRINCIPLES.md)
 - [Security considerations](docs/SECURITY-MODEL.md)
 - [Conformance checklist](docs/CONFORMANCE.md)
+- [Normative requirement-to-evidence matrix](docs/CONFORMANCE-MATRIX.md)
 - [Test-vector definitions](docs/TEST-VECTORS.md)
+- [Machine-readable V01–V15 catalog](conformance/v0.1/vector-catalog.json)
 - [Protocol registries](docs/REGISTRIES.md)
+- [Required metrics](docs/METRICS.md)
+- [M4P confirmation requirement](docs/M4P-CONFIRMATION.md)
+- [Release-record requirements](docs/RELEASE-RECORD.md)
 - [Canonical schema descriptors](schemas/README.md)
 - [v0.1.0 roadmap and tag gates](docs/ROADMAP-v0.1.0.md)
 - [Draft v0.1.0 release notes](docs/RELEASE-NOTES-v0.1.0.md)
@@ -98,6 +103,8 @@ the reference implementation nor compatibility authority.
 ```bash
 python -m pip install --require-hashes -r requirements-validation.txt
 python -m scripts.validate_docs
+python -m scripts.validate_release_gates
+node scripts/independent_verify.mjs
 python -m unittest prototype.tests.test_proof -v
 python -m prototype.demo
 python -m prototype.benchmark
