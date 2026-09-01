@@ -21,6 +21,12 @@ releases correct or clarify without intentionally changing protocol semantics.
 
 ### Changed
 
+- Replaced Python-specific JSON serialization in schema-fingerprint validation
+  with genuine RFC 8785/JCS canonicalization and RFC-derived regression
+  fixtures.
+- Expanded the fingerprinted `REPRESENTATION_DATA` selection into an explicit
+  bounded record and advanced the unreleased core-operations schema to revision
+  2.
 - Reclassified the Python proof as a retained transitional oracle rather than a
   future reference implementation or compatibility authority.
 - Reconciled initial planning and Great Parallel Work with the sibling reference

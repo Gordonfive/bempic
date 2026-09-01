@@ -96,6 +96,7 @@ the reference implementation nor compatibility authority.
 ## Verification
 
 ```bash
+python -m pip install --require-hashes -r requirements-validation.txt
 python -m scripts.validate_docs
 python -m unittest prototype.tests.test_proof -v
 python -m prototype.demo

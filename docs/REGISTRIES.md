@@ -40,7 +40,7 @@ explicitly not an allocation.
 
 | Fingerprint | Name | Status |
 |---|---|---|
-| `a9479fc4fc1770a0385abbe3a351e9b517c00e135f74f82b11f7113281fb14b0` | `bempic.core-operations`, revision 1 | v0.1 release candidate |
+| `c4a686e7e9c6a40a5f187259a376b26cfc1d355179fd9fff487e105aeeac7302` | `bempic.core-operations`, revision 2 | v0.1 release candidate |
 | `0ac001efba42837aade054401d9d307d16ad4715feac288fcb3d1711e4b961da` | `bempic.message-manifest`, revision 1 | v0.1 release candidate |
 | `d8906a1cefbf89e4f29b4a0f636cfbfa1e9c6301e7e3a4fe213c090066f8e797` | `bempic.opaque-binary`, revision 1 | v0.1 release candidate |
 

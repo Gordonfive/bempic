@@ -35,7 +35,17 @@
     "REQUEST": {
       "variants": {
         "INVENTORY_PAGE": ["collection_id:octets32", "target_generation:uint64", "mode:delta-or-full", "cursor", "page_entry_limit:uint8-max128"],
-        "REPRESENTATION_DATA": ["budget_id:octets16", "max_total_bempic_bytes:uint64", "max_sender_to_receiver_bytes:uint64", "max_receiver_to_sender_bytes:uint64", "selections:max128"]
+        "REPRESENTATION_DATA": {
+          "fields": [
+            "budget_id:octets16",
+            "max_total_bempic_bytes:uint64",
+            "max_sender_to_receiver_bytes:uint64",
+            "max_receiver_to_sender_bytes:uint64",
+            {"items": "representation_selection", "max_items": 128, "min_items": 1, "name": "selections", "ordered": true, "type": "array"}
+          ],
+          "invariants": ["representation_id values are unique within selections"],
+          "type": "record"
+        }
       }
     },
     "SUMMARY": {
@@ -43,5 +53,19 @@
     }
   },
   "protocol": "0.1",
-  "revision": 1
+  "revision": 2,
+  "types": {
+    "representation_selection": {
+      "fields": [
+        {"length": 32, "name": "representation_id", "type": "octets"},
+        {"max": 1073741824, "min": 0, "name": "durable_prefix_offset", "type": "uint64", "unit": "octets"},
+        {"max": 1073741824, "min": 1, "name": "max_desired_payload_octets", "type": "uint64", "unit": "octets"}
+      ],
+      "invariants": [
+        "durable_prefix_offset does not exceed the offered encoded length",
+        "max_desired_payload_octets does not exceed encoded length minus durable_prefix_offset"
+      ],
+      "type": "record"
+    }
+  }
 }

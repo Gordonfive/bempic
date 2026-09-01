@@ -10,6 +10,13 @@ committed here when a codec profile is approved.
 The generation-0 vectors implicit in `prototype/tests/` test the transitional
 proof only and are not v0.1 wire vectors.
 
+The small
+[`JCS canonicalization fixture`](../schemas/v0.1/jcs-canonicalization-vectors.json)
+is committed here because it protects normative schema-fingerprint inputs. It
+includes ECMAScript number formatting, UTF-16 property ordering, duplicate-key,
+non-JSON-number, and lone-surrogate cases derived from RFC 8785. It is not a
+codec or operation-byte vector bundle.
+
 ## Bundle format
 
 Each versioned bundle MUST have a canonical manifest containing:

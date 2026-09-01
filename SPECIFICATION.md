@@ -221,6 +221,9 @@ SHA-256(
 
 Schema descriptors are canonical JSON documents represented as UTF-8 using
 [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) JSON Canonicalization Scheme.
+They MUST satisfy RFC 8785's I-JSON input constraints and exact ECMAScript
+primitive serialization and UTF-16 property-ordering rules; ordinary
+language-runtime sorted JSON is not a substitute.
 If `S` is the canonical descriptor, its fingerprint is:
 
 ```text
@@ -333,9 +336,13 @@ Has one of two variants:
 - `INVENTORY_PAGE` names a collection, target generation, mode, committed
   cursor, and desired page-entry limit.
 - `REPRESENTATION_DATA` carries a 16-octet budget ID and one to 128 selections.
-  Each selection names a representation ID, the receiver's durable contiguous
-  prefix, and its maximum desired new payload bytes. The operation also states
-  total and directional BEMPIC-byte limits for the budget scope.
+  Each selection contains `representation_id` (exactly 32 octets),
+  `durable_prefix_offset` (unsigned 64-bit octet offset, 0 through 1,073,741,824),
+  and `max_desired_payload_octets` (unsigned 64-bit integer, 1 through
+  1,073,741,824). The offset MUST NOT exceed the offered encoded length, and
+  the desired payload count MUST NOT exceed the encoded length minus that
+  offset. Representation IDs MUST be unique within the request. The operation
+  also states total and directional BEMPIC-byte limits for the budget scope.
 
 A request is explicit authorization. Unselected representations, including
 attachments, MUST NOT be sent.
