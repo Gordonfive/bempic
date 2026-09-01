@@ -52,10 +52,14 @@ Before publication, replace these placeholders:
 - Passing `bempic-reference` commit: `PENDING`
 - Conformance report digest: `PENDING`
 - Test-vector bundle digest: `PENDING`
+- Codec allocation, profile, size-proof, and license evidence: `PENDING`
+- V01–V15 and normative conformance-matrix results: `PENDING`
+- Required metric-record digest and threshold evaluation: `PENDING`
 - Benchmark result digest and B2F comparator version: `PENDING`
 - M4P boundary review: `PENDING`
 - Release CI URL: `PENDING`
 
 The complete gate list is
-[`ROADMAP-v0.1.0.md`](ROADMAP-v0.1.0.md). These notes are intentionally a draft
+[`ROADMAP-v0.1.0.md`](ROADMAP-v0.1.0.md), and the immutable record format is in
+[`RELEASE-RECORD.md`](RELEASE-RECORD.md). These notes are intentionally a draft
 and are not evidence of a release.

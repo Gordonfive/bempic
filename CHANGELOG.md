@@ -18,6 +18,14 @@ releases correct or clarify without intentionally changing protocol semantics.
   security, roadmap, and draft release-note material.
 - Explicit `bempic-reference` completion and parity gates for v0.1.0.
 - Documentation link and consistency validation.
+- A governed codec-ID allocation process with approved, experimental,
+  private-use, and reserved ranges; approval/mandatory evidence; and explicit
+  maximum-size and worst-case-proof requirements.
+- A machine-checkable V01–V15 semantic vector catalog, required metric catalog,
+  M4P confirmation contract, release-record template, and normative
+  requirement-to-evidence conformance matrix.
+- CI validation for release-gate artifacts and an explicit not-ready release
+  state retaining all unresolved blockers.
 
 ### Changed
 

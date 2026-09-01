@@ -1,0 +1,43 @@
+{
+  "format": "bempic-metrics-v0.1",
+  "unit": "octets",
+  "required": [
+    "bempic_total_bytes",
+    "bempic_operation_bytes_send",
+    "bempic_operation_bytes_receive",
+    "representation_payload_bytes",
+    "useful_committed_bytes",
+    "duplicate_bempic_bytes",
+    "duplicate_representation_payload_bytes",
+    "unselected_representation_payload_bytes",
+    "retransmitted_durable_prefix_bytes",
+    "retransmitted_prior_manifest_bytes",
+    "resume_control_bytes",
+    "bempic_bytes_to_first_body_payload_octet",
+    "bempic_bytes_to_first_body_commit",
+    "preflight_quoted_bempic_bytes",
+    "quote_error_bytes"
+  ],
+  "identities": [
+    "bempic_total_bytes=bempic_operation_bytes_send+bempic_operation_bytes_receive"
+  ],
+  "thresholds": [
+    {"id": "warm-no-change", "vector": "V01", "case": "equal-warm-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 64, "aggregation": "each-run"},
+    {"id": "cold-no-change", "vector": "V01", "case": "equal-cold-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 128, "aggregation": "each-run"},
+    {"id": "known-append-no-old-manifest", "vector": "V02", "case": "known-checkpoint-100-plus-1", "metric": "retransmitted_prior_manifest_bytes", "operator": "=", "value": 0, "aggregation": "each-run"},
+    {"id": "no-unselected-payload", "vector": "V05", "case": "*", "metric": "unselected_representation_payload_bytes", "operator": "=", "value": 0, "aggregation": "each-run"},
+    {"id": "exact-no-fault-quote", "vector": "V12", "case": "*", "metric": "quote_error_bytes", "operator": "=", "value": 0, "aggregation": "each-run"},
+    {"id": "resume-no-durable-prefix-resend", "vector": "V09", "case": "*", "metric": "retransmitted_durable_prefix_bytes", "operator": "=", "value": 0, "aggregation": "each-run-with-authoritative-prefix"},
+    {"id": "b2f-median-compactness", "vector": "external-text-corpus", "case": "*", "metric": "candidate_reduction_percent", "operator": ">=", "value": 10, "aggregation": "median"},
+    {"id": "b2f-per-fixture-regression", "vector": "external-text-corpus", "case": "*", "metric": "candidate_increase_percent", "operator": "<=", "value": 5, "aggregation": "each-run-or-accepted-justification"}
+  ],
+  "thresholds_not_yet_defined": [
+    "bempic_bytes_to_first_body_payload_octet",
+    "bempic_bytes_to_first_body_commit",
+    "resume_control_bytes",
+    "carrier_bytes",
+    "link_bytes",
+    "wall_time",
+    "energy"
+  ]
+}

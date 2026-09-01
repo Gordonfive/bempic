@@ -1,0 +1,115 @@
+{
+  "format": "bempic-vector-catalog-v0.1",
+  "catalog": [
+    {
+      "id": "V01",
+      "subject": "empty and equal synchronization",
+      "cases": ["empty", "equal-warm-100", "equal-cold-100"],
+      "assertions": ["no-object-payload", "warm-no-change-metric", "cold-no-change-metric"],
+      "blocked_by": ["experimental-codec-selection"]
+    },
+    {
+      "id": "V02",
+      "subject": "known checkpoint append",
+      "cases": ["known-checkpoint-100-plus-1"],
+      "assertions": ["new-manifest-only", "zero-retransmitted-prior-manifest-bytes"],
+      "blocked_by": ["experimental-codec-selection"]
+    },
+    {
+      "id": "V03",
+      "subject": "unknown checkpoint paging",
+      "cases": ["inventory-257-pages-128-128-1", "reopen-after-page-1"],
+      "assertions": ["deterministic-page-order", "durable-cursor", "target-digest-consistent"]
+    },
+    {
+      "id": "V04",
+      "subject": "message model boundaries",
+      "cases": ["tiny", "typical", "international-nfc", "reply-chain", "absent-subject", "maximum-recipients", "maximum-parts", "every-maximum-metadata-length"],
+      "maximum_fields": ["recipients", "parts", "representations-per-part", "sender-octets", "recipient-octets", "subject-octets", "filename-octets", "media-type-octets", "codec-parameter-octets"],
+      "assertions": ["exact-reconstruction", "bounds-before-mutation", "nfc-canonical"]
+    },
+    {
+      "id": "V05",
+      "subject": "selection and alternatives",
+      "cases": ["body-full-preview", "attachment-metadata-unselected"],
+      "assertions": ["one-body-representation-selected", "zero-unselected-attachment-payload-bytes"]
+    },
+    {
+      "id": "V06",
+      "subject": "selected attachments",
+      "cases": ["compressible-selected", "incompressible-selected"],
+      "assertions": ["exact-reconstruction", "declared-encoded-length", "digest-and-id-verified"]
+    },
+    {
+      "id": "V07",
+      "subject": "payload boundaries",
+      "cases": ["empty-representation", "one-byte-representation", "maximum-data-payload", "maximum-representation"],
+      "bound_sources": ["negotiated-max-data-payload-octets", "core-max-prepared-representation-octets", "codec-max-encoded-size"],
+      "assertions": ["exact-size-equals-encoded-length", "one-past-bound-rejected-before-allocation"]
+    },
+    {
+      "id": "V08",
+      "subject": "interruption and reopen",
+      "cases": ["offset-0", "offset-1-percent", "offset-10-percent", "offset-50-percent", "offset-90-percent", "final-byte", "post-verify-pre-commit", "post-commit-pre-receipt"],
+      "restart_parties": ["sender", "receiver", "both"],
+      "assertions": ["reopen-last-durable-state", "no-false-prefix", "no-false-receipt", "exact-reconstruction-after-resume"]
+    },
+    {
+      "id": "V09",
+      "subject": "alternate resume source and carrier",
+      "cases": ["alternate-authorized-source", "alternate-carrier"],
+      "assertions": ["identical-prepared-bytes", "zero-fully-durable-prefix-retransmission", "resume-metrics-recorded"],
+      "blocked_by": ["m4p-binding-review"]
+    },
+    {
+      "id": "V10",
+      "subject": "duplicates",
+      "cases": ["duplicate-offer", "duplicate-data", "duplicate-page", "duplicate-receipt", "lost-final-receipt"],
+      "assertions": ["idempotent-state", "duplicate-bytes-counted", "no-duplicate-application-effect"]
+    },
+    {
+      "id": "V11",
+      "subject": "integrity and metadata conflicts",
+      "cases": ["corrupt-final-byte", "conflicting-overlap", "gap", "false-length-short", "false-length-long", "false-digest", "false-representation-id", "object-id-metadata-conflict"],
+      "expected_outcomes": {
+        "corrupt-final-byte": "INTEGRITY_FAILURE",
+        "conflicting-overlap": "METADATA_CONFLICT",
+        "gap": "RANGE_INVALID",
+        "false-length-short": "RANGE_INVALID",
+        "false-length-long": "PARTIAL-no-positive-receipt",
+        "false-digest": "INTEGRITY_FAILURE",
+        "false-representation-id": "INTEGRITY_FAILURE",
+        "object-id-metadata-conflict": "METADATA_CONFLICT"
+      },
+      "assertions": ["expected-outcome", "no-positive-receipt", "unrelated-committed-state-usable"]
+    },
+    {
+      "id": "V12",
+      "subject": "byte budgets",
+      "cases": ["total-one-byte-short", "total-exact", "send-one-byte-short", "send-exact", "receive-one-byte-short", "receive-exact"],
+      "operation_types": ["CAPABILITIES", "SUMMARY", "OFFER", "REQUEST", "DATA", "RECEIPT", "FAILURE"],
+      "budget_domains": ["total", "send", "receive"],
+      "relative_budgets": [-1, 0],
+      "assertions": ["complete-operation-only", "zero-quote-error", "directional-accounting-identity"]
+    },
+    {
+      "id": "V13",
+      "subject": "negotiation and extensions",
+      "cases": ["compatible-tuple", "incompatible-protocol", "incompatible-schema", "incompatible-codec", "preference-tie", "stale-cache-recovery", "unknown-optional-extension", "unknown-critical-extension"],
+      "assertions": ["deterministic-highest-common-tuple", "critical-rejected-before-mutation", "optional-skipped-without-side-effect"]
+    },
+    {
+      "id": "V14",
+      "subject": "storage failures",
+      "cases": ["offer-page-commit", "prefix-length-update", "final-byte-persist", "digest-verification", "object-commit", "receipt-commit"],
+      "assertions": ["storage-failure-scoped", "reopen-not-ahead", "no-false-receipt"]
+    },
+    {
+      "id": "V15",
+      "subject": "failure taxonomy",
+      "cases": ["UNSUPPORTED_VERSION", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CODEC", "UNSUPPORTED_CRITICAL_EXTENSION", "MALFORMED_OPERATION", "LIMIT_EXCEEDED", "UNKNOWN_OBJECT", "METADATA_CONFLICT", "RANGE_INVALID", "INTEGRITY_FAILURE", "STORAGE_FAILURE", "POLICY_REJECTED", "CHECKPOINT_UNKNOWN"],
+      "advertised_retryable_flags": [false, true],
+      "assertions": ["exact-failure-code", "retry-classification", "bounded-retry", "scoped-mutation"]
+    }
+  ]
+}

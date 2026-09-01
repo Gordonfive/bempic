@@ -125,7 +125,10 @@ DCCL demonstrates useful requirements for highly compact, analyzable codecs:
 BEMPIC incorporates those qualities into its codec-profile contract. It does
 not depend on DCCL, adopt the DCCL wire format or encryption, require its C++
 implementation, or require Protobuf. A BEMPIC codec receives its own registry
-identity, schema fingerprints, specification, analysis, and vectors.
+identity, schema fingerprints, specification, analysis, and vectors. The exact
+allocation, approval, and worst-case-proof rules are in
+[`docs/REGISTRIES.md`](docs/REGISTRIES.md); DCCL supplies neither registry
+authority nor release evidence.
 
 ## M4P — Multi-Modal Maritime Mesh Protocol
 
@@ -150,7 +153,10 @@ BEMPIC should remain useful over other networking substrates as well, but OceanM
 This is now a fixed architectural boundary for v0.1, not merely a research
 preference. Proposed routing, mesh coordination, forwarding, generic
 fragmentation, network deduplication, TTL, or DataLink behavior is redirected to
-M4P rather than added to BEMPIC.
+M4P rather than added to BEMPIC. External confirmation of the first binding is
+a release gate with the exact evidence defined in
+[`docs/M4P-CONFIRMATION.md`](docs/M4P-CONFIRMATION.md); this repository does not
+invent the missing upstream contract.
 
 ## BEMPIC reference implementation
 

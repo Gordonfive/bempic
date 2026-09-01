@@ -1,0 +1,32 @@
+{
+  "format": "bempic-release-record-v0.1",
+  "release_state": "not-ready",
+  "tag": null,
+  "specification": {"commit": null, "pull_request": null, "ci_run": null},
+  "protocol_generation": {"major": 0, "minor": 1},
+  "schema_fingerprints": [],
+  "codec": {"id": null, "revision": null, "status": null, "profile_digest": null, "size_proof_digest": null},
+  "vector_bundle": {"digest": null, "independent_verification": null},
+  "conformance_report": {"digest": null, "supported_platforms": [], "fuzz_property_evidence": null},
+  "metrics": {"record_digest": null, "thresholds_passed": false},
+  "b2f_oracle": {"identity": null, "version": null, "license": null, "results_digest": null},
+  "m4p_confirmation": {"upstream_url": null, "m4p_commit": null, "reviewer": null, "confirmed_at_utc": null, "binding_trace_digest": null},
+  "bempic_reference": {"repository": "Gordonfive/bempic-reference", "commit": null, "ci_run": null},
+  "prototype_parity_decision": null,
+  "open_question_decisions": [],
+  "security_classification": "public-cleartext-experimental-only",
+  "license_notices": [],
+  "approvals": [],
+  "roadmap_gates": [],
+  "conformance_requirements": [],
+  "known_blockers": [
+    "experimental-codec-selection",
+    "independent-verifier",
+    "b2f-oracle",
+    "m4p-binding-review",
+    "object-id-application-profile",
+    "protocol-name",
+    "bempic-reference-implementation-and-evidence",
+    "final-release-candidate-verification"
+  ]
+}

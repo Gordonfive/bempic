@@ -1,0 +1,107 @@
+# BEMPIC v0.1 Normative Conformance Matrix
+
+Every uppercase `MUST` or `MUST NOT` paragraph in the release-authoritative
+documents carries one or more stable requirement IDs. This matrix maps every ID
+to evidence. [`scripts/validate_release_gates.py`](../scripts/validate_release_gates.py)
+fails if a normative paragraph has no ID, an ID has no row, or a row has no
+source requirement. A row can cover multiple inseparable clauses in its marked
+paragraph; all clauses must pass.
+
+Evidence keys use `Vnn` for the mandatory semantic catalog, `CB` for all
+applicable codec-boundary vectors, `CR` for the machine-readable conformance
+report, `MR` for metric records, `RR` for the release record, `SR` for security
+review, and `GR` for a governance review or accepted decision. “Inspection”
+means an independently reproducible static or artifact check, not an assertion.
+
+| Requirement | Source | Required evidence |
+|---|---|---|
+| REQ-REL-001 | `SPECIFICATION.md` release status | RR gate list and tag-state check |
+| REQ-LAYER-001 | `SPECIFICATION.md` architecture | V09 trace plus M4P confirmation |
+| REQ-BOUNDS-001 | `SPECIFICATION.md` core bounds | V04, V07, CB, allocation instrumentation |
+| REQ-CANON-001 | `SPECIFICATION.md` scalar rules | CB non-minimal/ambiguous cases |
+| REQ-META-001 | `SPECIFICATION.md` metadata | V04 and CB UTF-8/NFC/control cases |
+| REQ-PART-001 | `SPECIFICATION.md` parts | V04 manifest reconstruction |
+| REQ-PREP-001 | `SPECIFICATION.md` preparation | V04–V07 repeated deterministic preparation |
+| REQ-PREP-002 | `SPECIFICATION.md` deterministic codec | byte-identical runs and independent vector check |
+| REQ-JCS-001 | `SPECIFICATION.md` fingerprints | JCS fixture and independent fingerprint verification |
+| REQ-ID-001 | `SPECIFICATION.md` identifiers | V11 conflict cases and application-profile decision |
+| REQ-OPS-001 | `SPECIFICATION.md` operations | V01–V15 coverage and codec profile inspection |
+| REQ-CAPS-001 | `SPECIFICATION.md` capabilities | V13 limits and stale-cache cases |
+| REQ-OFFER-001 | `SPECIFICATION.md` offers | V05/V07 exact-length and no-deferred-payload checks |
+| REQ-REQUEST-001 | `SPECIFICATION.md` requests | V07/V11 boundary and conflict cases |
+| REQ-SELECTION-001 | `SPECIFICATION.md` selection | V05 and zero-unselected-payload MR |
+| REQ-DATA-001 | `SPECIFICATION.md` data | V07, V08, V11, V12 state traces |
+| REQ-RECEIPT-001 | `SPECIFICATION.md` receipts | V10 trace and M4P binding trace |
+| REQ-STATE-001 | `SPECIFICATION.md` state machine | V08, V11, V14 reopen traces |
+| REQ-IDEMP-001 | `SPECIFICATION.md` idempotency | V10 full-state traces |
+| REQ-PERSIST-001 | `SPECIFICATION.md` persistence | V03, V08, V14 crash/reopen evidence |
+| REQ-CRASH-001 | `SPECIFICATION.md` crash consistency | V08/V14 fault injection and storage audit |
+| REQ-REOPEN-001 | `SPECIFICATION.md` reopen | V03, V08, V11, V14 reopen traces |
+| REQ-RESUME-001 | `SPECIFICATION.md` resume boundary | V09 trace and architecture inspection |
+| REQ-INTEGRITY-001 | `SPECIFICATION.md` integrity | V07/V11 overflow, length, digest, and ID cases |
+| REQ-DECODE-001 | `SPECIFICATION.md` decode | V04/V06/V11 strict decode and reconstruction |
+| REQ-BUDGET-001 | `SPECIFICATION.md` budgets | V12 and zero-quote-error MR |
+| REQ-ACCOUNT-001 | `SPECIFICATION.md` counters | MR schema completeness and V01–V12 records |
+| REQ-ACCOUNT-002 | `SPECIFICATION.md` cost domains | MR identity plus M4P cost-label inspection |
+| REQ-CODEC-001 | `SPECIFICATION.md` codec publication | codec profile, size proof, CB, independent verifier |
+| REQ-EXT-001 | `SPECIFICATION.md` extensions | V13 optional/critical/limit cases |
+| REQ-FAIL-001 | `SPECIFICATION.md` fail closed | V11/V13/V15 and mutation traces |
+| REQ-FAIL-002 | `SPECIFICATION.md` scoped failure/retry | V11/V15 unrelated-state and retry evidence |
+| REQ-LAYER-002 | `SPECIFICATION.md` conformance boundary | architecture inspection and M4P confirmation |
+| REQ-ARCH-001 | `docs/ARCHITECTURE.md` state ownership | persistence/state-store integration tests and architecture inspection |
+| REQ-ARCH-002 | `docs/ARCHITECTURE.md` reference boundary | dependency/type inspection and M4P binding review |
+| REQ-REPO-001 | `docs/REPOSITORY-BOUNDARY.md` prototype retention | repository-tree inspection and accepted parity decision before later removal |
+| REQ-SEC-001 | `docs/SECURITY-MODEL.md` prototype warning | source/package warning inspection and deployment SR |
+| REQ-SEC-002 | `docs/SECURITY-MODEL.md` security claims | named-profile SR and negotiation vectors |
+| REQ-SEC-003 | `docs/SECURITY-MODEL.md` decompression | CB expansion-limit tests and allocation instrumentation |
+| REQ-VEC-001 | `docs/TEST-VECTORS.md` bundle | bundle-schema validation and digest recomputation |
+| REQ-VEC-002 | `docs/TEST-VECTORS.md` paths | traversal-invalid bundle cases |
+| REQ-VEC-003 | `docs/TEST-VECTORS.md` traces | independent step-by-step trace comparison |
+| REQ-VEC-004 | `docs/TEST-VECTORS.md` catalog | catalog validator and V01–V15 result records |
+| REQ-VEC-005 | `docs/TEST-VECTORS.md` updates | GR, compatibility statement, released-bundle immutability check |
+| REQ-CLAIM-001 | `docs/CONFORMANCE.md` claims | CR claim metadata schema validation |
+| REQ-CONF-001 | `docs/CONFORMANCE.md` semantic core | CR checklist with V01–V15 links |
+| REQ-CONF-002 | `docs/CONFORMANCE.md` interruptions | V08/V14 transition coverage report |
+| REQ-CLAIM-002 | `docs/CONFORMANCE.md` major-zero wording | RR/CR forbidden-claim lint |
+| REQ-REG-001 | `docs/REGISTRIES.md` prototype codec | registry and prototype-advertisement inspection |
+| REQ-REG-002 | `docs/REGISTRIES.md` ID ranges | registry validator and V13 invalid-ID cases |
+| REQ-REG-003 | `docs/REGISTRIES.md` experimental evidence | allocation PR checklist and artifact validation |
+| REQ-REG-004 | `docs/REGISTRIES.md` approval evidence | GR plus profile/proof/vector/fuzz/independent reports |
+| REQ-REG-005 | `docs/REGISTRIES.md` mandatory evidence | GR, two implementation reports, MR, migration review |
+| REQ-REG-006 | `docs/REGISTRIES.md` maximum sizes | profile size tables and layer-accounting inspection |
+| REQ-REG-007 | `docs/REGISTRIES.md` worst-case proof | proof artifact, reaching witnesses, independent result |
+| REQ-REG-008 | `docs/REGISTRIES.md` exact sizing | CB equality/one-past tests and allocation instrumentation |
+| REQ-REG-009 | `docs/REGISTRIES.md` proof tests | CB, property/exhaustive report, independent verifier |
+| REQ-REG-010 | `docs/REGISTRIES.md` allocation change | CI registry validator, changelog, GR |
+| REQ-METRIC-001 | `docs/METRICS.md` envelope metadata | MR schema validation |
+| REQ-METRIC-002 | `docs/METRICS.md` byte identity | per-direction capture and MR identity check |
+| REQ-METRIC-003 | `docs/METRICS.md` aggregation | raw-run MR and recomputed summaries |
+| REQ-METRIC-004 | `docs/METRICS.md` first body | V05/V06 traces and independently recomputed MR |
+| REQ-METRIC-005 | `docs/METRICS.md` interruption/resume | V08/V09 raw traces and MR |
+| REQ-METRIC-006 | `docs/METRICS.md` compactness | V01/V02 MR threshold evaluation |
+| REQ-METRIC-007 | `docs/METRICS.md` budget/defer/resume | V05/V08/V09/V12 MR threshold evaluation |
+| REQ-METRIC-008 | `docs/METRICS.md` B2F | oracle decision, licenses, raw corpus MR, justification GR |
+| REQ-METRIC-009 | `docs/METRICS.md` reproducibility | content-addressed MR and independent rerun |
+| REQ-M4P-001 | `docs/M4P-CONFIRMATION.md` authority | external immutable confirmation in RR |
+| REQ-M4P-002 | `docs/M4P-CONFIRMATION.md` contract | M4P contract checklist and upstream links |
+| REQ-M4P-003 | `docs/M4P-CONFIRMATION.md` ownership | affirmative external boundary statement and GR |
+| REQ-M4P-004 | `docs/M4P-CONFIRMATION.md` trace | binding trace for V09/V10/V12 cases |
+| REQ-RELEASE-001 | `docs/RELEASE-RECORD.md` content | release-record schema validation and linked artifacts |
+| REQ-RELEASE-002 | `docs/RELEASE-RECORD.md` immutability | URL/commit/digest validator and manual link review |
+| REQ-RELEASE-003 | `docs/RELEASE-RECORD.md` gates | generated all-pass gate list |
+| REQ-RELEASE-004 | `docs/RELEASE-RECORD.md` final verification | clean-checkout commands, CI, independent digest results |
+| REQ-RELEASE-005 | `docs/RELEASE-RECORD.md` tag prohibition | template validator and RR inspection |
+| REQ-GOV-001 | `GOVERNANCE.md` normative changes | diff check for specification, matrix, vectors, changelog |
+| REQ-GATE-001 | `docs/ROADMAP-v0.1.0.md` status | RR tag-state check |
+| REQ-GATE-002 | `docs/ROADMAP-v0.1.0.md` sibling work | immutable sibling commit, green CI, release evidence |
+| REQ-GATE-003 | `docs/ROADMAP-v0.1.0.md` experimental security | codec status inspection and SR |
+| REQ-GATE-004 | `docs/ROADMAP-v0.1.0.md` release claims | forbidden-claim lint and RR inspection |
+
+## Release-blocking matrix dependencies
+
+Rows may be precisely specified yet lack their required evidence. For v0.1.0,
+`REQ-ID-001`, `REQ-CODEC-001`, `REQ-REG-003` through `REQ-REG-009`,
+`REQ-METRIC-006` through `REQ-METRIC-009`, `REQ-M4P-001` through
+`REQ-M4P-004`, `REQ-GATE-002`, and the release-record rows remain incomplete
+until their named external or sibling artifacts exist. The release record must
+report them as blockers, not skips.

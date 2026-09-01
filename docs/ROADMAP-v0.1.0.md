@@ -1,6 +1,6 @@
 # BEMPIC v0.1.0 Roadmap and Release Gates
 
-**Status:** in progress; `v0.1.0` MUST NOT be tagged yet
+**Status:** in progress; [REQ-GATE-001] `v0.1.0` MUST NOT be tagged yet
 
 **Target:** first public semantic specification and governance baseline
 
@@ -19,6 +19,9 @@ passing results by documentation alone.
   vector-definition, changelog, and draft release-note documents.
 - [x] Mark the Python proof transitional and its generation-0 bytes
   non-normative.
+- [x] Define codec allocation/status rules, maximum-size proof evidence, the
+  V01–V15 catalog, metric semantics, external M4P confirmation, a release-record
+  template, and a machine-validated normative conformance matrix.
 - [ ] Resolve every `release-blocking` item in
   [`OPEN-QUESTIONS.md`](OPEN-QUESTIONS.md).
 - [ ] Review normative terms for contradictions and approve the specification
@@ -26,7 +29,7 @@ passing results by documentation alone.
 
 ## 2. Required work in `bempic-reference`
 
-Before this repository may tag v0.1.0, the sibling repository MUST:
+[REQ-GATE-002] Before this repository may tag v0.1.0, the sibling repository MUST:
 
 - [ ] record its Apache-2.0 license, governance-compatible contribution terms,
   and exact dependency notices;
@@ -47,18 +50,22 @@ Before this repository may tag v0.1.0, the sibling repository MUST:
   required fail-closed incompatibility path;
 - [ ] implement at least one clearly labeled experimental deterministic codec
   with declarative bounds, mandatory maximum encoded sizes, canonical
-  parameters, exact encoded-size analysis, and strict allocation limits;
+  parameters, exact encoded-size analysis, strict allocation limits, and all
+  proof evidence required by [`REGISTRIES.md`](REGISTRIES.md);
 - [ ] run malformed-input fuzzing and property tests over codec and state-machine
   boundaries with published tool versions and zero unresolved correctness or
   memory-safety findings;
 - [ ] consume the vector format in [`TEST-VECTORS.md`](TEST-VECTORS.md), publish
-  the mandatory vector bundle, and pass it on all supported platforms;
+  every V01–V15 case in
+  [`../conformance/v0.1/vector-catalog.json`](../conformance/v0.1/vector-catalog.json),
+  publish the mandatory vector bundle, and pass it on all supported platforms;
 - [ ] provide an independent decoder or vector verifier that agrees byte for
   byte with the primary implementation;
 - [ ] reproduce every required behavior of the transitional Python proof or
   link an accepted decision documenting the normative difference;
 - [ ] publish deterministic raw, MIME, B2F/LZHUF, candidate codec, interrupted
-  restart, and persistent-resume measurements with dependency/license details;
+  restart, and persistent-resume measurements required by
+  [`METRICS.md`](METRICS.md), with dependency/license details;
 - [ ] demonstrate zero deferred attachment payload before selection, exact
   budget enforcement, no resend of a fully durable prefix, and zero-byte quote
   error for deterministic no-fault plans;
@@ -68,7 +75,7 @@ Before this repository may tag v0.1.0, the sibling repository MUST:
   release PR in this repository.
 
 The sibling does not need to freeze a permanent wire format or ship production
-cryptography for v0.1.0. It must label the codec experimental and MUST NOT carry
+cryptography for v0.1.0. It must label the codec experimental and [REQ-GATE-003] MUST NOT carry
 real private user traffic without a separately reviewed security profile.
 
 ## 3. Transitional prototype parity gate
@@ -94,6 +101,8 @@ the prototype.
 - [ ] The deterministic benchmark completes and any changed baseline is
   reviewed rather than silently replaced.
 - [ ] Internal Markdown links and repository consistency checks pass.
+- [ ] The normative requirement matrix, codec registry, vector catalog, metrics, and
+  incomplete release-record controls pass `scripts.validate_release_gates`.
 - [ ] All required conformance vector definitions have a corresponding sibling
   artifact.
 - [ ] The release commit contains no secrets, private corpus, generated local
@@ -102,6 +111,8 @@ the prototype.
 ## 5. Protocol acceptance gates
 
 - [ ] All correctness items in [`CONFORMANCE.md`](CONFORMANCE.md) pass.
+- [ ] Every row in [`CONFORMANCE-MATRIX.md`](CONFORMANCE-MATRIX.md) has immutable
+  passing evidence in the release record.
 - [ ] Warm no-change synchronization is no more than 64 B and cold no-change is
   no more than 128 B for the prescribed 100-message experimental-codec vector,
   excluding a separately reported application-security handshake.
@@ -118,14 +129,17 @@ the prototype.
   corpus target is at least 10% fewer total BEMPIC bytes; any fixture more than
   5% above B2F has an accepted, measured resumption/metering justification.
 - [ ] M4P reviewers or maintainers confirm the proposed application binding
-  does not duplicate M4P network responsibilities.
+  does not duplicate M4P network responsibilities, with every field and trace
+  required by [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md).
 
 ## 6. Tag procedure
 
 After every item above is checked with evidence:
 
 1. Freeze the release candidate commit through a reviewed pull request.
-2. Put the sibling passing commit SHA and vector-bundle digest in
+2. Complete the immutable evidence record required by
+   [`RELEASE-RECORD.md`](RELEASE-RECORD.md) and put the sibling passing commit
+   SHA and vector-bundle digest in
    [`RELEASE-NOTES-v0.1.0.md`](RELEASE-NOTES-v0.1.0.md).
 3. Change the specification and release notes from “release candidate” to
    “released”.
@@ -133,5 +147,5 @@ After every item above is checked with evidence:
    CI from the exact release commit.
 5. Create signed annotated tag `v0.1.0` from that commit and publish the release.
 
-Until then, branches, commits, and documents may say “for v0.1.0” but MUST NOT
+Until then, branches, commits, and documents may say “for v0.1.0” but [REQ-GATE-004] MUST NOT
 claim the release or tag exists.

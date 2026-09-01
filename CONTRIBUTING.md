@@ -30,7 +30,10 @@ A focused pull request should:
 4. update normative text, conformance/vector requirements, decisions, and
    changelog together when semantics change;
 5. avoid claims unsupported by reproducible evidence; and
-6. pass documentation validation, Python tests, demo, and benchmark.
+6. map every new or changed normative `MUST` paragraph to evidence in
+   [`docs/CONFORMANCE-MATRIX.md`](docs/CONFORMANCE-MATRIX.md); and
+7. pass documentation and release-gate validation, Python tests, demo, and
+   benchmark.
 
 An incompatible proposal includes a decision record based on the existing
 numbered examples. A codec proposal additionally includes declared bounds,
@@ -44,6 +47,8 @@ From the repository root:
 ```bash
 python -m pip install --require-hashes -r requirements-validation.txt
 python -m scripts.validate_docs
+python -m scripts.validate_release_gates
+node scripts/independent_verify.mjs
 python -m unittest prototype.tests.test_proof -v
 python -m prototype.demo
 python -m prototype.benchmark

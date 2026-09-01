@@ -19,7 +19,7 @@ codec or operation-byte vector bundle.
 
 ## Bundle format
 
-Each versioned bundle MUST have a canonical manifest containing:
+[REQ-VEC-001] Each versioned bundle MUST have a canonical manifest containing:
 
 - bundle format version and immutable bundle digest;
 - specification commit/tag;
@@ -38,7 +38,7 @@ Each versioned bundle MUST have a canonical manifest containing:
 
 Canonical manifests use RFC 8785 JSON. Large byte payloads may be separate files
 named by SHA-256; the canonical manifest includes their digest and length.
-Paths are relative, slash-separated, and MUST NOT escape the bundle root.
+[REQ-VEC-002] Paths are relative, slash-separated, and MUST NOT escape the bundle root.
 
 Octet strings are lowercase hexadecimal without a prefix. Unsigned 64-bit
 semantic values are decimal JSON strings to avoid the I-JSON/IEEE-754 integer
@@ -59,27 +59,42 @@ again into the bundle-digest input.
 
 ## Mandatory semantic vectors
 
-1. Empty collection, equal warm checkpoint, and equal cold negotiation.
-2. Known checkpoint with one appended message and no retransmitted old manifest.
-3. Unknown checkpoint with multi-page full inventory and durable cursor reopen.
-4. Tiny, typical, international NFC, reply-chain, absent-subject, maximum
-   recipients, maximum parts, and every maximum metadata length.
-5. One body with full/preview alternatives and attachment metadata with the
-   attachment unselected.
-6. Selected compressible and incompressible attachments.
-7. Empty, one-byte, maximum data-payload, and maximum representation boundary.
-8. Interruption at all points required by `CONFORMANCE.md`, followed by reopen.
-9. Resume through another authorized source and another carrier.
-10. Duplicate offers, data, pages, receipts, and a lost final receipt.
-11. Corrupt final byte, conflicting overlap, gap, false length, false digest,
-    false representation ID, and object-ID metadata conflict.
-12. Budgets one byte below and exactly equal to each next complete operation,
-    including directional exhaustion.
-13. Compatible and incompatible protocol/schema/codec negotiation, preference
-    ties, stale cache recovery, optional unknown extension, and critical unknown
-    extension.
-14. Storage failure at each commit boundary and recovery without false receipt.
-15. Every core failure code with retryable and non-retryable handling.
+[REQ-VEC-004] A v0.1 semantic conformance bundle MUST contain exactly the
+catalog entries `V01` through `V15` below. Each entry may contain multiple
+cases, but every required case and assertion in the authoritative
+[`vector-catalog.json`](../conformance/v0.1/vector-catalog.json) MUST appear in
+the bundle manifest with an unambiguous catalog ID and case ID. `blocked_by`
+records release evidence still awaiting a decision; it does not make the
+decided behavior optional.
+
+| ID | Normative subject |
+|---|---|
+| V01 | Empty collection and equal warm/cold synchronization |
+| V02 | Known checkpoint with one appended message |
+| V03 | Unknown checkpoint, bounded paging, and cursor reopen |
+| V04 | Message model, Unicode, optional fields, and core maxima |
+| V05 | Body alternatives and deferred attachment selection |
+| V06 | Selected compressible and incompressible attachments |
+| V07 | Representation and `DATA` payload boundaries |
+| V08 | Required interruption points and process reopen |
+| V09 | Resume through alternate authorized source and carrier |
+| V10 | Duplicate operations and lost final receipt |
+| V11 | Corruption, overlap, range, short/long false lengths, digest, ID, and metadata conflicts |
+| V12 | Exact and one-byte-short total/directional budgets for every operation type |
+| V13 | Negotiation, ties, cache recovery, and extensions |
+| V14 | Storage failures at durable commit boundaries |
+| V15 | Every core failure code with both advertised retryable-flag values |
+
+The prescribed 100-message fixture used by V01 and V02 is an append-only
+collection with object IDs `SHA-256("BEMPIC-V01-OBJECT\0" || U32(index))` for
+indexes 0 through 99. Each message has one UTF-8 `text/plain` body containing
+`message-` followed by the zero-padded three-digit index and LF. Creation time
+is `2026-01-01T00:00:00Z` plus the index in seconds; sender and recipient are
+`sender@example.test` and `recipient@example.test`; subject is `Message ` plus
+the zero-padded index. V02 appends index 100 with the same construction. The
+selected experimental codec profile will publish the canonical manifest bytes
+and checkpoint values; that unresolved selection is recorded in V01/V02
+`blocked_by`.
 
 ## Mandatory codec boundary vectors
 
@@ -104,11 +119,11 @@ the precision vectors are not applicable.
 State vectors are ordered operation traces. Each step records operation bytes,
 direction, contact number, budget ID, budget before/after, volatile state,
 durable state, emitted operations, counters, and injected crash or carrier
-event. A runner MUST compare the full trace, not merely its final object.
+event. [REQ-VEC-003] A runner MUST compare the full trace, not merely its final object.
 
 ## Updating vectors
 
 Changing expected bytes requires a codec revision. Changing semantic outcomes
 requires a protocol-generation change or an accepted correction decision. A
-pull request must identify whether existing conformers remain compatible and
-must not rewrite previously released bundles in place.
+[REQ-VEC-005] A pull request MUST identify whether existing conformers remain
+compatible and MUST NOT rewrite previously released bundles in place.

@@ -36,8 +36,12 @@ REQUIRED_FILES = (
     "docs/REPOSITORY-BOUNDARY.md",
     "docs/ROADMAP-v0.1.0.md",
     "docs/CONFORMANCE.md",
+    "docs/CONFORMANCE-MATRIX.md",
     "docs/TEST-VECTORS.md",
     "docs/REGISTRIES.md",
+    "docs/METRICS.md",
+    "docs/M4P-CONFIRMATION.md",
+    "docs/RELEASE-RECORD.md",
     "docs/SECURITY-MODEL.md",
     "docs/RELEASE-NOTES-v0.1.0.md",
     "schemas/README.md",
@@ -46,6 +50,13 @@ REQUIRED_FILES = (
     "schemas/v0.1/opaque-binary.schema.json",
     "schemas/v0.1/fingerprints.json",
     "schemas/v0.1/jcs-canonicalization-vectors.json",
+    "conformance/v0.1/codec-registry.json",
+    "conformance/v0.1/vector-catalog.json",
+    "conformance/v0.1/metrics.json",
+    "conformance/v0.1/release-record-template.json",
+    "scripts/validate_release_gates.py",
+    "scripts/independent_verify.mjs",
+    "scripts/tests/test_validate_release_gates.py",
 )
 
 
@@ -144,6 +155,7 @@ def validate_consistency() -> list[str]:
         "docs/ROADMAP-v0.1.0.md": (
             "MUST NOT be tagged yet",
             "Required work in `bempic-reference`",
+            "CONFORMANCE-MATRIX.md",
         ),
         "docs/RELEASE-NOTES-v0.1.0.md": (
             "does not exist and must not be created yet",
