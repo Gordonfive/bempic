@@ -19,9 +19,10 @@ budgets, offset data transfer, crash-safe prefix persistence, reopen/resume,
 integrity verification, exact reconstruction, receipts, failures, negotiation,
 extensions, accounting, and codec-analysis requirements.
 
-The release candidate also defines codec-independent `semantic_bytes` and an
-exact 24-row pairwise interruption/restart/storage covering array so evidence
-can be independently reproduced without choosing results after a run.
+The release candidate also defines codec-independent `semantic_bytes`, with a
+stable endpoint-role orientation and representation-descriptor exclusion, and
+an exact 24-row pairwise interruption/restart/storage covering array so
+evidence can be independently reproduced without choosing results after a run.
 
 ## Wire-format status
 

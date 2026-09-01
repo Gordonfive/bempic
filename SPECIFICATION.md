@@ -510,22 +510,37 @@ a Boolean or enumeration contributes one octet; an absent nullable value
 contributes zero; and an array or record contributes the sum of its present
 children. Container counts, field names, tags, presence indicators, length
 prefixes, alignment, and padding contribute zero. Thus an opaque-binary value
-contributes its exact decoded length, while a message manifest contributes its
-normalized application metadata, identifiers, and descriptor scalar values.
+contributes its exact decoded length. For a message-manifest value, the walk
+includes only `object_id`, `created_at`, `sender`, `recipients`, `subject`, and
+each part's `part_id`, `role`, `media_type`, and `filename`. The
+`representations` container and every member of every representation descriptor
+(`representation_id`, `schema_fingerprint`, `codec_id`, `codec_revision`,
+codec parameters, encoded length, decoded length, content digest, and
+usefulness expiry) contribute zero. Those descriptor members identify or
+describe prepared codec output and therefore cannot change a codec-independent
+logical workload. A descriptor's `representation_id` remains the evidence key
+for count-once selection; using it as a key does not add its octets to
+`semantic_octets`.
 
-[REQ-ACCOUNT-003] Within one measurement scope and logical direction `d`,
-`semantic_bytes[d]` MUST equal the sum of `semantic_octets` once for each
-distinct `(d, representation_id)` first authorized by an accepted application
-selection in that scope. Repeated requests, contacts, duplicates,
-retransmissions, matching overlap, and restart/resume do not add semantic
-bytes. A deferred or unselected representation contributes zero until selected;
-metadata describing it contributes only when that metadata is part of a
-selected decoded manifest. Encoded representation payload, compression or
-security expansion, BEMPIC operation metadata and framing, codec padding,
-carrier bytes, M4P bytes, DataLink framing/FEC/retransmission, and RF cost do
-not contribute. `semantic_bytes` without a direction MUST be the sum of the
-send and receive directions, and both endpoints MUST report the same value for
-the same fixture, selections, and scope. Selection counts the declared logical
+[REQ-ACCOUNT-003] Each measurement scope MUST bind the two enduring logical
+peer roles `endpoint-a` and `endpoint-b` once, before measurement. `send` means
+logical flow from `endpoint-a` to `endpoint-b`, and `receive` means logical flow
+from `endpoint-b` to `endpoint-a`. The binding is shared by both reporters and
+MUST NOT change across process restart, authorized-source replacement, carrier
+change, or ownership/requester reversal for another representation. Within one
+scope and logical direction `d`, `semantic_bytes[d]` MUST equal the sum of
+`semantic_octets` once for each distinct `(d, representation_id)` first
+authorized by an accepted application selection in that scope. Repeated
+requests, contacts, duplicates, retransmissions, matching overlap, and
+restart/resume do not add semantic bytes. A deferred or unselected
+representation contributes zero until selected; a message manifest contributes
+only the application metadata enumerated above and never representation
+descriptor members. Encoded representation payload, compression or security
+expansion, BEMPIC operation metadata and framing, codec padding, carrier bytes,
+M4P bytes, DataLink framing/FEC/retransmission, and RF cost do not contribute.
+`semantic_bytes` without a direction MUST be the sum of the send and receive
+directions, and both endpoints MUST report the same value for the same endpoint
+binding, fixture, selections, and scope. Selection counts the declared logical
 workload even if the run later pauses or fails; `useful_committed_bytes` records
 successful completion separately.
 

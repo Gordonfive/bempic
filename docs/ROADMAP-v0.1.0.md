@@ -43,7 +43,8 @@ passing results by documentation alone.
   bounded full-inventory fallback, and durable page cursors;
 - [ ] implement hard total and directional BEMPIC budgets plus exact preflight
   sizing and the required accounting counters, including reproducible
-  directional `semantic_bytes` fixture breakdowns;
+  directional `semantic_bytes` fixture breakdowns with a shared immutable
+  endpoint-role binding and representation-descriptor exclusion;
 - [ ] implement crash-consistent prefix persistence, process reopen, resume
   through a different authorized source, quarantine/retry after corruption, and
   idempotent duplicate operations and receipts;
@@ -140,7 +141,8 @@ the prototype.
 - [ ] No selected deterministic no-fault plan exceeds its accepted BEMPIC
   budget or differs from its exact preflight quote.
 - [ ] Every prescribed fixture reproduces the exact directional
-  `semantic_bytes` identity from its content-addressed decoded semantic inputs.
+  `semantic_bytes` identity from its content-addressed decoded semantic inputs,
+  fixed endpoint-role binding, and descriptor-exclusion rule.
 - [ ] No unselected attachment representation payload is emitted.
 - [ ] No fully durable prefix is resent after reopen; a matching duplicate
   caused by lost durability knowledge is counted explicitly.

@@ -43,7 +43,7 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-BUDGET-001 | `SPECIFICATION.md` budgets | V12 and zero-quote-error MR |
 | REQ-ACCOUNT-001 | `SPECIFICATION.md` counters | MR schema completeness and V01–V12 records |
 | REQ-ACCOUNT-002 | `SPECIFICATION.md` cost domains | MR identity plus M4P cost-label inspection |
-| REQ-ACCOUNT-003 | `SPECIFICATION.md` semantic bytes | semantic-fixture recomputation, directional MR identity, V05/V08 duplicate/defer traces |
+| REQ-ACCOUNT-003 | `SPECIFICATION.md` semantic bytes | descriptor-excluding fixture recomputation, fixed endpoint-role directional MR identity, V05/V08 duplicate/defer traces |
 | REQ-CODEC-001 | `SPECIFICATION.md` codec publication | codec profile, size proof, CB, independent verifier |
 | REQ-EXT-001 | `SPECIFICATION.md` extensions | V13 optional/critical/limit cases |
 | REQ-FAIL-001 | `SPECIFICATION.md` fail closed | V11/V13/V15 and mutation traces |
@@ -85,7 +85,7 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-METRIC-007 | `docs/METRICS.md` budget/defer/resume | V05/V08/V09/V12 MR threshold evaluation |
 | REQ-METRIC-008 | `docs/METRICS.md` B2F | oracle decision, licenses, raw corpus MR, justification GR |
 | REQ-METRIC-009 | `docs/METRICS.md` reproducibility | content-addressed MR and independent rerun |
-| REQ-METRIC-010 | `docs/METRICS.md` semantic workload | raw per-representation fixture records and independently recomputed directional identity |
+| REQ-METRIC-010 | `docs/METRICS.md` semantic workload | raw per-representation fixture records, shared endpoint-role binding, descriptor exclusion, and independently recomputed directional identity |
 | REQ-M4P-001 | `docs/M4P-CONFIRMATION.md` authority | external immutable confirmation in RR |
 | REQ-M4P-002 | `docs/M4P-CONFIRMATION.md` contract | M4P contract checklist and upstream links |
 | REQ-M4P-003 | `docs/M4P-CONFIRMATION.md` ownership | affirmative external boundary statement and GR |

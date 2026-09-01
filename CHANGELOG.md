@@ -29,8 +29,9 @@ releases correct or clarify without intentionally changing protocol semantics.
 
 ### Changed
 
-- Defined codec-independent directional `semantic_bytes`, including exact
-  scalar accounting, inclusion/exclusion, aggregation, and fixture evidence;
+- Defined codec-independent directional `semantic_bytes`, including a stable
+  endpoint-role orientation, representation-descriptor exclusion, exact scalar
+  accounting, aggregation, and fixture evidence;
   replaced ambiguous independent V08 axis coverage with a fixed 24-row
   pairwise interruption/restart/storage covering array and exact pass/fail
   evidence, without changing any release threshold.

@@ -33,11 +33,16 @@ codec or operation-byte vector bundle.
   value for every valid vector;
 - expected failure code and mutation prohibition for every invalid vector;
 - expected state before/after each state-machine step;
-- expected persistent checkpoint/prefix/receipt state after reopen; and
+- expected persistent checkpoint/prefix/receipt state after reopen;
 - exact directional accounting by operation and budget scope;
+- one immutable measurement-scope binding, serialized as `endpoint_a_binding`
+  and `endpoint_b_binding`, of fixture roles `endpoint-a` and `endpoint-b` to
+  the two logical peer fixtures and shared by both endpoint reporters;
 - one canonical semantic-fixture artifact for every selected representation,
-  with direction, schema fingerprint, full representation ID, path, octet
-  length, SHA-256 digest, and expected `semantic_octets`; and
+  with direction, source and destination endpoint roles, schema fingerprint,
+  full representation ID, path, octet length, SHA-256 digest, expected
+  `semantic_octets`, and `representation_descriptor_contribution` equal to
+  zero; and
 - expected `semantic_bytes_send`, `semantic_bytes_receive`, and their sum.
 
 Canonical manifests use RFC 8785 JSON. Large byte payloads may be separate files
@@ -180,8 +185,13 @@ walked by Specification Section 12.1. Octet strings are stored as exact bytes;
 structured values use the lossless canonical input already named by the bundle,
 while `semantic_octets` is computed from the decoded scalar values rather than
 from the artifact's JSON punctuation, field names, hexadecimal spelling, or
-container framing. Deferred fixture artifacts remain listed for reproducibility
-but contribute zero until their selection event.
+container framing. For a message manifest, the recomputation walks the
+application fields enumerated by Specification Section 12.1 and skips the
+`representations` container and every representation descriptor member.
+Fixture direction is derived only from the immutable endpoint-role binding:
+`endpoint-a` to `endpoint-b` is `send`, and the reverse is `receive`. Deferred
+fixture artifacts remain listed for reproducibility but contribute zero until
+their selection event.
 
 ## Updating vectors
 

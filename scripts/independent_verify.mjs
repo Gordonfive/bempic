@@ -101,7 +101,17 @@ assert(metrics.required.length === 18, "expected 18 required metrics");
 assert(metrics.semantic_bytes_definition.identity ===
   "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
 "semantic_bytes identity changed");
+assert(metrics.semantic_bytes_definition.direction_basis.send ===
+  "endpoint-a-to-endpoint-b" &&
+  metrics.semantic_bytes_definition.direction_basis.receive ===
+  "endpoint-b-to-endpoint-a",
+"semantic_bytes direction basis changed");
+assert(metrics.semantic_bytes_definition.scope_fields.join(",") ===
+  "endpoint_a_binding,endpoint_b_binding" &&
+  metrics.semantic_bytes_definition.fixture_fields.includes("representation_descriptor_contribution"),
+"semantic_bytes reproducibility fields changed");
 assert(metrics.semantic_bytes_definition.excluded.includes("duplicates") &&
+  metrics.semantic_bytes_definition.excluded.includes("representation-descriptor-container-and-members") &&
   metrics.semantic_bytes_definition.excluded.includes("lower-layer-retransmissions"),
 "semantic_bytes exclusion set is incomplete");
 assert(metrics.thresholds.length === 8, "expected eight metric thresholds");

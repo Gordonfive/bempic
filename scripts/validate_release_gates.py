@@ -188,8 +188,15 @@ EXPECTED_SEMANTIC_BYTES_DEFINITION = {
     "counter": "semantic_bytes",
     "directional_counters": ["semantic_bytes_send", "semantic_bytes_receive"],
     "identity": "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
+    "direction_basis": {
+        "endpoint_roles": ["endpoint-a", "endpoint-b"],
+        "send": "endpoint-a-to-endpoint-b",
+        "receive": "endpoint-b-to-endpoint-a",
+        "binding": "declared-once-per-measurement-scope-and-stable-across-ownership-reversals-restarts-sources-carriers-and-reporters",
+    },
     "count_key": ["direction", "representation_id"],
     "count_event": "first-accepted-application-selection-in-scope",
+    "scope_fields": ["endpoint_a_binding", "endpoint_b_binding"],
     "scalar_octets": {
         "octets": "length",
         "utf8-or-ascii": "normalized-utf8-length",
@@ -200,21 +207,24 @@ EXPECTED_SEMANTIC_BYTES_DEFINITION = {
         "array-or-record": "sum-present-children",
     },
     "included": [
-        "selected-decoded-scalar-values",
-        "selected-manifest-application-metadata-and-descriptors",
+        "selected-decoded-application-scalar-values",
+        "selected-manifest-application-fields-outside-representation-descriptors",
     ],
     "excluded": [
         "container-counts", "field-names", "tags", "presence-indicators",
-        "length-prefixes", "encoded-representation-payload",
+        "length-prefixes", "representation-descriptor-container-and-members",
+        "encoded-representation-payload",
         "deferred-or-unselected-payload", "duplicates", "retransmissions",
         "matching-overlap", "codec-padding",
         "bempic-operation-metadata-and-framing", "carrier-bytes", "m4p-bytes",
         "datalink-bytes", "fec", "lower-layer-retransmissions",
     ],
     "fixture_fields": [
-        "direction", "representation_id", "schema_fingerprint",
+        "direction", "source_endpoint_role", "destination_endpoint_role",
+        "representation_id", "schema_fingerprint",
         "semantic_fixture_path", "semantic_fixture_sha256",
-        "semantic_fixture_octets", "semantic_octets", "selection_event",
+        "semantic_fixture_octets", "semantic_octets",
+        "representation_descriptor_contribution", "selection_event",
     ],
 }
 
@@ -473,6 +483,8 @@ def validate_clarification_alignment() -> None:
             "[REQ-ACCOUNT-003]",
             "semantic_bytes[d]",
             "sum of the send and receive directions",
+            "`endpoint-a` and `endpoint-b`",
+            "never representation descriptor members",
             "A deferred or unselected representation contributes zero until selected",
             "Repeated requests, contacts, duplicates, retransmissions, matching overlap, and restart/resume do not add semantic bytes",
             "Encoded representation payload, compression or security expansion",
@@ -494,6 +506,10 @@ def validate_clarification_alignment() -> None:
         "docs/METRICS.md": (
             "[REQ-METRIC-010]",
             "semantic_bytes = semantic_bytes_send + semantic_bytes_receive",
+            "`endpoint-a` to `endpoint-b`",
+            "every representation descriptor member",
+            "`endpoint_a_binding` and `endpoint_b_binding`",
+            "descriptor contribution MUST be zero",
             "The same `(direction, representation_id)` MUST appear at most once per scope",
         ),
         "docs/ROADMAP-v0.1.0.md": (

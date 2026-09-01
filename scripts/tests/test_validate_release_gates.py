@@ -29,6 +29,23 @@ class ReleaseGateValidatorTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "required metric names"):
                 gates.validate_metrics()
 
+    def test_semantic_direction_and_descriptor_exclusion_are_pinned(self) -> None:
+        metrics = copy.deepcopy(gates.load_json("conformance/v0.1/metrics.json"))
+        metrics["semantic_bytes_definition"]["direction_basis"]["send"] = (
+            "owner-to-requester"
+        )
+        with patch.object(gates, "load_json", return_value=metrics):
+            with self.assertRaisesRegex(ValueError, "semantic_bytes definition"):
+                gates.validate_metrics()
+
+        metrics = copy.deepcopy(gates.load_json("conformance/v0.1/metrics.json"))
+        metrics["semantic_bytes_definition"]["excluded"].remove(
+            "representation-descriptor-container-and-members"
+        )
+        with patch.object(gates, "load_json", return_value=metrics):
+            with self.assertRaisesRegex(ValueError, "semantic_bytes definition"):
+                gates.validate_metrics()
+
     def test_every_vector_case_and_assertion_is_pinned(self) -> None:
         catalog = copy.deepcopy(gates.load_json("conformance/v0.1/vector-catalog.json"))
         v11 = next(entry for entry in catalog["catalog"] if entry["id"] == "V11")

@@ -19,8 +19,9 @@ oracle identity/version/license/results; M4P confirmation; prototype parity
 decision; resolution links for every release-blocking open question; security
 classification; changelog/release-note review; and named approvals required by
 governance. The metric records MUST include independently recomputed
-directional `semantic_bytes`, and V08 evidence MUST include the complete
-24-row covering array and pair-coverage proof.
+directional `semantic_bytes`, the shared immutable endpoint-role binding, and
+evidence that representation descriptors contributed zero. V08 evidence MUST
+include the complete 24-row covering array and pair-coverage proof.
 
 [REQ-RELEASE-002] Every repository URL MUST identify an immutable commit or tag,
 every CI URL MUST be for that commit and conclude successfully, and every digest

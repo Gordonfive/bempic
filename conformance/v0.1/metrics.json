@@ -5,8 +5,15 @@
     "counter": "semantic_bytes",
     "directional_counters": ["semantic_bytes_send", "semantic_bytes_receive"],
     "identity": "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
+    "direction_basis": {
+      "endpoint_roles": ["endpoint-a", "endpoint-b"],
+      "send": "endpoint-a-to-endpoint-b",
+      "receive": "endpoint-b-to-endpoint-a",
+      "binding": "declared-once-per-measurement-scope-and-stable-across-ownership-reversals-restarts-sources-carriers-and-reporters"
+    },
     "count_key": ["direction", "representation_id"],
     "count_event": "first-accepted-application-selection-in-scope",
+    "scope_fields": ["endpoint_a_binding", "endpoint_b_binding"],
     "scalar_octets": {
       "octets": "length",
       "utf8-or-ascii": "normalized-utf8-length",
@@ -16,9 +23,9 @@
       "absent-nullable": 0,
       "array-or-record": "sum-present-children"
     },
-    "included": ["selected-decoded-scalar-values", "selected-manifest-application-metadata-and-descriptors"],
-    "excluded": ["container-counts", "field-names", "tags", "presence-indicators", "length-prefixes", "encoded-representation-payload", "deferred-or-unselected-payload", "duplicates", "retransmissions", "matching-overlap", "codec-padding", "bempic-operation-metadata-and-framing", "carrier-bytes", "m4p-bytes", "datalink-bytes", "fec", "lower-layer-retransmissions"],
-    "fixture_fields": ["direction", "representation_id", "schema_fingerprint", "semantic_fixture_path", "semantic_fixture_sha256", "semantic_fixture_octets", "semantic_octets", "selection_event"]
+    "included": ["selected-decoded-application-scalar-values", "selected-manifest-application-fields-outside-representation-descriptors"],
+    "excluded": ["container-counts", "field-names", "tags", "presence-indicators", "length-prefixes", "representation-descriptor-container-and-members", "encoded-representation-payload", "deferred-or-unselected-payload", "duplicates", "retransmissions", "matching-overlap", "codec-padding", "bempic-operation-metadata-and-framing", "carrier-bytes", "m4p-bytes", "datalink-bytes", "fec", "lower-layer-retransmissions"],
+    "fixture_fields": ["direction", "source_endpoint_role", "destination_endpoint_role", "representation_id", "schema_fingerprint", "semantic_fixture_path", "semantic_fixture_sha256", "semantic_fixture_octets", "semantic_octets", "representation_descriptor_contribution", "selection_event"]
   },
   "required": [
     "semantic_bytes",

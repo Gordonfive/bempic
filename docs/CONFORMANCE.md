@@ -47,9 +47,10 @@ profile without changing core receipt meanings.
 - [ ] Accept matching duplicates idempotently; reject gaps and conflicts.
 - [ ] Never emit a complete operation across a total or directional budget.
 - [ ] Account for every encoded BEMPIC octet in the correct direction/scope.
-- [ ] Reproduce codec-independent directional `semantic_bytes` from the
-  selected fixture without counting deferred, duplicate, retransmitted,
-  padded, or lower-layer bytes.
+- [ ] Reproduce codec-independent directional `semantic_bytes` from a fixed
+  `endpoint-a`/`endpoint-b` scope binding without counting representation
+  descriptors, deferred, duplicate, retransmitted, padded, or lower-layer
+  bytes.
 - [ ] Label lower-layer counters as exact or estimated and never conflate them
   with BEMPIC counters.
 - [ ] Recover the last durable prefix after process restart.
