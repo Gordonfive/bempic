@@ -24,3 +24,12 @@ regressions are in
 
 Changing a descriptor changes its fingerprint and requires compatibility,
 registry, conformance, vector, and changelog review.
+
+The codec-independent `semantic_bytes` measurement walks values after decode,
+but skips a message manifest's representation descriptors because they
+identify or describe codec output. The measurement and its endpoint-role
+orientation do not add a field to a BEMPIC semantic value or change a schema
+descriptor. The interruption covering array likewise changes required evidence,
+not protocol state. Consequently this clarification leaves all three canonical
+descriptor bytes and fingerprints unchanged; its machine-readable controls are
+the metrics and vector catalogs under `conformance/v0.1/`.

@@ -29,6 +29,14 @@ releases correct or clarify without intentionally changing protocol semantics.
 
 ### Changed
 
+- Defined codec-independent directional `semantic_bytes`, including a stable
+  endpoint-role orientation, representation-descriptor exclusion, exact scalar
+  accounting, aggregation, and fixture evidence;
+  replaced ambiguous independent V08 axis coverage with a fixed 24-row
+  pairwise interruption/restart/storage covering array and exact pass/fail
+  evidence, without changing any release threshold.
+- Recorded the latest immutable `bempic-reference` conformance checkpoint as
+  prior `blocked-not-conformant` evidence while retaining all incomplete gates.
 - Replaced Python-specific JSON serialization in schema-fingerprint validation
   with genuine RFC 8785/JCS canonicalization and RFC-derived regression
   fixtures.

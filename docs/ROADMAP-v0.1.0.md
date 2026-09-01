@@ -42,7 +42,9 @@ passing results by documentation alone.
 - [ ] implement append-only checkpoints, delta reconciliation, deterministic
   bounded full-inventory fallback, and durable page cursors;
 - [ ] implement hard total and directional BEMPIC budgets plus exact preflight
-  sizing and the required accounting counters;
+  sizing and the required accounting counters, including reproducible
+  directional `semantic_bytes` fixture breakdowns with a shared immutable
+  endpoint-role binding and representation-descriptor exclusion;
 - [ ] implement crash-consistent prefix persistence, process reopen, resume
   through a different authorized source, quarantine/retry after corruption, and
   idempotent duplicate operations and receipts;
@@ -66,6 +68,9 @@ passing results by documentation alone.
 - [ ] publish deterministic raw, MIME, B2F/LZHUF, candidate codec, interrupted
   restart, and persistent-resume measurements required by
   [`METRICS.md`](METRICS.md), with dependency/license details;
+- [ ] execute every row of the normative 24-row V08 interruption/restart/storage
+  covering array, publish its pair-coverage proof and exact trace fields, and
+  retain the separate before/after V14 durable-transition evidence;
 - [ ] demonstrate zero deferred attachment payload before selection, exact
   budget enforcement, no resend of a fully durable prefix, and zero-byte quote
   error for deterministic no-fault plans;
@@ -73,6 +78,21 @@ passing results by documentation alone.
   without implementing routing, fragmentation, deduplication, or TTL; and
 - [ ] record one immutable passing commit SHA and green CI URL in the v0.1.0
   release PR in this repository.
+
+### Current sibling evidence checkpoint (not a passing gate)
+
+The latest audited public checkpoint is
+[`bempic-reference` commit `29be83fed70433ea958f9773539fb8b93fa00dc9`](https://github.com/Gordonfive/bempic-reference/commit/29be83fed70433ea958f9773539fb8b93fa00dc9),
+with a successful [CI run](https://github.com/Gordonfive/bempic-reference/actions/runs/33471197976).
+Its immutable
+[`conformance/v0.1.0-report.json`](https://github.com/Gordonfive/bempic-reference/blob/29be83fed70433ea958f9773539fb8b93fa00dc9/conformance/v0.1.0-report.json)
+self-reports `blocked-not-conformant`, identifies implementation commit
+[`c8d940ca69fe98aecf72185f80f4a2b3254aaf24`](https://github.com/Gordonfive/bempic-reference/commit/c8d940ca69fe98aecf72185f80f4a2b3254aaf24),
+and was evaluated against the older specification commit `c67a87e`. It records
+partial or failing mandatory vectors, failed warm/cold byte gates, no approved
+B2F oracle, no external M4P approval, and the two ambiguities resolved by this
+clarification. It is useful prior evidence, but it does not satisfy this gate;
+the sibling must rerun and publish artifacts against the clarified commit.
 
 The sibling does not need to freeze a permanent wire format or ship production
 cryptography for v0.1.0. It must label the codec experimental and [REQ-GATE-003] MUST NOT carry
@@ -120,6 +140,9 @@ the prototype.
   other 100 manifests.
 - [ ] No selected deterministic no-fault plan exceeds its accepted BEMPIC
   budget or differs from its exact preflight quote.
+- [ ] Every prescribed fixture reproduces the exact directional
+  `semantic_bytes` identity from its content-addressed decoded semantic inputs,
+  fixed endpoint-role binding, and descriptor-exclusion rule.
 - [ ] No unselected attachment representation payload is emitted.
 - [ ] No fully durable prefix is resent after reopen; a matching duplicate
   caused by lost durability knowledge is counted explicitly.

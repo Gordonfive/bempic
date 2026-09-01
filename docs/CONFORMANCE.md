@@ -47,6 +47,10 @@ profile without changing core receipt meanings.
 - [ ] Accept matching duplicates idempotently; reject gaps and conflicts.
 - [ ] Never emit a complete operation across a total or directional budget.
 - [ ] Account for every encoded BEMPIC octet in the correct direction/scope.
+- [ ] Reproduce codec-independent directional `semantic_bytes` from a fixed
+  `endpoint-a`/`endpoint-b` scope binding without counting representation
+  descriptors, deferred, duplicate, retransmitted, padded, or lower-layer
+  bytes.
 - [ ] Label lower-layer counters as exact or estimated and never conflate them
   with BEMPIC counters.
 - [ ] Recover the last durable prefix after process restart.
@@ -93,10 +97,53 @@ commit, and receipt commit. On reopen, the implementation may roll back to the
 last reported durable state but may not advance beyond recoverable bytes,
 commit unverified content, or emit a false positive receipt.
 
-Required interruption points include 0%, 1%, 10%, 50%, 90%, the final byte,
-post-verification/pre-commit, and post-commit/pre-receipt. Sender, receiver, and
-both processes must be restarted. At least one case resumes from a different
-authorized source and one from a different carrier.
+The percentage fixture has encoded length `L >= 100` octets. Its required
+durable-prefix points are exactly `floor(L*p/100)` for `p` equal to 0, 1, 10,
+50, and 90. `final-byte` means interruption after the `L`th encoded octet and
+prefix length `L` are durable but before integrity verification;
+`post-verify-pre-commit` means verified state is durable but the representation
+is not committed; and `post-commit-pre-receipt` means committed state is durable
+but no positive receipt is durable or emitted. These eight names are the V08
+interruption-point axis.
+
+The restart axis is exactly `sender`, `receiver`, and `both`. Restart discards
+all volatile state of the named endpoint and creates a new process instance;
+receiver and both-endpoint restart reopen persisted state, while sender restart
+must re-establish the same prepared representation and use the receiver's
+authoritative prefix. At least one V09 case resumes from a different authorized
+source and one from a different carrier.
+
+The storage axis names three logical surfaces, whether or not one physical
+backend implements more than one: `memory` is volatile process state that must
+be discarded and reconstructed from durable facts; `representation-file` is
+the staged or committed prepared-octet content and its promotion boundary; and
+`durable-store` is descriptor, checkpoint/page cursor, prefix length,
+verified/committed phase, and receipt-idempotency state held by a journal,
+database, copy-on-write record, or equivalent store. A trace may map multiple
+surfaces to one backend, but it must identify distinct durability barriers and
+fault observations for each surface.
+
+[REQ-CONF-003] V08 release evidence MUST execute the exact 24 rows in the
+authoritative vector catalog. That fixed covering array covers every
+interruption-point/restart pair, every interruption-point/storage pair, and
+every restart/storage pair; the 72-row full Cartesian product is not required.
+Independent coverage of each axis without those pairwise combinations is
+insufficient. Pairwise coverage is sufficient only because every row applies
+the same state, prefix, receipt, and reconstruction invariants; an
+implementation with point-, restart-, or backend-specific behavior MUST add
+every affected triple needed to exercise that behavior. Every claimed
+persistent backend MUST be named in at least one row for each logical storage
+surface it implements. Every row MUST prove that its interruption was reached
+exactly once, volatile state was discarded where named, recovered state was not ahead
+of recoverable durable facts, no false prefix or receipt was advertised, the
+first resumed offset equaled the authoritative recovered prefix, required
+duplicate/retransmission counters were exact, final bytes/digest/ID/decode
+matched the fixture, and a positive receipt followed durable commit. A missing
+row or evidence field, an unexpected skip, recovery ahead of durable bytes,
+false receipt, wrong resume offset, counter mismatch, or reconstruction failure
+is a failing V08 result. V14 remains separate and MUST inject failure on both
+sides of every named durable transition; pairwise V08 coverage does not waive a
+V14 storage-boundary case.
 
 ## Required accounting cases
 

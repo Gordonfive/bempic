@@ -74,6 +74,11 @@ The authoritative machine-readable range table is
 The table contains no codec allocation: the v0.1 experimental codec selection
 is still release-blocking.
 
+The `semantic_bytes` and V08 interruption-coverage clarifications are
+codec-independent conformance rules. They allocate no codec, extension,
+receipt, failure, schema, or security-profile identifier and do not select a
+wire format. The empty allocation table therefore remains authoritative.
+
 ### Status progression
 
 The statuses are `experimental`, `approved`, `mandatory`, `deprecated`, and

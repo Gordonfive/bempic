@@ -27,6 +27,61 @@ NORMATIVE_DOCS = (
 REQ_RE = re.compile(r"\[?(REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*)\]?")
 MUST_RE = re.compile(r"\bMUST(?: NOT)?\b")
 
+V08_CASES = [
+    "offset-0",
+    "offset-1-percent",
+    "offset-10-percent",
+    "offset-50-percent",
+    "offset-90-percent",
+    "final-byte",
+    "post-verify-pre-commit",
+    "post-commit-pre-receipt",
+]
+V08_RESTART_PARTIES = ["sender", "receiver", "both"]
+V08_STORAGE_SURFACES = ["memory", "representation-file", "durable-store"]
+
+
+def expected_v08_coverage_rows() -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for point_index, point in enumerate(V08_CASES):
+        for restart_index, restart in enumerate(V08_RESTART_PARTIES):
+            rows.append(
+                {
+                    "id": f"V08-C{len(rows) + 1:02d}",
+                    "point": point,
+                    "restart": restart,
+                    "storage": V08_STORAGE_SURFACES[
+                        (point_index + restart_index) % len(V08_STORAGE_SURFACES)
+                    ],
+                }
+            )
+    return rows
+
+
+V08_EVIDENCE_FIELDS = [
+    "row_id", "fixture_digest", "trace_digest", "encoded_length",
+    "interruption_point", "computed_prefix", "restart_party",
+    "storage_surface", "storage_backend", "durable_state_before",
+    "recovered_state", "recovered_prefix", "first_resumed_offset",
+    "new_payload_bytes", "duplicate_payload_bytes",
+    "retransmitted_durable_prefix_bytes", "receipt_state_before",
+    "receipt_state_after", "final_content_digest", "final_representation_id",
+    "final_decode", "result",
+]
+V08_PASS_CRITERIA = [
+    "interruption-reached-exactly-once",
+    "volatile-state-discarded-when-named",
+    "recovered-state-not-ahead",
+    "no-false-prefix",
+    "no-false-receipt",
+    "first-resumed-offset-equals-authoritative-prefix",
+    "duplicate-and-retransmission-counters-exact",
+    "exact-reconstruction-after-resume",
+    "positive-receipt-after-durable-commit",
+    "pair-coverage-complete",
+    "backend-specific-triples-covered-when-applicable",
+]
+
 EXPECTED_VECTOR_REQUIREMENTS = {
     "V01": {
         "cases": ["empty", "equal-warm-100", "equal-cold-100"],
@@ -61,9 +116,24 @@ EXPECTED_VECTOR_REQUIREMENTS = {
         "assertions": ["exact-size-equals-encoded-length", "one-past-bound-rejected-before-allocation"],
     },
     "V08": {
-        "cases": ["offset-0", "offset-1-percent", "offset-10-percent", "offset-50-percent", "offset-90-percent", "final-byte", "post-verify-pre-commit", "post-commit-pre-receipt"],
-        "restart_parties": ["sender", "receiver", "both"],
-        "assertions": ["reopen-last-durable-state", "no-false-prefix", "no-false-receipt", "exact-reconstruction-after-resume"],
+        "cases": V08_CASES,
+        "prefix_percentage_points": [0, 1, 10, 50, 90],
+        "prefix_offset_formula": "floor(encoded_length*percentage/100)",
+        "minimum_encoded_length": 100,
+        "point_definitions": {
+            "final-byte": "prefix-length-L-durable-before-verification",
+            "post-verify-pre-commit": "verified-state-durable-not-committed",
+            "post-commit-pre-receipt": "committed-state-durable-no-positive-receipt-durable-or-emitted",
+        },
+        "restart_parties": V08_RESTART_PARTIES,
+        "storage_surfaces": V08_STORAGE_SURFACES,
+        "coverage_model": "fixed-pairwise-covering-array-v0.1",
+        "full_cartesian_required": False,
+        "conditional_additional_coverage": "all-affected-triples-for-point-restart-or-backend-specific-behavior",
+        "coverage_rows": expected_v08_coverage_rows(),
+        "evidence_fields": V08_EVIDENCE_FIELDS,
+        "pass_criteria": V08_PASS_CRITERIA,
+        "assertions": ["reopen-last-durable-state", "no-false-prefix", "no-false-receipt", "exact-reconstruction-after-resume", "pairwise-all-axis-pairs", "complete-row-evidence"],
     },
     "V09": {
         "cases": ["alternate-authorized-source", "alternate-carrier"],
@@ -101,6 +171,10 @@ EXPECTED_VECTOR_REQUIREMENTS = {
     },
     "V14": {
         "cases": ["offer-page-commit", "prefix-length-update", "final-byte-persist", "digest-verification", "object-commit", "receipt-commit"],
+        "fault_sides": ["before", "after"],
+        "storage_surfaces": ["representation-file", "durable-store"],
+        "evidence_fields": ["case", "fault_side", "storage_surface", "storage_backend", "fault_reached", "durable_state_before", "recoverable_prefix", "recovered_state", "recovered_prefix", "receipt_state", "unrelated_committed_state", "result"],
+        "pass_criteria": ["storage-failure-scoped", "fault-reached-exactly-once", "recovered-not-ahead", "no-false-prefix", "no-false-receipt", "unrelated-committed-state-usable"],
         "assertions": ["storage-failure-scoped", "reopen-not-ahead", "no-false-receipt"],
     },
     "V15": {
@@ -109,6 +183,76 @@ EXPECTED_VECTOR_REQUIREMENTS = {
         "assertions": ["exact-failure-code", "retry-classification", "bounded-retry", "scoped-mutation"],
     },
 }
+
+EXPECTED_SEMANTIC_BYTES_DEFINITION = {
+    "counter": "semantic_bytes",
+    "directional_counters": ["semantic_bytes_send", "semantic_bytes_receive"],
+    "identity": "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
+    "direction_basis": {
+        "endpoint_roles": ["endpoint-a", "endpoint-b"],
+        "send": "endpoint-a-to-endpoint-b",
+        "receive": "endpoint-b-to-endpoint-a",
+        "binding": "declared-once-per-measurement-scope-and-stable-across-ownership-reversals-restarts-sources-carriers-and-reporters",
+    },
+    "count_key": ["direction", "representation_id"],
+    "count_event": "first-accepted-application-selection-in-scope",
+    "scope_fields": ["endpoint_a_binding", "endpoint_b_binding"],
+    "scalar_octets": {
+        "octets": "length",
+        "utf8-or-ascii": "normalized-utf8-length",
+        "uint32": 4,
+        "uint64": 8,
+        "boolean-or-enum": 1,
+        "absent-nullable": 0,
+        "array-or-record": "sum-present-children",
+    },
+    "included": [
+        "selected-decoded-application-scalar-values",
+        "selected-manifest-application-fields-outside-representation-descriptors",
+    ],
+    "excluded": [
+        "container-counts", "field-names", "tags", "presence-indicators",
+        "length-prefixes", "representation-descriptor-container-and-members",
+        "encoded-representation-payload",
+        "deferred-or-unselected-payload", "duplicates", "retransmissions",
+        "matching-overlap", "codec-padding",
+        "bempic-operation-metadata-and-framing", "carrier-bytes", "m4p-bytes",
+        "datalink-bytes", "fec", "lower-layer-retransmissions",
+    ],
+    "fixture_fields": [
+        "direction", "source_endpoint_role", "destination_endpoint_role",
+        "representation_id", "schema_fingerprint",
+        "semantic_fixture_path", "semantic_fixture_sha256",
+        "semantic_fixture_octets", "semantic_octets",
+        "representation_descriptor_contribution", "selection_event",
+    ],
+}
+
+EXPECTED_REQUIRED_METRICS = [
+    "semantic_bytes",
+    "semantic_bytes_send",
+    "semantic_bytes_receive",
+    "bempic_total_bytes",
+    "bempic_operation_bytes_send",
+    "bempic_operation_bytes_receive",
+    "representation_payload_bytes",
+    "useful_committed_bytes",
+    "duplicate_bempic_bytes",
+    "duplicate_representation_payload_bytes",
+    "unselected_representation_payload_bytes",
+    "retransmitted_durable_prefix_bytes",
+    "retransmitted_prior_manifest_bytes",
+    "resume_control_bytes",
+    "bempic_bytes_to_first_body_payload_octet",
+    "bempic_bytes_to_first_body_commit",
+    "preflight_quoted_bempic_bytes",
+    "quote_error_bytes",
+]
+
+EXPECTED_METRIC_IDENTITIES = [
+    "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
+    "bempic_total_bytes=bempic_operation_bytes_send+bempic_operation_bytes_receive",
+]
 
 EXPECTED_METRIC_THRESHOLDS = [
     {"id": "warm-no-change", "vector": "V01", "case": "equal-warm-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 64, "aggregation": "each-run"},
@@ -238,6 +382,39 @@ def validate_vector_catalog() -> None:
         for field, expected_value in expected_fields.items():
             if by_id[vector_id].get(field) != expected_value:
                 fail(f"{vector_id} {field} differs from the normative catalog")
+    validate_v08_pairwise(by_id["V08"]["coverage_rows"])
+
+
+def validate_v08_pairwise(rows: object) -> None:
+    if not isinstance(rows, list) or len(rows) != 24:
+        fail("V08 coverage must contain exactly 24 rows")
+    row_ids = [row.get("id") for row in rows]
+    if len(row_ids) != len(set(row_ids)):
+        fail("V08 coverage row IDs must be unique")
+    point_restart = {(row.get("point"), row.get("restart")) for row in rows}
+    point_storage = {(row.get("point"), row.get("storage")) for row in rows}
+    restart_storage = {(row.get("restart"), row.get("storage")) for row in rows}
+    expected_point_restart = {
+        (point, restart)
+        for point in V08_CASES
+        for restart in V08_RESTART_PARTIES
+    }
+    expected_point_storage = {
+        (point, storage)
+        for point in V08_CASES
+        for storage in V08_STORAGE_SURFACES
+    }
+    expected_restart_storage = {
+        (restart, storage)
+        for restart in V08_RESTART_PARTIES
+        for storage in V08_STORAGE_SURFACES
+    }
+    if point_restart != expected_point_restart:
+        fail("V08 coverage omits an interruption-point/restart pair")
+    if point_storage != expected_point_storage:
+        fail("V08 coverage omits an interruption-point/storage pair")
+    if restart_storage != expected_restart_storage:
+        fail("V08 coverage omits a restart/storage pair")
 
 
 def validate_metrics() -> None:
@@ -245,8 +422,12 @@ def validate_metrics() -> None:
     if data.get("format") != "bempic-metrics-v0.1" or data.get("unit") != "octets":
         fail("unexpected metrics format or unit")
     required = data.get("required")
-    if not isinstance(required, list) or len(required) != len(set(required)):
-        fail("required metric names must be a unique list")
+    if required != EXPECTED_REQUIRED_METRICS or len(required) != len(set(required)):
+        fail("required metric names differ from the normative catalog")
+    if data.get("semantic_bytes_definition") != EXPECTED_SEMANTIC_BYTES_DEFINITION:
+        fail("semantic_bytes definition differs from the normative catalog")
+    if data.get("identities") != EXPECTED_METRIC_IDENTITIES:
+        fail("metric identities differ from the normative catalog")
     if data.get("thresholds") != EXPECTED_METRIC_THRESHOLDS:
         fail("metric threshold definitions differ from the normative catalog")
 
@@ -272,6 +453,95 @@ def validate_release_template() -> None:
         fail("release-record blockers do not match the required unresolved set")
     if data.get("metrics", {}).get("thresholds_passed") is not False:
         fail("incomplete release template cannot claim metric thresholds passed")
+    metrics = data.get("metrics", {})
+    if metrics.get("semantic_bytes_identity_passed") is not False:
+        fail("incomplete release template cannot claim semantic_bytes evidence")
+    interruption = data.get("interruption_coverage", {})
+    expected_interruption = {
+        "model": "fixed-pairwise-covering-array-v0.1",
+        "required_rows": 24,
+        "evidence_digest": None,
+        "pair_coverage_passed": False,
+        "v14_before_after_passed": False,
+    }
+    if interruption != expected_interruption:
+        fail("release template interruption coverage differs from the normative catalog")
+    reference = data.get("current_reference_evidence", {})
+    if reference.get("evidence_commit") != "29be83fed70433ea958f9773539fb8b93fa00dc9":
+        fail("current reference evidence commit changed without review")
+    if reference.get("observed_status") != "blocked-not-conformant":
+        fail("current reference evidence status must remain blocked-not-conformant")
+    if reference.get("accepted_as_release_evidence") is not False:
+        fail("current blocked reference report cannot be accepted as release evidence")
+    if reference.get("requires_rerun_against_clarified_specification") is not True:
+        fail("current reference evidence must require a clarified-specification rerun")
+
+
+def validate_clarification_alignment() -> None:
+    required_markers = {
+        "SPECIFICATION.md": (
+            "[REQ-ACCOUNT-003]",
+            "semantic_bytes[d]",
+            "sum of the send and receive directions",
+            "`endpoint-a` and `endpoint-b`",
+            "never representation descriptor members",
+            "A deferred or unselected representation contributes zero until selected",
+            "Repeated requests, contacts, duplicates, retransmissions, matching overlap, and restart/resume do not add semantic bytes",
+            "Encoded representation payload, compression or security expansion",
+        ),
+        "docs/CONFORMANCE.md": (
+            "[REQ-CONF-003]",
+            "exact 24 rows",
+            "72-row full Cartesian product is not required",
+            "memory",
+            "representation-file",
+            "durable-store",
+            "floor(L*p/100)",
+        ),
+        "docs/TEST-VECTORS.md": (
+            "[REQ-VEC-006]",
+            "V08-C01",
+            "V08-C24",
+        ),
+        "docs/METRICS.md": (
+            "[REQ-METRIC-010]",
+            "semantic_bytes = semantic_bytes_send + semantic_bytes_receive",
+            "`endpoint-a` to `endpoint-b`",
+            "every representation descriptor member",
+            "`endpoint_a_binding` and `endpoint_b_binding`",
+            "descriptor contribution MUST be zero",
+            "The same `(direction, representation_id)` MUST appear at most once per scope",
+        ),
+        "docs/ROADMAP-v0.1.0.md": (
+            "29be83fed70433ea958f9773539fb8b93fa00dc9",
+            "blocked-not-conformant",
+        ),
+        "docs/RELEASE-RECORD.md": (
+            "29be83fed70433ea958f9773539fb8b93fa00dc9",
+            "predates the normative clarifications",
+        ),
+    }
+    for relative, markers in required_markers.items():
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        normalized_text = " ".join(text.split())
+        for marker in markers:
+            if marker not in text and marker not in normalized_text:
+                fail(f"{relative} missing clarification marker {marker!r}")
+
+    vector_text = (ROOT / "docs/TEST-VECTORS.md").read_text(encoding="utf-8")
+    markdown_rows = []
+    for line in vector_text.splitlines():
+        if not line.startswith("| V08-C"):
+            continue
+        cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
+        if len(cells) != 4:
+            fail(f"malformed V08 Markdown coverage row: {line}")
+        row_id, point, restart, storage = cells
+        markdown_rows.append(
+            {"id": row_id, "point": point, "restart": restart, "storage": storage}
+        )
+    if markdown_rows != expected_v08_coverage_rows():
+        fail("V08 Markdown table differs from the machine-readable covering array")
 
 
 def main() -> int:
@@ -281,13 +551,15 @@ def main() -> int:
         validate_vector_catalog()
         validate_metrics()
         validate_release_template()
+        validate_clarification_alignment()
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         print(f"release-gate validation failed: {exc}", file=sys.stderr)
         return 1
     print(
         "release-gate validation passed: "
-        f"{must_paragraphs} MUST paragraphs, 15 vectors, 8 metric thresholds, "
-        "complete codec-ID range coverage, release state not-ready"
+        f"{must_paragraphs} MUST paragraphs, 15 vectors, 24 V08 coverage rows, "
+        "18 required metrics, 8 metric thresholds, complete codec-ID range "
+        "coverage, release state not-ready"
     )
     return 0
 

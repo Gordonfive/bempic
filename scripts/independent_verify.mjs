@@ -74,14 +74,60 @@ const vectors = readJson("conformance/v0.1/vector-catalog.json");
 assert(vectors.catalog.map((entry) => entry.id).join(",") ===
   Array.from({ length: 15 }, (_, index) => `V${String(index + 1).padStart(2, "0")}`).join(","),
 "vector IDs are not exactly V01-V15");
+const v08 = vectors.catalog.find((entry) => entry.id === "V08");
+const v08Points = ["offset-0", "offset-1-percent", "offset-10-percent", "offset-50-percent",
+  "offset-90-percent", "final-byte", "post-verify-pre-commit", "post-commit-pre-receipt"];
+const v08Restarts = ["sender", "receiver", "both"];
+const v08Storage = ["memory", "representation-file", "durable-store"];
+const expectedRows = v08Points.flatMap((point, pointIndex) =>
+  v08Restarts.map((restart, restartIndex) => ({
+    id: `V08-C${String(pointIndex * 3 + restartIndex + 1).padStart(2, "0")}`,
+    point,
+    restart,
+    storage: v08Storage[(pointIndex + restartIndex) % v08Storage.length],
+  })));
+assert(JSON.stringify(v08.coverage_rows) === JSON.stringify(expectedRows),
+  "V08 fixed pairwise covering array changed");
+const pairs = (left, right) => new Set(v08.coverage_rows.map((row) => `${row[left]}\0${row[right]}`));
+assert(pairs("point", "restart").size === v08Points.length * v08Restarts.length,
+  "V08 misses an interruption-point/restart pair");
+assert(pairs("point", "storage").size === v08Points.length * v08Storage.length,
+  "V08 misses an interruption-point/storage pair");
+assert(pairs("restart", "storage").size === v08Restarts.length * v08Storage.length,
+  "V08 misses a restart/storage pair");
 
 const metrics = readJson("conformance/v0.1/metrics.json");
+assert(metrics.required.length === 18, "expected 18 required metrics");
+assert(metrics.semantic_bytes_definition.identity ===
+  "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
+"semantic_bytes identity changed");
+assert(metrics.semantic_bytes_definition.direction_basis.send ===
+  "endpoint-a-to-endpoint-b" &&
+  metrics.semantic_bytes_definition.direction_basis.receive ===
+  "endpoint-b-to-endpoint-a",
+"semantic_bytes direction basis changed");
+assert(metrics.semantic_bytes_definition.scope_fields.join(",") ===
+  "endpoint_a_binding,endpoint_b_binding" &&
+  metrics.semantic_bytes_definition.fixture_fields.includes("representation_descriptor_contribution"),
+"semantic_bytes reproducibility fields changed");
+assert(metrics.semantic_bytes_definition.excluded.includes("duplicates") &&
+  metrics.semantic_bytes_definition.excluded.includes("representation-descriptor-container-and-members") &&
+  metrics.semantic_bytes_definition.excluded.includes("lower-layer-retransmissions"),
+"semantic_bytes exclusion set is incomplete");
 assert(metrics.thresholds.length === 8, "expected eight metric thresholds");
 
 const release = readJson("conformance/v0.1/release-record-template.json");
 assert(release.release_state === "not-ready" && release.tag === null,
   "release template made a premature release claim");
+assert(release.interruption_coverage.required_rows === 24 &&
+  release.interruption_coverage.pair_coverage_passed === false,
+"release template interruption gate changed");
+assert(release.current_reference_evidence.evidence_commit ===
+  "29be83fed70433ea958f9773539fb8b93fa00dc9" &&
+  release.current_reference_evidence.observed_status === "blocked-not-conformant" &&
+  release.current_reference_evidence.accepted_as_release_evidence === false,
+"blocked reference checkpoint changed or was promoted");
 
 console.log(`Independent Node verification passed (Node ${process.version}).`);
 for (const result of fingerprintResults) console.log(`fingerprint MATCH ${result}`);
-console.log("codec ranges cover uint32; V01-V15 present; 8 thresholds; release not-ready");
+console.log("codec ranges cover uint32; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; release not-ready");
