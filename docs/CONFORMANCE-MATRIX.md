@@ -45,6 +45,14 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-ACCOUNT-002 | `SPECIFICATION.md` cost domains | MR identity plus M4P cost-label inspection |
 | REQ-ACCOUNT-003 | `SPECIFICATION.md` semantic bytes | descriptor-excluding fixture recomputation, fixed endpoint-role directional MR identity, V05/V08 duplicate/defer traces |
 | REQ-CODEC-001 | `SPECIFICATION.md` codec publication | codec profile, size proof, CB, independent verifier |
+| REQ-COMPACT-001 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` status | registry/package tuple check and forbidden private-tuple vector check |
+| REQ-COMPACT-002 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` context | CB missing/stale/mismatched cache and noncanonical-full-form cases |
+| REQ-COMPACT-003 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` framing | CB prefix/tag/form/uvarint/length/ceiling cases and pre-allocation instrumentation |
+| REQ-COMPACT-004 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` fields | CB field/count/UTF-8/NFC/extension/cross-field boundaries |
+| REQ-COMPACT-005 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` aliases | static-alias expansion and canonical-empty-parameter vectors |
+| REQ-COMPACT-006 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` exact size | arithmetic-size/encoded-length equality and one-past tests |
+| REQ-COMPACT-007 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` maxima | seven public-tuple witnesses, malformed/property report, independent reproduction |
+| REQ-COMPACT-008 | `docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md` evidence | immutable provenance audit and public-tuple release-evidence lint |
 | REQ-EXT-001 | `SPECIFICATION.md` extensions | V13 optional/critical/limit cases |
 | REQ-FAIL-001 | `SPECIFICATION.md` fail closed | V11/V13/V15 and mutation traces |
 | REQ-FAIL-002 | `SPECIFICATION.md` scoped failure/retry | V11/V15 unrelated-state and retry evidence |
@@ -61,6 +69,7 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-VEC-004 | `docs/TEST-VECTORS.md` catalog | catalog validator and V01–V15 result records |
 | REQ-VEC-005 | `docs/TEST-VECTORS.md` updates | GR, compatibility statement, released-bundle immutability check |
 | REQ-VEC-006 | `docs/TEST-VECTORS.md` V08 array | catalog validator, 24 complete row traces, pair-coverage proof |
+| REQ-VEC-007 | `docs/TEST-VECTORS.md` public codec tuple | public-tuple bundle metadata, regenerated IDs/digests, private-tuple rejection |
 | REQ-CLAIM-001 | `docs/CONFORMANCE.md` claims | CR claim metadata schema validation |
 | REQ-CONF-001 | `docs/CONFORMANCE.md` semantic core | CR checklist with V01–V15 links |
 | REQ-CONF-002 | `docs/CONFORMANCE.md` interruptions | V08/V14 transition coverage report |
@@ -104,11 +113,18 @@ means an independently reproducible static or artifact check, not an assertion.
 ## Release-blocking matrix dependencies
 
 Rows may be precisely specified yet lack their required evidence. For v0.1.0,
-`REQ-ID-001`, `REQ-CODEC-001`, `REQ-REG-003` through `REQ-REG-009`,
+`REQ-ID-001`, `REQ-CODEC-001`, `REQ-COMPACT-002` through
+`REQ-COMPACT-008`, `REQ-REG-004` through `REQ-REG-009`,
 `REQ-METRIC-006` through `REQ-METRIC-009`, `REQ-M4P-001` through
 `REQ-M4P-004`, `REQ-GATE-002`, and the release-record rows remain incomplete
 until their named external or sibling artifacts exist. The release record must
 report them as blockers, not skips.
+
+`REQ-REG-003` and the registry/package portion of `REQ-COMPACT-001` are
+satisfied by the provisional allocation audit. They do not promote any later
+row. `REQ-ID-001` now has current immutable OceanMail application-profile
+evidence, but V11 sender/receiver conflict evidence against the exact
+specification/profile commits is still required before that row passes.
 
 The newly clarified `REQ-ACCOUNT-003`, `REQ-CONF-003`, `REQ-VEC-006`, and
 `REQ-METRIC-010` also remain incomplete until `bempic-reference` publishes a

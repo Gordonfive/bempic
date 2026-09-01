@@ -592,6 +592,14 @@ Codecs are pluggable. No v0.1 codec may be assumed merely because another
 implementation uses it. DCCL is prior art for these requirements, not a BEMPIC
 dependency or wire format.
 
+The registry currently allocates the provisional experimental profile
+[`bempic-compact-operation-v0.1`](docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md) as
+`0x00010000/1`. Its allocation publishes a complete candidate wire profile but
+does not approve it, make it mandatory, freeze it as stable wire, or satisfy
+the remaining conformance and release gates. Implementations using the public
+profile regenerate all tuple-bound records and vectors rather than substituting
+the Reference implementation's private candidate `0xffff0001/2`.
+
 Extensions use unsigned 32-bit IDs and a critical bit. [REQ-EXT-001] Extension contents MUST
 be length-delimited and included in size limits. Unknown optional extensions
 are skipped without side effects. An unknown critical extension fails before

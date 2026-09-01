@@ -32,6 +32,13 @@ encoded sizes, deterministic encoding, exact per-value size analysis, strict
 decoding, schema fingerprints, canonical parameters, and byte vectors. DCCL is
 prior art only; BEMPIC adopts neither its bytes nor its software dependencies.
 
+Provisional experimental tuple `0x00010000/1` is allocated to
+`bempic-compact-operation-v0.1`. It is derived from the Reference private
+candidate `0xffff0001/2`, but implementations use the public tuple and
+regenerate every ID-bound record and vector. The allocation is neither
+approved nor mandatory and provides no stable-wire or production-security
+promise.
+
 ## Compatibility
 
 The negotiated semantic generation is `0.1`; exact schema fingerprints and
@@ -49,8 +56,9 @@ mutation.
 - The retained Python proof uses non-normative generation-0 bytes and does not
   implement the complete v0.1 contract.
 - The latest immutable `bempic-reference` report is
-  [`blocked-not-conformant`](https://github.com/Gordonfive/bempic-reference/blob/29be83fed70433ea958f9773539fb8b93fa00dc9/conformance/v0.1.0-report.json)
-  and predates the clarified semantic-byte and V08 requirements.
+  [`blocked-not-conformant`](https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/conformance/v0.1.0-report.json),
+  predates the clarified semantic-byte and V08 requirements, and binds the
+  private candidate rather than allocated public tuple `0x00010000/1`.
 
 ## Required release evidence
 
@@ -60,7 +68,8 @@ Before publication, replace these placeholders:
 - Passing `bempic-reference` commit: `PENDING`
 - Conformance report digest: `PENDING`
 - Test-vector bundle digest: `PENDING`
-- Codec allocation, profile, size-proof, and license evidence: `PENDING`
+- Codec allocation: experimental `0x00010000/1`; public-tuple profile,
+  size-proof, vector, license, and independent release evidence: `PENDING`
 - V01–V15 and normative conformance-matrix results: `PENDING`
 - Required metric-record digest and threshold evaluation: `PENDING`
 - Benchmark result digest and B2F comparator version: `PENDING`

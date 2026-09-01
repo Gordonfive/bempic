@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -23,6 +24,7 @@ NORMATIVE_DOCS = (
     "docs/METRICS.md",
     "docs/M4P-CONFIRMATION.md",
     "docs/RELEASE-RECORD.md",
+    "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md",
 )
 REQ_RE = re.compile(r"\[?(REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*)\]?")
 MUST_RE = re.compile(r"\bMUST(?: NOT)?\b")
@@ -39,6 +41,14 @@ V08_CASES = [
 ]
 V08_RESTART_PARTIES = ["sender", "receiver", "both"]
 V08_STORAGE_SURFACES = ["memory", "representation-file", "durable-store"]
+
+COMPACT_CODEC_ID = 65536
+COMPACT_CODEC_REVISION = 1
+COMPACT_PROFILE = "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md"
+COMPACT_PROFILE_SHA256 = "08c8af34d57870a421b8ecb4505ed9be176f9448a18879ceadfe0df9b30b297f"
+COMPACT_PRIVATE_COMMIT = "cf3485f6606d6462077e8edd1592264c3ce4ca5e"
+COMPACT_PRIVATE_TUPLE = "0xffff0001/2"
+OCEANMAIL_PROFILE_COMMIT = "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600"
 
 
 def expected_v08_coverage_rows() -> list[dict[str, str]]:
@@ -86,12 +96,12 @@ EXPECTED_VECTOR_REQUIREMENTS = {
     "V01": {
         "cases": ["empty", "equal-warm-100", "equal-cold-100"],
         "assertions": ["no-object-payload", "warm-no-change-metric", "cold-no-change-metric"],
-        "blocked_by": ["experimental-codec-selection"],
+        "blocked_by": ["public-codec-vector-regeneration"],
     },
     "V02": {
         "cases": ["known-checkpoint-100-plus-1"],
         "assertions": ["new-manifest-only", "zero-retransmitted-prior-manifest-bytes"],
-        "blocked_by": ["experimental-codec-selection"],
+        "blocked_by": ["public-codec-vector-regeneration"],
     },
     "V03": {
         "cases": ["inventory-257-pages-128-128-1", "reopen-after-page-1"],
@@ -360,6 +370,140 @@ def validate_codec_registry() -> None:
         if status not in allowed_classes or range_class not in allowed_classes[status]:
             fail(f"codec allocation status/range mismatch {allocation!r}")
 
+    if len(allocations) != 1:
+        fail("v0.1 registry must contain exactly the reviewed compact allocation")
+    compact = allocations[0]
+    expected_compact = {
+        "id": COMPACT_CODEC_ID,
+        "id_hex": "0x00010000",
+        "revision": COMPACT_CODEC_REVISION,
+        "name": "bempic-compact-operation-v0.1",
+        "status": "experimental",
+        "owner": "Gordonfive/bempic maintainers",
+        "contact": "https://github.com/Gordonfive/bempic/issues",
+        "profile": COMPACT_PROFILE,
+        "profile_sha256": COMPACT_PROFILE_SHA256,
+        "allocation_evidence": "conformance/v0.1/experimental-codec-allocation.json",
+        "canonical_parameters_hex": "",
+        "derived_from_private_candidate": COMPACT_PRIVATE_TUPLE,
+        "approved": False,
+        "mandatory": False,
+        "stable_wire_promise": False,
+        "production_security_promise": False,
+        "public_tuple_vectors_required": True,
+    }
+    if compact != expected_compact:
+        fail("reviewed compact codec allocation changed")
+
+
+def validate_experimental_codec_allocation() -> None:
+    profile_path = ROOT / COMPACT_PROFILE
+    actual_profile_sha256 = hashlib.sha256(profile_path.read_bytes()).hexdigest()
+    if actual_profile_sha256 != COMPACT_PROFILE_SHA256:
+        fail("compact profile digest differs from the reviewed allocation")
+
+    data = load_json("conformance/v0.1/experimental-codec-allocation.json")
+    if data.get("format") != "bempic-experimental-codec-allocation-v0.1":
+        fail("unexpected experimental codec allocation format")
+    if data.get("decision") != "allocate-provisional-experimental":
+        fail("experimental codec allocation decision changed")
+    allocation = data.get("allocation", {})
+    expected_allocation = {
+        "name": "bempic-compact-operation-v0.1",
+        "id": COMPACT_CODEC_ID,
+        "id_hex": "0x00010000",
+        "revision": COMPACT_CODEC_REVISION,
+        "status": "experimental",
+        "owner": "Gordonfive/bempic maintainers",
+        "contact": "https://github.com/Gordonfive/bempic/issues",
+        "approved": False,
+        "mandatory": False,
+        "stable_wire_promise": False,
+        "production_security_promise": False,
+    }
+    if allocation != expected_allocation:
+        fail("allocation package public tuple or status changed")
+    profile = data.get("profile", {})
+    if profile.get("path") != COMPACT_PROFILE or profile.get("sha256") != COMPACT_PROFILE_SHA256:
+        fail("allocation package profile path or digest changed")
+    if profile.get("canonical_parameters_hex") != "":
+        fail("compact codec canonical parameters must remain empty")
+
+    collision = data.get("collision_check", {})
+    if collision != {
+        "range_class": "experimental",
+        "range_first": 65536,
+        "range_last": 2147483647,
+        "allocations_before_request": [],
+        "selected_first_free_id": COMPACT_CODEC_ID,
+        "collision_free": True,
+    }:
+        fail("experimental allocation collision evidence changed")
+    req_reg_003 = data.get("req_reg_003", {})
+    expected_checklist = {
+        "stable_name", "owner_and_contact", "exact_id_and_initial_revision",
+        "public_profile", "canonical_parameters", "field_and_collection_bounds",
+        "maximum_encoded_size_tables", "draft_worst_case_proof",
+        "draft_valid_and_invalid_vectors", "security_analysis", "license_analysis",
+        "registry_collision_check", "experimental_replacement_warning", "result",
+    }
+    if set(req_reg_003) != expected_checklist or any(
+        value != "pass" for value in req_reg_003.values()
+    ):
+        fail("REQ-REG-003 allocation checklist is incomplete")
+
+    provenance = data.get("private_candidate_provenance", {})
+    if (
+        provenance.get("commit") != COMPACT_PRIVATE_COMMIT
+        or provenance.get("private_id_hex") != "0xffff0001"
+        or provenance.get("private_revision") != 2
+        or provenance.get("ci_conclusion") != "success"
+    ):
+        fail("private compact candidate provenance changed")
+    expected_hashes = {
+        "profile": "0633ed81272a89d085ceb8ae01aef82ac1749a9babe2fac9b59d0d1f3529fce8",
+        "size_proof_and_measurements": "fd3461c674921b9730c773f0eef01d34dcc8e60a472ca1bb2ec1f3027de2f525",
+        "draft_vectors": "5edd10847be60cef384be726d7f3d83c6d78618ec38ce56db469cf24e794b8fb",
+        "independent_language_verifier": "75c00d8e7af789a889669910cf945eaa7596d81054b6105a916475df02583dc4",
+        "malformed_property_report": "5716f157c23fa631e748acb48f20f68ae28326b6251e4ecf1c0c77458155401d",
+        "conformance_report": "40bbb7544a8b2c1eee1e9ac74fbb2fd0d73c9f8d8a5cbe505fb5abe3b33d1ba1",
+    }
+    artifacts = provenance.get("artifacts", {})
+    for name, expected_hash in expected_hashes.items():
+        if artifacts.get(name, {}).get("sha256") != expected_hash:
+            fail(f"private candidate {name} digest changed")
+    if artifacts.get("independent_language_verifier", {}).get("independent_ownership") is not False:
+        fail("same-owner verifier cannot satisfy independent ownership")
+    if artifacts.get("conformance_report", {}).get("accepted_as_release_evidence") is not False:
+        fail("blocked private-candidate report cannot become release evidence")
+
+    measurements = data.get("private_candidate_measurements", {})
+    if (
+        measurements.get("warm_no_change_bempic_bytes") != 35
+        or measurements.get("cold_no_change_bempic_bytes") != 75
+        or measurements.get("accepted_as_public_tuple_release_evidence") is not False
+        or measurements.get("public_tuple_regeneration_required") is not True
+    ):
+        fail("private measurements were changed or promoted")
+    transition = data.get("public_tuple_transition", {})
+    if (
+        transition.get("source_private_tuple") != COMPACT_PRIVATE_TUPLE
+        or transition.get("allocated_public_tuple") != "0x00010000/1"
+        or transition.get("id_change_changes_encoded_records") is not True
+        or "vectors-and-bundle-digests" not in transition.get("regenerate", [])
+    ):
+        fail("public codec tuple transition requirements changed")
+
+    oceanmail = data.get("oceanmail_application_evidence", {})
+    if (
+        oceanmail.get("commit") != OCEANMAIL_PROFILE_COMMIT
+        or oceanmail.get("profile_sha256") != "b2e485c08d67ad0839c134829643905936dc2263bd52eaf5d88ddc71ee29d624"
+        or oceanmail.get("fixture_sha256") != "2693e4007697f381f2ff5e500686876bbe1a90a9a3fa75c312a8edff6fb334fe"
+        or oceanmail.get("application_profile_current") is not True
+        or oceanmail.get("accepted_as_complete_bempic_v11_release_evidence") is not False
+    ):
+        fail("OceanMail application evidence changed or was over-promoted")
+
 
 def validate_vector_catalog() -> None:
     data = load_json("conformance/v0.1/vector-catalog.json")
@@ -440,11 +584,11 @@ def validate_release_template() -> None:
         fail("release template must remain not-ready with a null tag")
     blockers = set(data.get("known_blockers", []))
     expected = {
-        "experimental-codec-selection",
+        "public-codec-vector-regeneration",
+        "complete-v01-v15-and-codec-boundary-evidence",
         "independent-verifier",
         "b2f-oracle",
         "m4p-binding-review",
-        "object-id-application-profile",
         "protocol-name",
         "bempic-reference-implementation-and-evidence",
         "final-release-candidate-verification",
@@ -466,15 +610,39 @@ def validate_release_template() -> None:
     }
     if interruption != expected_interruption:
         fail("release template interruption coverage differs from the normative catalog")
+    codec = data.get("codec", {})
+    if codec != {
+        "id": COMPACT_CODEC_ID,
+        "revision": COMPACT_CODEC_REVISION,
+        "status": "experimental",
+        "profile_digest": f"sha256:{COMPACT_PROFILE_SHA256}",
+        "size_proof_digest": "sha256:fd3461c674921b9730c773f0eef01d34dcc8e60a472ca1bb2ec1f3027de2f525",
+        "allocation_evidence": "conformance/v0.1/experimental-codec-allocation.json",
+        "approved": False,
+        "mandatory": False,
+        "public_tuple_vectors_complete": False,
+    }:
+        fail("release template compact codec evidence changed or was promoted")
     reference = data.get("current_reference_evidence", {})
-    if reference.get("evidence_commit") != "29be83fed70433ea958f9773539fb8b93fa00dc9":
+    if reference.get("evidence_commit") != COMPACT_PRIVATE_COMMIT:
         fail("current reference evidence commit changed without review")
     if reference.get("observed_status") != "blocked-not-conformant":
         fail("current reference evidence status must remain blocked-not-conformant")
     if reference.get("accepted_as_release_evidence") is not False:
         fail("current blocked reference report cannot be accepted as release evidence")
+    if reference.get("accepted_for_experimental_allocation") is not True:
+        fail("current reference allocation evidence was discarded")
     if reference.get("requires_rerun_against_clarified_specification") is not True:
         fail("current reference evidence must require a clarified-specification rerun")
+    if reference.get("requires_rerun_against_allocated_public_tuple") is not True:
+        fail("current reference evidence must require public-tuple regeneration")
+    oceanmail = data.get("oceanmail_application_evidence", {})
+    if (
+        oceanmail.get("commit") != OCEANMAIL_PROFILE_COMMIT
+        or oceanmail.get("application_profile_current") is not True
+        or oceanmail.get("complete_v11_release_evidence") is not False
+    ):
+        fail("OceanMail evidence changed or was promoted to complete V11 evidence")
 
 
 def validate_clarification_alignment() -> None:
@@ -500,8 +668,11 @@ def validate_clarification_alignment() -> None:
         ),
         "docs/TEST-VECTORS.md": (
             "[REQ-VEC-006]",
+            "[REQ-VEC-007]",
             "V08-C01",
             "V08-C24",
+            "public-codec-vector-regeneration",
+            "0xffff0001/2",
         ),
         "docs/METRICS.md": (
             "[REQ-METRIC-010]",
@@ -513,12 +684,27 @@ def validate_clarification_alignment() -> None:
             "The same `(direction, representation_id)` MUST appear at most once per scope",
         ),
         "docs/ROADMAP-v0.1.0.md": (
-            "29be83fed70433ea958f9773539fb8b93fa00dc9",
+            COMPACT_PRIVATE_COMMIT,
             "blocked-not-conformant",
+            "35 B/75 B",
+            OCEANMAIL_PROFILE_COMMIT,
         ),
         "docs/RELEASE-RECORD.md": (
-            "29be83fed70433ea958f9773539fb8b93fa00dc9",
+            COMPACT_PRIVATE_COMMIT,
             "predates the normative clarifications",
+            OCEANMAIL_PROFILE_COMMIT,
+        ),
+        "docs/REGISTRIES.md": (
+            "0x00010000/1",
+            COMPACT_PRIVATE_TUPLE,
+            "neither approved nor mandatory",
+        ),
+        COMPACT_PROFILE: (
+            "[REQ-COMPACT-001]",
+            "[REQ-COMPACT-008]",
+            "0x00010000/1",
+            COMPACT_PRIVATE_TUPLE,
+            "no stable-wire or production-security promise",
         ),
     }
     for relative, markers in required_markers.items():
@@ -548,6 +734,7 @@ def main() -> int:
     try:
         must_paragraphs = validate_must_matrix()
         validate_codec_registry()
+        validate_experimental_codec_allocation()
         validate_vector_catalog()
         validate_metrics()
         validate_release_template()
@@ -558,7 +745,8 @@ def main() -> int:
     print(
         "release-gate validation passed: "
         f"{must_paragraphs} MUST paragraphs, 15 vectors, 24 V08 coverage rows, "
-        "18 required metrics, 8 metric thresholds, complete codec-ID range "
+        "18 required metrics, 8 metric thresholds, complete codec-ID range, "
+        "experimental compact allocation 0x00010000/1 "
         "coverage, release state not-ready"
     )
     return 0

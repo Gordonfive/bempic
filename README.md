@@ -12,8 +12,10 @@ and independently implementable.
 
 [`SPECIFICATION.md`](SPECIFICATION.md) is the normative semantic specification.
 It defines exact behavior while intentionally leaving the final stable wire
-codec open to measured implementation work. The generation-0 bytes in
-`prototype/` are non-normative.
+codec open to measured implementation work. Provisional experimental profile
+`bempic-compact-operation-v0.1` is allocated as `0x00010000/1`; it is neither
+approved nor mandatory and is not a stable-wire or production-security
+promise. The generation-0 bytes in `prototype/` are non-normative.
 
 Do not claim a v0.1.0 release until every gate in
 [`docs/ROADMAP-v0.1.0.md`](docs/ROADMAP-v0.1.0.md) passes, including the required
@@ -72,6 +74,8 @@ DCCL, adopt its wire format or encryption, require C++, or require Protobuf.
 - [Test-vector definitions](docs/TEST-VECTORS.md)
 - [Machine-readable V01–V15 catalog](conformance/v0.1/vector-catalog.json)
 - [Protocol registries](docs/REGISTRIES.md)
+- [Experimental compact codec profile](docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md)
+- [Experimental allocation evidence](conformance/v0.1/experimental-codec-allocation.json)
 - [Required metrics](docs/METRICS.md)
 - [M4P confirmation requirement](docs/M4P-CONFIRMATION.md)
 - [Release-record requirements](docs/RELEASE-RECORD.md)

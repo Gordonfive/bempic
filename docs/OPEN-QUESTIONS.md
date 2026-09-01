@@ -6,10 +6,12 @@ deferred by an accepted decision before `v0.1.0` is tagged.
 
 ## Release-blocking
 
-- **Experimental codec selection:** Which candidate codec ID/revision will
-  provide the v0.1 interoperability evidence while remaining explicitly
-  non-stable? The allocation and evidence must satisfy
-  [`REGISTRIES.md`](REGISTRIES.md); no allocation is currently recorded.
+- **Experimental codec release evidence:** Provisional experimental tuple
+  `0x00010000/1` is allocated to `bempic-compact-operation-v0.1`, derived from
+  Reference private candidate `0xffff0001/2`. Which exact public-tuple vector
+  bundle and independently owned verification will complete the v0.1
+  interoperability evidence? The allocation is not approval, mandatory status,
+  or a stable-wire promise.
 - **Independent verifier:** Which implementation, language, and ownership will
   provide decoder/vector independence from the primary reference codec?
 - **B2F oracle:** Which licensed implementation and version will produce the
@@ -19,9 +21,6 @@ deferred by an accepted decision before `v0.1.0` is tagged.
   consume? The external record must satisfy
   [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md); it must be coordinated upstream,
   not invented here.
-- **Object-ID application profile:** What collision-resistant generation rule
-  will the OceanMail application profile require for the core's 32-octet opaque
-  object ID?
 - **Protocol name:** Keep `BEMPIC` without an expansion, or adopt a durable
   expansion? The acronym's expansion has no wire consequence.
 
@@ -30,11 +29,10 @@ record. The minimum decision evidence is:
 
 | Blocker | Evidence required to resolve it |
 |---|---|
-| Experimental codec selection | Allocated experimental ID/revision, immutable profile and proof artifacts, complete vectors, compatibility/security/license review, and governance acceptance |
+| Experimental codec release evidence | Regenerated `0x00010000/1` vector bundle, compatibility/security/license review, independent verification, and governance acceptance; private-tuple artifacts are allocation provenance only |
 | Independent verifier | Independently maintained source commit, owner, implementation language, toolchain/dependencies, vector-bundle digest, byte/failure comparison, and green CI |
 | B2F oracle | Exact implementation/version/source, license and required notices, deterministic invocation and envelope rules, corpus digest, and reproducible raw results |
 | M4P binding review | The external confirmation and traces required by [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md) |
-| Object-ID application profile | OceanMail-owned collision-resistant generation algorithm, input/canonicalization rules, persistence/reuse rules, collision/conflict tests, and versioning decision; the core remains opaque |
 | Protocol name | Governance decision selecting the durable display name/expansion and updating public documents consistently; no schema, negotiation, or byte change is implied |
 
 A decision that merely postpones a blocker can satisfy the release only if it
@@ -76,7 +74,14 @@ generations.
   are specified.
 - Codecs are pluggable and must publish maximum and exact encoded-size analysis.
 - Codec ID ranges, status transitions, approval evidence, and worst-case-proof
-  rules are defined; selection of the v0.1 experimental codec is not.
+  rules are defined; provisional experimental tuple `0x00010000/1` is allocated
+  to `bempic-compact-operation-v0.1`, while approval and public-tuple release
+  evidence remain open.
+- OceanMail's immutable application profile and accepted ADR at
+  [`cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600`](https://github.com/Gordonfive/oceanmail/commit/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600)
+  define a 32-octet CSPRNG object identifier, durable no-reuse binding, and
+  metadata-conflict behavior. BEMPIC continues to treat the value as opaque;
+  V11 cross-repository conformance evidence is still pending.
 - Required metrics and V01–V15 semantic cases are defined; their release
   evidence is not yet available.
 - DCCL is prior art only, with no dependency, wire, crypto, C++, or Protobuf

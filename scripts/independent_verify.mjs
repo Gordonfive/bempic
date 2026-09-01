@@ -68,7 +68,48 @@ for (const range of registry.ranges) {
   next = range.last + 1;
 }
 assert(next === 2 ** 32, "codec registry does not cover uint32");
-assert(registry.allocations.length === 0, "unexpected v0.1 codec allocation");
+assert(registry.allocations.length === 1, "expected one reviewed v0.1 codec allocation");
+const compact = registry.allocations[0];
+const compactProfileSha256 =
+  "08c8af34d57870a421b8ecb4505ed9be176f9448a18879ceadfe0df9b30b297f";
+assert(compact.id === 65536 && compact.id_hex === "0x00010000" &&
+  compact.revision === 1 && compact.status === "experimental",
+"compact public tuple changed");
+assert(compact.approved === false && compact.mandatory === false &&
+  compact.stable_wire_promise === false && compact.production_security_promise === false,
+"experimental codec was promoted");
+assert(compact.derived_from_private_candidate === "0xffff0001/2" &&
+  compact.public_tuple_vectors_required === true,
+"private provenance or public-vector requirement changed");
+const actualCompactProfileSha256 = createHash("sha256")
+  .update(readFileSync(join(root, compact.profile)))
+  .digest("hex");
+assert(actualCompactProfileSha256 === compactProfileSha256 &&
+  compact.profile_sha256 === compactProfileSha256,
+"compact profile digest changed");
+
+const allocation = readJson("conformance/v0.1/experimental-codec-allocation.json");
+assert(allocation.decision === "allocate-provisional-experimental" &&
+  allocation.allocation.id === 65536 && allocation.allocation.revision === 1 &&
+  allocation.allocation.status === "experimental",
+"allocation package public tuple changed");
+assert(Object.values(allocation.req_reg_003).every((value) => value === "pass"),
+  "REQ-REG-003 checklist is incomplete");
+assert(allocation.private_candidate_provenance.commit ===
+  "cf3485f6606d6462077e8edd1592264c3ce4ca5e" &&
+  allocation.private_candidate_provenance.private_id_hex === "0xffff0001" &&
+  allocation.private_candidate_provenance.private_revision === 2,
+"private compact provenance changed");
+assert(allocation.private_candidate_measurements.warm_no_change_bempic_bytes === 35 &&
+  allocation.private_candidate_measurements.cold_no_change_bempic_bytes === 75 &&
+  allocation.private_candidate_measurements.accepted_as_public_tuple_release_evidence === false &&
+  allocation.private_candidate_measurements.public_tuple_regeneration_required === true,
+"private measurements changed or were promoted");
+assert(allocation.oceanmail_application_evidence.commit ===
+  "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600" &&
+  allocation.oceanmail_application_evidence.application_profile_current === true &&
+  allocation.oceanmail_application_evidence.accepted_as_complete_bempic_v11_release_evidence === false,
+"OceanMail evidence changed or was over-promoted");
 
 const vectors = readJson("conformance/v0.1/vector-catalog.json");
 assert(vectors.catalog.map((entry) => entry.id).join(",") ===
@@ -123,11 +164,21 @@ assert(release.interruption_coverage.required_rows === 24 &&
   release.interruption_coverage.pair_coverage_passed === false,
 "release template interruption gate changed");
 assert(release.current_reference_evidence.evidence_commit ===
-  "29be83fed70433ea958f9773539fb8b93fa00dc9" &&
+  "cf3485f6606d6462077e8edd1592264c3ce4ca5e" &&
   release.current_reference_evidence.observed_status === "blocked-not-conformant" &&
-  release.current_reference_evidence.accepted_as_release_evidence === false,
+  release.current_reference_evidence.accepted_for_experimental_allocation === true &&
+  release.current_reference_evidence.accepted_as_release_evidence === false &&
+  release.current_reference_evidence.requires_rerun_against_allocated_public_tuple === true,
 "blocked reference checkpoint changed or was promoted");
+assert(release.codec.id === 65536 && release.codec.revision === 1 &&
+  release.codec.status === "experimental" && release.codec.approved === false &&
+  release.codec.mandatory === false && release.codec.public_tuple_vectors_complete === false,
+"release record codec state changed or was promoted");
+assert(release.oceanmail_application_evidence.commit ===
+  "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600" &&
+  release.oceanmail_application_evidence.complete_v11_release_evidence === false,
+"release record OceanMail evidence changed or was over-promoted");
 
 console.log(`Independent Node verification passed (Node ${process.version}).`);
 for (const result of fingerprintResults) console.log(`fingerprint MATCH ${result}`);
-console.log("codec ranges cover uint32; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; release not-ready");
+console.log("codec ranges cover uint32; compact 0x00010000/1 profile MATCH; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; release not-ready");

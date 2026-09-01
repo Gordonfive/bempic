@@ -26,9 +26,21 @@ releases correct or clarify without intentionally changing protocol semantics.
   requirement-to-evidence conformance matrix.
 - CI validation for release-gate artifacts and an explicit not-ready release
   state retaining all unresolved blockers.
+- Provisional experimental codec allocation `0x00010000/1` for
+  `bempic-compact-operation-v0.1`, with the complete public profile,
+  machine-readable `REQ-REG-003` evidence audit, immutable Reference candidate
+  provenance, and drift regression validation.
 
 ### Changed
 
+- Replaced the codec-selection blocker with public-tuple vector regeneration:
+  the Reference private candidate `0xffff0001/2` supports allocation only, and
+  all ID-bound bytes, representation IDs, collection digests, and vectors must
+  be regenerated for public experimental tuple `0x00010000/1`.
+- Recorded OceanMail commit
+  `cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600` as current immutable
+  application-owned object-identity evidence while retaining BEMPIC V11 and
+  unrelated release blockers.
 - Defined codec-independent directional `semantic_bytes`, including a stable
   endpoint-role orientation, representation-descriptor exclusion, exact scalar
   accounting, aggregation, and fixture evidence;

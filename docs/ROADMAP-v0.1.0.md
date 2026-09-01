@@ -82,17 +82,39 @@ passing results by documentation alone.
 ### Current sibling evidence checkpoint (not a passing gate)
 
 The latest audited public checkpoint is
-[`bempic-reference` commit `29be83fed70433ea958f9773539fb8b93fa00dc9`](https://github.com/Gordonfive/bempic-reference/commit/29be83fed70433ea958f9773539fb8b93fa00dc9),
-with a successful [CI run](https://github.com/Gordonfive/bempic-reference/actions/runs/33471197976).
+[`bempic-reference` commit `cf3485f6606d6462077e8edd1592264c3ce4ca5e`](https://github.com/Gordonfive/bempic-reference/commit/cf3485f6606d6462077e8edd1592264c3ce4ca5e),
+with successful [exact-head CI](https://github.com/Gordonfive/bempic-reference/actions/runs/33569955919).
 Its immutable
-[`conformance/v0.1.0-report.json`](https://github.com/Gordonfive/bempic-reference/blob/29be83fed70433ea958f9773539fb8b93fa00dc9/conformance/v0.1.0-report.json)
+[`conformance/v0.1.0-report.json`](https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/conformance/v0.1.0-report.json)
 self-reports `blocked-not-conformant`, identifies implementation commit
-[`c8d940ca69fe98aecf72185f80f4a2b3254aaf24`](https://github.com/Gordonfive/bempic-reference/commit/c8d940ca69fe98aecf72185f80f4a2b3254aaf24),
-and was evaluated against the older specification commit `c67a87e`. It records
-partial or failing mandatory vectors, failed warm/cold byte gates, no approved
-B2F oracle, no external M4P approval, and the two ambiguities resolved by this
-clarification. It is useful prior evidence, but it does not satisfy this gate;
-the sibling must rerun and publish artifacts against the clarified commit.
+[`38c01eb41d96a02c97478650efbde859888e6908`](https://github.com/Gordonfive/bempic-reference/commit/38c01eb41d96a02c97478650efbde859888e6908),
+and still reports the older specification commit `c67a87e` for the overall
+conformance run.
+
+The same checkpoint's immutable compact-candidate profile, exact-size formulas,
+maximum witnesses, malformed/property results, draft vectors, licensing, and
+same-owner Python verifier satisfy the evidence minimum for provisional
+experimental allocation. Its private candidate `0xffff0001/2` measured 35 B
+warm and 75 B cold on the prescribed V01 fixture. Those lengths are useful
+allocation evidence but are not public-tuple release results: the sibling has
+to regenerate encoded records, representation IDs, checkpoint and collection
+digests, vectors, and verification for allocated `0x00010000/1` and the exact
+clarified specification commit. Mandatory V01–V15/codec-boundary evidence,
+independent ownership, B2F, and external M4P approval remain incomplete.
+
+### Current OceanMail application evidence
+
+Application-owned object identity is now documented at immutable
+[`oceanmail` commit `cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600`](https://github.com/Gordonfive/oceanmail/commit/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600),
+with successful [exact-head CI](https://github.com/Gordonfive/oceanmail/actions/runs/33569928056),
+an immutable
+[`BEMPIC-APPLICATION-PROFILE.md`](https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/docs/BEMPIC-APPLICATION-PROFILE.md),
+and a content-addressed
+[fixture](https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/tests/fixtures/bempic-application-profile-v1.json).
+The profile uses an application-generated 32-octet CSPRNG identifier, durable
+no-reuse binding, and conflict handling while leaving the BEMPIC core ID
+opaque. It is current application evidence, not a BEMPIC wire change and not a
+substitute for the required V11 conflict traces against the release candidate.
 
 The sibling does not need to freeze a permanent wire format or ship production
 cryptography for v0.1.0. It must label the codec experimental and [REQ-GATE-003] MUST NOT carry
@@ -135,7 +157,9 @@ the prototype.
   passing evidence in the release record.
 - [ ] Warm no-change synchronization is no more than 64 B and cold no-change is
   no more than 128 B for the prescribed 100-message experimental-codec vector,
-  excluding a separately reported application-security handshake.
+  excluding a separately reported application-security handshake. The private
+  candidate measured 35 B/75 B; the gate remains open until regenerated
+  public-tuple `0x00010000/1` vectors and exact-head verification exist.
 - [ ] Adding one message to a valid retained checkpoint does not retransmit the
   other 100 manifests.
 - [ ] No selected deterministic no-fault plan exceeds its accepted BEMPIC
