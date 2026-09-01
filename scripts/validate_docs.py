@@ -56,6 +56,7 @@ REQUIRED_FILES = (
     "conformance/v0.1/release-record-template.json",
     "scripts/validate_release_gates.py",
     "scripts/independent_verify.mjs",
+    "scripts/tests/test_validate_release_gates.py",
 )
 
 

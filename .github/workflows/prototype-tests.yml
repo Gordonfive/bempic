@@ -28,6 +28,8 @@ jobs:
         run: python3 -m scripts.validate_docs
       - name: Validate normative release-gate artifacts
         run: python3 -m scripts.validate_release_gates
+      - name: Test release-gate validator rejection paths
+        run: python3 -m unittest scripts.tests.test_validate_release_gates -v
       - name: Run independent Node verification
         run: node scripts/independent_verify.mjs
       - name: Run interrupted-transfer demo

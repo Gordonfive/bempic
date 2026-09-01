@@ -27,6 +27,100 @@ NORMATIVE_DOCS = (
 REQ_RE = re.compile(r"\[?(REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*)\]?")
 MUST_RE = re.compile(r"\bMUST(?: NOT)?\b")
 
+EXPECTED_VECTOR_REQUIREMENTS = {
+    "V01": {
+        "cases": ["empty", "equal-warm-100", "equal-cold-100"],
+        "assertions": ["no-object-payload", "warm-no-change-metric", "cold-no-change-metric"],
+        "blocked_by": ["experimental-codec-selection"],
+    },
+    "V02": {
+        "cases": ["known-checkpoint-100-plus-1"],
+        "assertions": ["new-manifest-only", "zero-retransmitted-prior-manifest-bytes"],
+        "blocked_by": ["experimental-codec-selection"],
+    },
+    "V03": {
+        "cases": ["inventory-257-pages-128-128-1", "reopen-after-page-1"],
+        "assertions": ["deterministic-page-order", "durable-cursor", "target-digest-consistent"],
+    },
+    "V04": {
+        "cases": ["tiny", "typical", "international-nfc", "reply-chain", "absent-subject", "maximum-recipients", "maximum-parts", "every-maximum-metadata-length"],
+        "maximum_fields": ["recipients", "parts", "representations-per-part", "sender-octets", "recipient-octets", "subject-octets", "filename-octets", "media-type-octets", "codec-parameter-octets"],
+        "assertions": ["exact-reconstruction", "bounds-before-mutation", "nfc-canonical"],
+    },
+    "V05": {
+        "cases": ["body-full-preview", "attachment-metadata-unselected"],
+        "assertions": ["one-body-representation-selected", "zero-unselected-attachment-payload-bytes"],
+    },
+    "V06": {
+        "cases": ["compressible-selected", "incompressible-selected"],
+        "assertions": ["exact-reconstruction", "declared-encoded-length", "digest-and-id-verified"],
+    },
+    "V07": {
+        "cases": ["empty-representation", "one-byte-representation", "maximum-data-payload", "maximum-representation"],
+        "bound_sources": ["negotiated-max-data-payload-octets", "core-max-prepared-representation-octets", "codec-max-encoded-size"],
+        "assertions": ["exact-size-equals-encoded-length", "one-past-bound-rejected-before-allocation"],
+    },
+    "V08": {
+        "cases": ["offset-0", "offset-1-percent", "offset-10-percent", "offset-50-percent", "offset-90-percent", "final-byte", "post-verify-pre-commit", "post-commit-pre-receipt"],
+        "restart_parties": ["sender", "receiver", "both"],
+        "assertions": ["reopen-last-durable-state", "no-false-prefix", "no-false-receipt", "exact-reconstruction-after-resume"],
+    },
+    "V09": {
+        "cases": ["alternate-authorized-source", "alternate-carrier"],
+        "assertions": ["identical-prepared-bytes", "zero-fully-durable-prefix-retransmission", "resume-metrics-recorded"],
+        "blocked_by": ["m4p-binding-review"],
+    },
+    "V10": {
+        "cases": ["duplicate-offer", "duplicate-data", "duplicate-page", "duplicate-receipt", "lost-final-receipt"],
+        "assertions": ["idempotent-state", "duplicate-bytes-counted", "no-duplicate-application-effect"],
+    },
+    "V11": {
+        "cases": ["corrupt-final-byte", "conflicting-overlap", "gap", "false-length-short", "false-length-long", "false-digest", "false-representation-id", "object-id-metadata-conflict"],
+        "expected_outcomes": {
+            "corrupt-final-byte": "INTEGRITY_FAILURE",
+            "conflicting-overlap": "METADATA_CONFLICT",
+            "gap": "RANGE_INVALID",
+            "false-length-short": "RANGE_INVALID",
+            "false-length-long": "PARTIAL-no-positive-receipt",
+            "false-digest": "INTEGRITY_FAILURE",
+            "false-representation-id": "INTEGRITY_FAILURE",
+            "object-id-metadata-conflict": "METADATA_CONFLICT",
+        },
+        "assertions": ["expected-outcome", "no-positive-receipt", "unrelated-committed-state-usable"],
+    },
+    "V12": {
+        "cases": ["total-one-byte-short", "total-exact", "send-one-byte-short", "send-exact", "receive-one-byte-short", "receive-exact"],
+        "operation_types": ["CAPABILITIES", "SUMMARY", "OFFER", "REQUEST", "DATA", "RECEIPT", "FAILURE"],
+        "budget_domains": ["total", "send", "receive"],
+        "relative_budgets": [-1, 0],
+        "assertions": ["complete-operation-only", "zero-quote-error", "directional-accounting-identity"],
+    },
+    "V13": {
+        "cases": ["compatible-tuple", "incompatible-protocol", "incompatible-schema", "incompatible-codec", "preference-tie", "stale-cache-recovery", "unknown-optional-extension", "unknown-critical-extension"],
+        "assertions": ["deterministic-highest-common-tuple", "critical-rejected-before-mutation", "optional-skipped-without-side-effect"],
+    },
+    "V14": {
+        "cases": ["offer-page-commit", "prefix-length-update", "final-byte-persist", "digest-verification", "object-commit", "receipt-commit"],
+        "assertions": ["storage-failure-scoped", "reopen-not-ahead", "no-false-receipt"],
+    },
+    "V15": {
+        "cases": ["UNSUPPORTED_VERSION", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CODEC", "UNSUPPORTED_CRITICAL_EXTENSION", "MALFORMED_OPERATION", "LIMIT_EXCEEDED", "UNKNOWN_OBJECT", "METADATA_CONFLICT", "RANGE_INVALID", "INTEGRITY_FAILURE", "STORAGE_FAILURE", "POLICY_REJECTED", "CHECKPOINT_UNKNOWN"],
+        "advertised_retryable_flags": [False, True],
+        "assertions": ["exact-failure-code", "retry-classification", "bounded-retry", "scoped-mutation"],
+    },
+}
+
+EXPECTED_METRIC_THRESHOLDS = [
+    {"id": "warm-no-change", "vector": "V01", "case": "equal-warm-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 64, "aggregation": "each-run"},
+    {"id": "cold-no-change", "vector": "V01", "case": "equal-cold-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 128, "aggregation": "each-run"},
+    {"id": "known-append-no-old-manifest", "vector": "V02", "case": "known-checkpoint-100-plus-1", "metric": "retransmitted_prior_manifest_bytes", "operator": "=", "value": 0, "aggregation": "each-run"},
+    {"id": "no-unselected-payload", "vector": "V05", "case": "*", "metric": "unselected_representation_payload_bytes", "operator": "=", "value": 0, "aggregation": "each-run"},
+    {"id": "exact-no-fault-quote", "vector": "V12", "case": "*", "metric": "quote_error_bytes", "operator": "=", "value": 0, "aggregation": "each-run"},
+    {"id": "resume-no-durable-prefix-resend", "vector": "V09", "case": "*", "metric": "retransmitted_durable_prefix_bytes", "operator": "=", "value": 0, "aggregation": "each-run-with-authoritative-prefix"},
+    {"id": "b2f-median-compactness", "vector": "external-text-corpus", "case": "*", "metric": "candidate_reduction_percent", "operator": ">=", "value": 10, "aggregation": "median"},
+    {"id": "b2f-per-fixture-regression", "vector": "external-text-corpus", "case": "*", "metric": "candidate_increase_percent", "operator": "<=", "value": 5, "aggregation": "each-run-or-accepted-justification"},
+]
+
 
 def fail(message: str) -> None:
     raise ValueError(message)
@@ -101,12 +195,26 @@ def validate_codec_registry() -> None:
         fail("codec allocations must be a list")
     pairs: set[tuple[int, int]] = set()
     for allocation in allocations:
-        pair = (allocation.get("id"), allocation.get("revision"))
+        codec_id = allocation.get("id")
+        revision = allocation.get("revision")
+        status = allocation.get("status")
+        pair = (codec_id, revision)
         if pair in pairs:
             fail(f"duplicate codec allocation {pair}")
         pairs.add(pair)
-        if not isinstance(pair[0], int) or not isinstance(pair[1], int) or pair[1] < 1:
+        if isinstance(codec_id, bool) or not isinstance(codec_id, int) or not 0 <= codec_id < 2**32:
             fail(f"invalid codec allocation {allocation!r}")
+        if isinstance(revision, bool) or not isinstance(revision, int) or not 1 <= revision < 2**32:
+            fail(f"invalid codec revision {allocation!r}")
+        range_class = next(item["class"] for item in ranges if item["first"] <= codec_id <= item["last"])
+        allowed_classes = {
+            "experimental": {"experimental"},
+            "approved": {"standards-action"},
+            "mandatory": {"standards-action"},
+            "deprecated": {"experimental", "standards-action"},
+        }
+        if status not in allowed_classes or range_class not in allowed_classes[status]:
+            fail(f"codec allocation status/range mismatch {allocation!r}")
 
 
 def validate_vector_catalog() -> None:
@@ -126,23 +234,10 @@ def validate_vector_catalog() -> None:
         if len(entry["assertions"]) != len(set(entry["assertions"])):
             fail(f"duplicate assertion in {entry.get('id')}")
     by_id = {entry["id"]: entry for entry in catalog}
-    if by_id["V03"]["cases"] != ["inventory-257-pages-128-128-1", "reopen-after-page-1"]:
-        fail("V03 must pin the 257-entry 128/128/1 paging cases")
-    if by_id["V08"].get("restart_parties") != ["sender", "receiver", "both"]:
-        fail("V08 must cover sender, receiver, and joint restart")
-    operations = ["CAPABILITIES", "SUMMARY", "OFFER", "REQUEST", "DATA", "RECEIPT", "FAILURE"]
-    if by_id["V12"].get("operation_types") != operations:
-        fail("V12 must cover all seven core operation types")
-    if by_id["V12"].get("budget_domains") != ["total", "send", "receive"] or by_id["V12"].get("relative_budgets") != [-1, 0]:
-        fail("V12 must cover exact and one-byte-short total/directional budgets")
-    failure_codes = {
-        "UNSUPPORTED_VERSION", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CODEC",
-        "UNSUPPORTED_CRITICAL_EXTENSION", "MALFORMED_OPERATION", "LIMIT_EXCEEDED",
-        "UNKNOWN_OBJECT", "METADATA_CONFLICT", "RANGE_INVALID", "INTEGRITY_FAILURE",
-        "STORAGE_FAILURE", "POLICY_REJECTED", "CHECKPOINT_UNKNOWN",
-    }
-    if set(by_id["V15"]["cases"]) != failure_codes or by_id["V15"].get("advertised_retryable_flags") != [False, True]:
-        fail("V15 must cover every core failure code with both retryable flags")
+    for vector_id, expected_fields in EXPECTED_VECTOR_REQUIREMENTS.items():
+        for field, expected_value in expected_fields.items():
+            if by_id[vector_id].get(field) != expected_value:
+                fail(f"{vector_id} {field} differs from the normative catalog")
 
 
 def validate_metrics() -> None:
@@ -152,19 +247,8 @@ def validate_metrics() -> None:
     required = data.get("required")
     if not isinstance(required, list) or len(required) != len(set(required)):
         fail("required metric names must be a unique list")
-    threshold_ids = [item.get("id") for item in data.get("thresholds", [])]
-    expected = {
-        "warm-no-change",
-        "cold-no-change",
-        "known-append-no-old-manifest",
-        "no-unselected-payload",
-        "exact-no-fault-quote",
-        "resume-no-durable-prefix-resend",
-        "b2f-median-compactness",
-        "b2f-per-fixture-regression",
-    }
-    if set(threshold_ids) != expected or len(threshold_ids) != len(expected):
-        fail("metric threshold catalog is incomplete or duplicated")
+    if data.get("thresholds") != EXPECTED_METRIC_THRESHOLDS:
+        fail("metric threshold definitions differ from the normative catalog")
 
 
 def validate_release_template() -> None:
