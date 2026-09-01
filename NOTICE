@@ -1,0 +1,9 @@
+BEMPIC
+Copyright 2026 Gordonfive and BEMPIC contributors
+
+This product includes protocol specifications, documentation, conformance
+material, and a transitional Python semantic prototype developed by the
+BEMPIC project.
+
+The validation environment uses rfc8785.py by Trail of Bits, distributed under
+the Apache License 2.0. Source: https://github.com/trailofbits/rfc8785.py

@@ -6,7 +6,11 @@ This document records the major protocol research conclusions that define what B
 
 Git documentation is authoritative; these conclusions must not depend on chat history.
 
-The concrete feature matrix, exact borrow/reuse/omit/invent decisions, source list, and pre-wire implementation plan are in [`INITIAL-PROTOCOL-PLAN.md`](INITIAL-PROTOCOL-PLAN.md).
+The historical feature matrix, borrow/reuse/omit/invent decisions, source list,
+and pre-wire implementation plan are in
+[`INITIAL-PROTOCOL-PLAN.md`](INITIAL-PROTOCOL-PLAN.md). Current requirements are
+in [`../SPECIFICATION.md`](../SPECIFICATION.md); the architecture and repository
+owners are in [`REPOSITORY-BOUNDARY.md`](REPOSITORY-BOUNDARY.md).
 
 ## Winlink B2F
 
@@ -64,6 +68,21 @@ CFDP is strong prior art for resumable object/file transfer:
 
 BEMPIC should borrow these ideas for attachments/large objects while remaining messaging-first rather than adopting CFDP wholesale.
 
+## Dynamic Compact Control Language (DCCL)
+
+DCCL is prior art for designing compact, analyzable codecs. BEMPIC borrows the
+discipline of declarative field bounds and numeric precision, mandatory maximum
+encoded size, schema fingerprints, pluggable codecs, strict validation, and
+exact encoded-size analysis.
+
+DCCL is **not** a dependency or compatibility target. BEMPIC does not adopt the
+DCCL wire format, DCCL encryption, its C++ implementation, or a Protobuf
+dependency. BEMPIC's v0.1 semantic core remains codec-neutral, and any codec
+profile must be independently specified and registered.
+
+See the [GobySoft DCCL project](https://github.com/GobySoft/dccl) for the
+upstream implementation and documentation links.
+
 ## M4P boundary
 
 M4P is the intended open mesh/network layer for OceanMail.
@@ -114,6 +133,10 @@ BEMPIC should focus on what these systems do not jointly give OceanMail:
 - provider/service envelopes;
 - protocol capability/version negotiation;
 - optional recovery only for unreliable links where the underlying layer does not already solve it.
+
+Executable reference work for this retained role belongs in the sibling
+`bempic-reference` repository. The Python proof in this repository is a
+transitional, non-normative oracle until the published parity gate passes.
 
 ## Architectural rule
 
