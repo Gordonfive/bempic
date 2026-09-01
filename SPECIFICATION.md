@@ -486,7 +486,8 @@ scope pauses without failure when no next complete operation fits.
 
 [REQ-ACCOUNT-001] Implementations MUST expose at least:
 
-- `semantic_bytes`: decoded bytes selected by the application;
+- `semantic_bytes`: the codec-independent logical workload selected by the
+  application, as defined below;
 - `bempic_tx_bytes` and `bempic_rx_bytes`: every encoded BEMPIC octet, including
   envelopes, negotiation when included in the reported scope, metadata,
   payload, receipts, failures, compression framing, and application security;
@@ -497,6 +498,36 @@ scope pauses without failure when no next complete operation fits.
   and
 - `link_tx_bytes` and `link_rx_bytes`, only when measured or estimated by the
   DataLink, with the estimate method identified.
+
+### 12.1 `semantic_bytes`
+
+`semantic_bytes` is a logical-workload counter, not a wire, storage, or
+completion counter. For a decoded schema value, `semantic_octets(value)` is
+computed recursively without codec framing: an octet string contributes its
+length; a UTF-8 or ASCII string contributes the length of its normalized UTF-8
+bytes; an unsigned 32-bit or 64-bit integer contributes four or eight octets;
+a Boolean or enumeration contributes one octet; an absent nullable value
+contributes zero; and an array or record contributes the sum of its present
+children. Container counts, field names, tags, presence indicators, length
+prefixes, alignment, and padding contribute zero. Thus an opaque-binary value
+contributes its exact decoded length, while a message manifest contributes its
+normalized application metadata, identifiers, and descriptor scalar values.
+
+[REQ-ACCOUNT-003] Within one measurement scope and logical direction `d`,
+`semantic_bytes[d]` MUST equal the sum of `semantic_octets` once for each
+distinct `(d, representation_id)` first authorized by an accepted application
+selection in that scope. Repeated requests, contacts, duplicates,
+retransmissions, matching overlap, and restart/resume do not add semantic
+bytes. A deferred or unselected representation contributes zero until selected;
+metadata describing it contributes only when that metadata is part of a
+selected decoded manifest. Encoded representation payload, compression or
+security expansion, BEMPIC operation metadata and framing, codec padding,
+carrier bytes, M4P bytes, DataLink framing/FEC/retransmission, and RF cost do
+not contribute. `semantic_bytes` without a direction MUST be the sum of the
+send and receive directions, and both endpoints MUST report the same value for
+the same fixture, selections, and scope. Selection counts the declared logical
+workload even if the run later pauses or fails; `useful_committed_bytes` records
+successful completion separately.
 
 [REQ-ACCOUNT-002] Counters MUST identify their direction, scope, and whether they are exact or
 estimated. BEMPIC MUST NOT label carrier or RF cost as exact when the lower

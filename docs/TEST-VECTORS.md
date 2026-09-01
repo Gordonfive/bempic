@@ -34,7 +34,11 @@ codec or operation-byte vector bundle.
 - expected failure code and mutation prohibition for every invalid vector;
 - expected state before/after each state-machine step;
 - expected persistent checkpoint/prefix/receipt state after reopen; and
-- exact directional accounting by operation and budget scope.
+- exact directional accounting by operation and budget scope;
+- one canonical semantic-fixture artifact for every selected representation,
+  with direction, schema fingerprint, full representation ID, path, octet
+  length, SHA-256 digest, and expected `semantic_octets`; and
+- expected `semantic_bytes_send`, `semantic_bytes_receive`, and their sum.
 
 Canonical manifests use RFC 8785 JSON. Large byte payloads may be separate files
 named by SHA-256; the canonical manifest includes their digest and length.
@@ -85,6 +89,56 @@ decided behavior optional.
 | V14 | Storage failures at durable commit boundaries |
 | V15 | Every core failure code with both advertised retryable-flag values |
 
+### V08 interruption covering array
+
+For percentage rows the fixture length is `L >= 100`, the offset is
+`floor(L*p/100)`, and `p` is the percentage in the case name. `final-byte` is
+after prefix `L` is durable and before verification; the final two points use
+the durable states named by their case. Storage names are the logical surfaces
+defined in [`CONFORMANCE.md`](CONFORMANCE.md), not a requirement to ship three
+separate physical databases.
+
+The following array is authoritative and intentionally pairwise rather than
+the 72-row Cartesian product:
+
+| Row | Interruption point | Restart | Storage surface |
+|---|---|---|---|
+| V08-C01 | `offset-0` | sender | memory |
+| V08-C02 | `offset-0` | receiver | representation-file |
+| V08-C03 | `offset-0` | both | durable-store |
+| V08-C04 | `offset-1-percent` | sender | representation-file |
+| V08-C05 | `offset-1-percent` | receiver | durable-store |
+| V08-C06 | `offset-1-percent` | both | memory |
+| V08-C07 | `offset-10-percent` | sender | durable-store |
+| V08-C08 | `offset-10-percent` | receiver | memory |
+| V08-C09 | `offset-10-percent` | both | representation-file |
+| V08-C10 | `offset-50-percent` | sender | memory |
+| V08-C11 | `offset-50-percent` | receiver | representation-file |
+| V08-C12 | `offset-50-percent` | both | durable-store |
+| V08-C13 | `offset-90-percent` | sender | representation-file |
+| V08-C14 | `offset-90-percent` | receiver | durable-store |
+| V08-C15 | `offset-90-percent` | both | memory |
+| V08-C16 | `final-byte` | sender | durable-store |
+| V08-C17 | `final-byte` | receiver | memory |
+| V08-C18 | `final-byte` | both | representation-file |
+| V08-C19 | `post-verify-pre-commit` | sender | memory |
+| V08-C20 | `post-verify-pre-commit` | receiver | representation-file |
+| V08-C21 | `post-verify-pre-commit` | both | durable-store |
+| V08-C22 | `post-commit-pre-receipt` | sender | representation-file |
+| V08-C23 | `post-commit-pre-receipt` | receiver | durable-store |
+| V08-C24 | `post-commit-pre-receipt` | both | memory |
+
+[REQ-VEC-006] A V08 bundle MUST contain all 24 row IDs exactly once and MUST
+record, for every row: fixture and trace digests; encoded length; interruption
+point and computed prefix; restart party; storage surface and mapped backend;
+durable state before interruption; recovered state and prefix; first resumed
+offset; new, duplicate, and retransmitted-durable-prefix payload octets;
+receipt state before and after reopen; final content digest, representation ID,
+decode result, and row result. A row passes only when all criteria in
+`vector-catalog.json` and `CONFORMANCE.md` pass. The bundle MUST also record the
+pair-coverage proof generated from its rows. A full Cartesian run MAY be
+published as additional evidence but does not replace or alter these row IDs.
+
 The prescribed 100-message fixture used by V01 and V02 is an append-only
 collection with object IDs `SHA-256("BEMPIC-V01-OBJECT\0" || U32(index))` for
 indexes 0 through 99. Each message has one UTF-8 `text/plain` body containing
@@ -120,6 +174,14 @@ State vectors are ordered operation traces. Each step records operation bytes,
 direction, contact number, budget ID, budget before/after, volatile state,
 durable state, emitted operations, counters, and injected crash or carrier
 event. [REQ-VEC-003] A runner MUST compare the full trace, not merely its final object.
+
+For semantic accounting, a fixture artifact represents the exact decoded value
+walked by Specification Section 12.1. Octet strings are stored as exact bytes;
+structured values use the lossless canonical input already named by the bundle,
+while `semantic_octets` is computed from the decoded scalar values rather than
+from the artifact's JSON punctuation, field names, hexadecimal spelling, or
+container framing. Deferred fixture artifacts remain listed for reproducibility
+but contribute zero until their selection event.
 
 ## Updating vectors
 

@@ -43,6 +43,7 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-BUDGET-001 | `SPECIFICATION.md` budgets | V12 and zero-quote-error MR |
 | REQ-ACCOUNT-001 | `SPECIFICATION.md` counters | MR schema completeness and V01–V12 records |
 | REQ-ACCOUNT-002 | `SPECIFICATION.md` cost domains | MR identity plus M4P cost-label inspection |
+| REQ-ACCOUNT-003 | `SPECIFICATION.md` semantic bytes | semantic-fixture recomputation, directional MR identity, V05/V08 duplicate/defer traces |
 | REQ-CODEC-001 | `SPECIFICATION.md` codec publication | codec profile, size proof, CB, independent verifier |
 | REQ-EXT-001 | `SPECIFICATION.md` extensions | V13 optional/critical/limit cases |
 | REQ-FAIL-001 | `SPECIFICATION.md` fail closed | V11/V13/V15 and mutation traces |
@@ -59,9 +60,11 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-VEC-003 | `docs/TEST-VECTORS.md` traces | independent step-by-step trace comparison |
 | REQ-VEC-004 | `docs/TEST-VECTORS.md` catalog | catalog validator and V01–V15 result records |
 | REQ-VEC-005 | `docs/TEST-VECTORS.md` updates | GR, compatibility statement, released-bundle immutability check |
+| REQ-VEC-006 | `docs/TEST-VECTORS.md` V08 array | catalog validator, 24 complete row traces, pair-coverage proof |
 | REQ-CLAIM-001 | `docs/CONFORMANCE.md` claims | CR claim metadata schema validation |
 | REQ-CONF-001 | `docs/CONFORMANCE.md` semantic core | CR checklist with V01–V15 links |
 | REQ-CONF-002 | `docs/CONFORMANCE.md` interruptions | V08/V14 transition coverage report |
+| REQ-CONF-003 | `docs/CONFORMANCE.md` pairwise coverage | V08 24-row evidence and V14 before/after fault report |
 | REQ-CLAIM-002 | `docs/CONFORMANCE.md` major-zero wording | RR/CR forbidden-claim lint |
 | REQ-REG-001 | `docs/REGISTRIES.md` prototype codec | registry and prototype-advertisement inspection |
 | REQ-REG-002 | `docs/REGISTRIES.md` ID ranges | registry validator and V13 invalid-ID cases |
@@ -82,6 +85,7 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-METRIC-007 | `docs/METRICS.md` budget/defer/resume | V05/V08/V09/V12 MR threshold evaluation |
 | REQ-METRIC-008 | `docs/METRICS.md` B2F | oracle decision, licenses, raw corpus MR, justification GR |
 | REQ-METRIC-009 | `docs/METRICS.md` reproducibility | content-addressed MR and independent rerun |
+| REQ-METRIC-010 | `docs/METRICS.md` semantic workload | raw per-representation fixture records and independently recomputed directional identity |
 | REQ-M4P-001 | `docs/M4P-CONFIRMATION.md` authority | external immutable confirmation in RR |
 | REQ-M4P-002 | `docs/M4P-CONFIRMATION.md` contract | M4P contract checklist and upstream links |
 | REQ-M4P-003 | `docs/M4P-CONFIRMATION.md` ownership | affirmative external boundary statement and GR |
@@ -105,3 +109,9 @@ Rows may be precisely specified yet lack their required evidence. For v0.1.0,
 `REQ-M4P-004`, `REQ-GATE-002`, and the release-record rows remain incomplete
 until their named external or sibling artifacts exist. The release record must
 report them as blockers, not skips.
+
+The newly clarified `REQ-ACCOUNT-003`, `REQ-CONF-003`, `REQ-VEC-006`, and
+`REQ-METRIC-010` also remain incomplete until `bempic-reference` publishes a
+report and vector/metric artifacts against the specification commit containing
+this clarification. Pre-clarification evidence is informative but cannot be
+silently reclassified as passing.

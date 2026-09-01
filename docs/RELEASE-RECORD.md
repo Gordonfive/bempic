@@ -18,7 +18,9 @@ platform results; fuzz/property evidence; benchmark and metric records; B2F
 oracle identity/version/license/results; M4P confirmation; prototype parity
 decision; resolution links for every release-blocking open question; security
 classification; changelog/release-note review; and named approvals required by
-governance.
+governance. The metric records MUST include independently recomputed
+directional `semantic_bytes`, and V08 evidence MUST include the complete
+24-row covering array and pair-coverage proof.
 
 [REQ-RELEASE-002] Every repository URL MUST identify an immutable commit or tag,
 every CI URL MUST be for that commit and conclude successfully, and every digest
@@ -45,8 +47,22 @@ Creating or claiming the tag from this tranche is prohibited.
 
 ## Current state
 
-The template names every evidence class but intentionally records blockers and
-empty evidence. It is a governance control, not evidence that v0.1.0 exists.
+The template names every release-decision evidence class but intentionally
+keeps those fields empty or failing and records all blockers. It is a
+governance control, not evidence that v0.1.0 exists.
 The experimental codec, independent verifier, B2F oracle, M4P confirmation,
 object-ID application profile, protocol-name decision, sibling implementation,
 and final release candidate results are unresolved.
+
+The template also records an audited, non-passing sibling checkpoint so that
+existing work is not lost or overstated. The checkpoint is
+[`bempic-reference@29be83fed70433ea958f9773539fb8b93fa00dc9`](https://github.com/Gordonfive/bempic-reference/commit/29be83fed70433ea958f9773539fb8b93fa00dc9),
+its [push CI succeeded](https://github.com/Gordonfive/bempic-reference/actions/runs/33471197976),
+and its immutable
+[conformance report](https://github.com/Gordonfive/bempic-reference/blob/29be83fed70433ea958f9773539fb8b93fa00dc9/conformance/v0.1.0-report.json)
+states `blocked-not-conformant`. That report names implementation commit
+[`c8d940ca69fe98aecf72185f80f4a2b3254aaf24`](https://github.com/Gordonfive/bempic-reference/commit/c8d940ca69fe98aecf72185f80f4a2b3254aaf24)
+and specification commit `c67a87e`; it predates the normative clarifications in
+this change. Its passing rows remain useful evidence candidates, but no row is
+promoted into release evidence until a new report evaluates the exact clarified
+specification commit and satisfies every currently blocked or incomplete gate.

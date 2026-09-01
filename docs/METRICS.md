@@ -17,8 +17,9 @@ operations is separately reported and eligible for a threshold exclusion.
 [REQ-METRIC-001] A result MUST identify the specification commit, vector-bundle
 digest, vector and case IDs, codec ID/revision/status and profile digest,
 implementation commit, direction, budget ID, initial durable state, security
-profile, carrier binding, run count, and whether each lower-layer counter is
-exact, estimated, unavailable, or not applicable.
+profile, carrier binding, run count, semantic-fixture digest, selected
+representation IDs by logical direction, and whether each lower-layer counter
+is exact, estimated, unavailable, or not applicable.
 
 [REQ-METRIC-002] For each direction `d`, implementations MUST report
 `bempic_operation_bytes[d]` as the sum of complete encoded BEMPIC operations,
@@ -32,6 +33,7 @@ operation bytes and MUST NOT be added to that identity a second time.
 
 The following counters are unsigned integer octets unless noted otherwise:
 
+- `semantic_bytes`, `semantic_bytes_send`, and `semantic_bytes_receive`;
 - `bempic_total_bytes` and directional `bempic_operation_bytes`;
 - `representation_payload_bytes` and `useful_committed_bytes`;
 - `duplicate_bempic_bytes` and `duplicate_representation_payload_bytes`;
@@ -49,6 +51,27 @@ The following counters are unsigned integer octets unless noted otherwise:
 newly committed in the run. Matching overlap, replay, and previously durable
 bytes are not useful bytes.
 
+## Semantic-workload metrics
+
+The `send` direction is the logical flow from the endpoint that owns the
+selected prepared representation to the endpoint requesting it; `receive` is
+the reverse flow. Direction does not change when a carrier path, source
+process, or reporting endpoint changes. A representation selected in both
+directions is one workload item in each direction.
+
+[REQ-METRIC-010] Every result MUST compute `semantic_bytes_send` and
+`semantic_bytes_receive` from Specification Section 12.1 and demonstrate
+`semantic_bytes = semantic_bytes_send + semantic_bytes_receive`. The raw record
+MUST contain, for each counted representation, its direction, full
+representation ID, schema fingerprint, canonical semantic-fixture path,
+SHA-256 digest, exact fixture length, independently recomputed
+`semantic_octets`, and selection event. The same `(direction,
+representation_id)` MUST appear at most once per scope. Protocol metadata,
+encoded payload, deferred payload, duplicates, retransmission, padding, and
+lower-layer bytes MUST NOT change the counter. Aggregation is performed only
+after each raw run passes this identity; values from different fixture digests,
+selection sets, or scopes MUST NOT be pooled into one comparison.
+
 For report serialization, `bempic_operation_bytes_send` and
 `bempic_operation_bytes_receive` are the exact aliases of Specification
 `bempic_tx_bytes` and `bempic_rx_bytes`; `duplicate_representation_payload_bytes`
@@ -59,7 +82,9 @@ direction or domain ambiguity in a standalone metric record.
 aggregation. A report MUST publish all raw run values plus count, minimum,
 median, maximum, and arithmetic mean. Thresholds apply to each prescribed run
 unless a threshold explicitly says `median`; a skipped or unavailable required
-counter is a failure, not zero.
+counter is a failure, not zero. `semantic_bytes` is aggregated like every other
+required counter but is never multiplied by duplicate delivery, contact count,
+or restart count.
 
 ## First-body metrics
 

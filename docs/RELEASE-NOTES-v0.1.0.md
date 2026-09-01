@@ -19,6 +19,10 @@ budgets, offset data transfer, crash-safe prefix persistence, reopen/resume,
 integrity verification, exact reconstruction, receipts, failures, negotiation,
 extensions, accounting, and codec-analysis requirements.
 
+The release candidate also defines codec-independent `semantic_bytes` and an
+exact 24-row pairwise interruption/restart/storage covering array so evidence
+can be independently reproduced without choosing results after a run.
+
 ## Wire-format status
 
 Version 0.1.0 does not freeze a permanent wire codec. It defines how a codec is
@@ -43,6 +47,9 @@ mutation.
 - No permanent codec or M4P binding is frozen.
 - The retained Python proof uses non-normative generation-0 bytes and does not
   implement the complete v0.1 contract.
+- The latest immutable `bempic-reference` report is
+  [`blocked-not-conformant`](https://github.com/Gordonfive/bempic-reference/blob/29be83fed70433ea958f9773539fb8b93fa00dc9/conformance/v0.1.0-report.json)
+  and predates the clarified semantic-byte and V08 requirements.
 
 ## Required release evidence
 
