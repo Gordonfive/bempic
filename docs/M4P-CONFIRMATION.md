@@ -53,7 +53,7 @@ and
 [`integration guidance`](https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/C-integration-guidelines.md).
 Exact Git blob identities and their uses are in the machine-readable package.
 The release template pins that package's RFC 8785 canonical SHA-256 as
-`2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459`.
+`b1908c3d86522410454a375054310c75282a4a34dc29689d887a2a4406651e4e`.
 
 ## Exact opaque-record interface
 
@@ -246,8 +246,8 @@ receipt is a failing trace.
 | `M4P-V09-CROSS-MODALITY` | V09 alternate carrier | M4P path/DataLink or modality changes; BEMPIC record interface and durable prefix do not |
 | `M4P-V10-DUPLICATE` | V10 duplicate data | same-MIID network duplicate suppressed separately from a fresh-MIID BEMPIC replay; no duplicate application effect |
 | `M4P-V10-LOST-FINAL-RECEIPT` | V10 lost final receipt | no M4P evidence becomes receipt; fresh-MIID replay causes idempotent re-emission and exactly-once sender advance |
-| `M4P-V12-BUDGET` | V12 exact and one-byte-short | one-short submits nothing; exact submits one complete operation; M4P opportunity handling stays below boundary |
-| `M4P-V12-CONNECTION-LOSS` | V12 binding connection loss | uncertain acceptance is reported, durable state reopens, bounded fresh-MIID replay has no false receipt or duplicate effect |
+| `M4P-V12-BUDGET` | V12 `total-one-byte-short`, `total-exact`, `send-one-byte-short`, `send-exact`, `receive-one-byte-short`, and `receive-exact` | one-short submits nothing; exact submits one complete operation; M4P opportunity handling stays below boundary |
+| `M4P-V12-CONNECTION-LOSS` | V12 `binding-connection-loss-acceptance-unknown` | uncertain acceptance is reported, durable state reopens, bounded fresh-MIID replay has no false receipt or duplicate effect |
 
 These are prescribed expected traces, not invented execution evidence. They
 remain blocked until a binding implementation runs them against the externally

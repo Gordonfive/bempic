@@ -36,7 +36,7 @@
   "m4p_confirmation": {
     "review_package_status": "ready-for-external-review-not-submitted",
     "review_package": "conformance/v0.1/m4p-binding-review-package.json",
-    "review_package_digest": "sha256:2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459",
+    "review_package_digest": "sha256:b1908c3d86522410454a375054310c75282a4a34dc29689d887a2a4406651e4e",
     "binding_profile": "bempic-m4p-opaque-record-v0.1-review",
     "binding_revision": 1,
     "package_m4p_commit": "2eca9e8f57d43dab250cc26c1bbf2d255e3331de",

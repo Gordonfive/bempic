@@ -226,6 +226,12 @@ Message Type mapping, and the concrete API mapping. It MUST execute
 `M4P-V10-DUPLICATE`, `M4P-V10-LOST-FINAL-RECEIPT`, `M4P-V12-BUDGET`, and
 `M4P-V12-CONNECTION-LOSS` with every ordered step and pass assertion in
 [`m4p-binding-review-package.json`](../conformance/v0.1/m4p-binding-review-package.json).
+`M4P-V12-BUDGET` covers all six declared V12 directional budget cases:
+`total-one-byte-short`, `total-exact`, `send-one-byte-short`, `send-exact`,
+`receive-one-byte-short`, and `receive-exact`. `M4P-V12-CONNECTION-LOSS` maps
+to the separately declared V12 case
+`binding-connection-loss-acceptance-unknown`. Every trace `case` or `cases`
+reference MUST match a case declared by its mapped vector.
 The trace must record complete record bytes/digest, local submission and
 delivery references, resolved source `ClientUID`, M4P Message identity,
 submission result, BEMPIC budget before/after, exact BEMPIC counters, every

@@ -128,7 +128,7 @@
     {
       "id": "V12",
       "subject": "byte budgets",
-      "cases": ["total-one-byte-short", "total-exact", "send-one-byte-short", "send-exact", "receive-one-byte-short", "receive-exact"],
+      "cases": ["total-one-byte-short", "total-exact", "send-one-byte-short", "send-exact", "receive-one-byte-short", "receive-exact", "binding-connection-loss-acceptance-unknown"],
       "operation_types": ["CAPABILITIES", "SUMMARY", "OFFER", "REQUEST", "DATA", "RECEIPT", "FAILURE"],
       "budget_domains": ["total", "send", "receive"],
       "relative_budgets": [-1, 0],

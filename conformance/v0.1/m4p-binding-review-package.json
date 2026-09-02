@@ -482,7 +482,14 @@
     {
       "id": "M4P-V12-BUDGET",
       "vector": "V12",
-      "case": "exact-and-one-byte-short",
+      "cases": [
+        "total-one-byte-short",
+        "total-exact",
+        "send-one-byte-short",
+        "send-exact",
+        "receive-one-byte-short",
+        "receive-exact"
+      ],
       "steps": [
         "precompute-complete-bempic-operation-size-n",
         "with-bempic-budget-n-minus-one-emit-nothing-and-pause",
@@ -503,7 +510,7 @@
     {
       "id": "M4P-V12-CONNECTION-LOSS",
       "vector": "V12",
-      "case": "binding-connection-loss",
+      "case": "binding-connection-loss-acceptance-unknown",
       "steps": [
         "precompute-complete-bempic-operation-size",
         "invoke-binding-submit",

@@ -313,6 +313,27 @@ class ReleaseGateValidatorTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "open review questions"):
                 gates.validate_m4p_binding_review_package()
 
+    def test_m4p_trace_cases_must_exist_in_the_vector_catalog_contract(self) -> None:
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        budget = next(
+            trace for trace in package["binding_traces"]
+            if trace["id"] == "M4P-V12-BUDGET"
+        )
+        budget["cases"].append("undeclared-case")
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "undeclared vector case"):
+                gates.validate_m4p_binding_review_package()
+
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        connection_loss = next(
+            trace for trace in package["binding_traces"]
+            if trace["id"] == "M4P-V12-CONNECTION-LOSS"
+        )
+        connection_loss["cases"] = [connection_loss["case"]]
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "undeclared vector case"):
+                gates.validate_m4p_binding_review_package()
+
     def test_m4p_vector_and_metric_alignment_are_pinned(self) -> None:
         catalog = copy.deepcopy(
             gates.load_json("conformance/v0.1/vector-catalog.json")

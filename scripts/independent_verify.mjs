@@ -234,7 +234,7 @@ const m4pCanonicalDigest = createHash("sha256")
   .update(Buffer.from(canonicalize(m4p), "utf8"))
   .digest("hex");
 assert(m4pCanonicalDigest ===
-  "2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459",
+  "b1908c3d86522410454a375054310c75282a4a34dc29689d887a2a4406651e4e",
 "M4P review package canonical digest changed");
 assert(m4p.package_status === "ready-for-external-review-not-submitted" &&
   m4p.binding_profile.id === m4pProfile &&
@@ -299,6 +299,17 @@ for (const [vectorId, traceIds] of Object.entries({
   assert(vectors.catalog.find((entry) => entry.id === vectorId)
     .m4p_binding_trace_ids.join(",") === traceIds.join(","),
   `${vectorId} M4P trace mapping changed`);
+}
+for (const trace of m4p.binding_traces) {
+  const catalogEntry = vectors.catalog.find((entry) => entry.id === trace.vector);
+  const hasCase = Object.hasOwn(trace, "case");
+  const hasCases = Object.hasOwn(trace, "cases");
+  const caseReferences = hasCases ? trace.cases : [trace.case];
+  assert(catalogEntry && hasCase !== hasCases && Array.isArray(caseReferences) &&
+    caseReferences.length > 0 &&
+    new Set(caseReferences).size === caseReferences.length &&
+    caseReferences.every((caseId) => catalogEntry.cases.includes(caseId)),
+  `${trace.id} references an undeclared vector case`);
 }
 assert(metrics.m4p_binding_accounting.profile === m4pProfile &&
   metrics.m4p_binding_accounting.external_confirmation_complete === false &&

@@ -56,7 +56,7 @@ B2F_ARSFI_COMMIT = "dbe96569817018e66e0e5f6add40eed12adc9fd7"
 B2F_WL2K_COMMIT = "efde6fbcb7bc8d6519fd8018ec544c793d4ef48d"
 B2F_PACLINK_COMMIT = "cc7b2f9474959a70856cabaf812bfce53d2da145"
 M4P_PACKAGE_PATH = "conformance/v0.1/m4p-binding-review-package.json"
-M4P_PACKAGE_SHA256 = "2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459"
+M4P_PACKAGE_SHA256 = "b1908c3d86522410454a375054310c75282a4a34dc29689d887a2a4406651e4e"
 M4P_PROFILE = "bempic-m4p-opaque-record-v0.1-review"
 M4P_COMMIT = "2eca9e8f57d43dab250cc26c1bbf2d255e3331de"
 M4P_TREE = "b06d1830c6156ead535542d9ff4c0a5acbfd1545"
@@ -236,7 +236,7 @@ EXPECTED_VECTOR_REQUIREMENTS = {
         "assertions": ["expected-outcome", "no-positive-receipt", "unrelated-committed-state-usable"],
     },
     "V12": {
-        "cases": ["total-one-byte-short", "total-exact", "send-one-byte-short", "send-exact", "receive-one-byte-short", "receive-exact"],
+        "cases": ["total-one-byte-short", "total-exact", "send-one-byte-short", "send-exact", "receive-one-byte-short", "receive-exact", "binding-connection-loss-acceptance-unknown"],
         "operation_types": ["CAPABILITIES", "SUMMARY", "OFFER", "REQUEST", "DATA", "RECEIPT", "FAILURE"],
         "budget_domains": ["total", "send", "receive"],
         "relative_budgets": [-1, 0],
@@ -1075,14 +1075,29 @@ def validate_m4p_binding_review_package() -> None:
         fail("M4P trace IDs or order changed")
     source_paths = set(expected_blobs)
     for trace in traces:
+        vector_id = trace.get("vector")
+        has_case = "case" in trace
+        has_cases = "cases" in trace
+        case_references = trace.get("cases") if has_cases else [trace.get("case")]
+        declared_cases = set(
+            EXPECTED_VECTOR_REQUIREMENTS.get(vector_id, {}).get("cases", [])
+        )
         if (
-            trace.get("vector") not in M4P_TRACE_IDS_BY_VECTOR
-            or trace.get("id") not in M4P_TRACE_IDS_BY_VECTOR[trace["vector"]]
+            vector_id not in M4P_TRACE_IDS_BY_VECTOR
+            or trace.get("id") not in M4P_TRACE_IDS_BY_VECTOR[vector_id]
             or not trace.get("steps")
             or not trace.get("pass")
             or not set(trace.get("mapped_m4p_sources", [])).issubset(source_paths)
         ):
             fail(f"incomplete or mismapped M4P trace {trace.get('id')}")
+        if (
+            has_case == has_cases
+            or not isinstance(case_references, list)
+            or not case_references
+            or len(case_references) != len(set(case_references))
+            or not set(case_references).issubset(declared_cases)
+        ):
+            fail(f"M4P trace {trace.get('id')} references an undeclared vector case")
 
     questions = data.get("open_review_questions", [])
     if (
