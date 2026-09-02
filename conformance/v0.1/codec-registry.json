@@ -34,5 +34,25 @@
       "public_interoperability": false
     }
   ],
-  "allocations": []
+  "allocations": [
+    {
+      "id": 65536,
+      "id_hex": "0x00010000",
+      "revision": 1,
+      "name": "bempic-compact-operation-v0.1",
+      "status": "experimental",
+      "owner": "Gordonfive/bempic maintainers",
+      "contact": "https://github.com/Gordonfive/bempic/issues",
+      "profile": "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md",
+      "profile_sha256": "bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc642dc731127",
+      "allocation_evidence": "conformance/v0.1/experimental-codec-allocation.json",
+      "canonical_parameters_hex": "",
+      "derived_from_private_candidate": "0xffff0001/2",
+      "approved": false,
+      "mandatory": false,
+      "stable_wire_promise": false,
+      "production_security_promise": false,
+      "public_tuple_vectors_required": true
+    }
+  ]
 }

@@ -46,7 +46,8 @@ explicitly not an allocation.
 
 ## Codec IDs and revisions
 
-No codec is approved yet. [REQ-REG-001] The Python generation-0 encoding has no codec ID and
+No codec is approved or mandatory. One provisional experimental allocation is
+recorded below. [REQ-REG-001] The Python generation-0 encoding has no codec ID and
 MUST NOT be advertised as a v0.1 profile.
 
 Codec IDs are unsigned 32-bit integers. Revisions are unsigned 32-bit integers
@@ -69,15 +70,25 @@ values with `UNSUPPORTED_CODEC` before protocol-state mutation. Private-use IDs
 are a shared collision space, not vendor-owned allocations, and therefore may be
 used only where every participant is configured out of band.
 
-The authoritative machine-readable range table is
+The authoritative machine-readable range and allocation table is
 [`../conformance/v0.1/codec-registry.json`](../conformance/v0.1/codec-registry.json).
-The table contains no codec allocation: the v0.1 experimental codec selection
-is still release-blocking.
 
-The `semantic_bytes` and V08 interruption-coverage clarifications are
-codec-independent conformance rules. They allocate no codec, extension,
-receipt, failure, schema, or security-profile identifier and do not select a
-wire format. The empty allocation table therefore remains authoritative.
+| ID/revision | Stable name | Status | Owner/contact | Profile and evidence |
+|---|---|---|---|---|
+| `0x00010000/1` | `bempic-compact-operation-v0.1` | Experimental; neither approved nor mandatory | Gordonfive/bempic maintainers; [issues](https://github.com/Gordonfive/bempic/issues) | [profile](codecs/EXPERIMENTAL-COMPACT-v0.1.md); [allocation audit](../conformance/v0.1/experimental-codec-allocation.json) |
+
+The allocation is derived from the Reference repository's private candidate
+`0xffff0001/2` at immutable commit
+[`cf3485f6606d6462077e8edd1592264c3ce4ca5e`](https://github.com/Gordonfive/bempic-reference/commit/cf3485f6606d6462077e8edd1592264c3ce4ca5e).
+Implementations use the new public experimental tuple. Changing the ID changes
+encoded records, representation IDs, descriptors, collection digests, and
+dependent vectors, so the private-candidate vectors are allocation evidence
+only and have to be regenerated for `0x00010000/1`.
+
+This allocation makes no approval, mandatory-to-implement, stable-wire,
+production-security, B2F, M4P, independent-ownership, or release claim. Its
+security class is public cleartext with no application protection. No codec is
+approved for public production use.
 
 ### Status progression
 
@@ -96,6 +107,18 @@ canonical parameters, field and collection bounds, maximum-encoded-size tables,
 a draft worst-case proof, draft valid and invalid vectors, security and license
 analysis, and a registry collision check. The allocation pull request MUST state
 that the bytes are experimental and may be replaced by a new ID or revision.
+
+For `0x00010000/1`, the machine-readable allocation audit records every
+experimental-allocation item above as present: exact profile and canonical empty parameters;
+field, collection, and nesting bounds; seven operation maxima and reaching
+witnesses; exact-size formulas; valid, malformed, boundary, and one-past draft
+vectors; 50,000 random malformed inputs, 175 structured malformed inputs, and
+4,100 exact-size property cases with no reported unresolved finding; an
+independent-language verifier; Apache-2.0 evidence; security limitations; and a
+collision check selecting the first free experimental ID. This is sufficient
+for provisional allocation only. The independent-language verifier is under
+the same repository ownership and does not satisfy the independent-ownership
+evidence needed by later gates.
 
 [REQ-REG-004] Approval requires all experimental evidence plus a complete
 normative profile; exact-size functions; completed worst-case proofs and witness

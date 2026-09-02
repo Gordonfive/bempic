@@ -49,21 +49,34 @@ Creating or claiming the tag from this tranche is prohibited.
 ## Current state
 
 The template names every release-decision evidence class but intentionally
-keeps those fields empty or failing and records all blockers. It is a
-governance control, not evidence that v0.1.0 exists.
-The experimental codec, independent verifier, B2F oracle, M4P confirmation,
-object-ID application profile, protocol-name decision, sibling implementation,
-and final release candidate results are unresolved.
+keeps incomplete fields empty or failing and records all blockers. It is a
+governance control, not evidence that v0.1.0 exists. The provisional codec
+selection question is now narrowed to public-tuple vector and conformance
+regeneration: experimental tuple `0x00010000/1` is allocated, but it is neither
+approved nor mandatory and does not carry stable-wire or production-security
+assurance. The independent verifier, B2F oracle, M4P confirmation,
+protocol-name decision, complete sibling implementation evidence, and final
+release candidate results remain unresolved.
 
-The template also records an audited, non-passing sibling checkpoint so that
-existing work is not lost or overstated. The checkpoint is
-[`bempic-reference@29be83fed70433ea958f9773539fb8b93fa00dc9`](https://github.com/Gordonfive/bempic-reference/commit/29be83fed70433ea958f9773539fb8b93fa00dc9),
-its [push CI succeeded](https://github.com/Gordonfive/bempic-reference/actions/runs/33471197976),
-and its immutable
-[conformance report](https://github.com/Gordonfive/bempic-reference/blob/29be83fed70433ea958f9773539fb8b93fa00dc9/conformance/v0.1.0-report.json)
-states `blocked-not-conformant`. That report names implementation commit
-[`c8d940ca69fe98aecf72185f80f4a2b3254aaf24`](https://github.com/Gordonfive/bempic-reference/commit/c8d940ca69fe98aecf72185f80f4a2b3254aaf24)
-and specification commit `c67a87e`; it predates the normative clarifications in
-this change. Its passing rows remain useful evidence candidates, but no row is
-promoted into release evidence until a new report evaluates the exact clarified
-specification commit and satisfies every currently blocked or incomplete gate.
+The audited, non-passing Reference checkpoint is
+[`bempic-reference@cf3485f6606d6462077e8edd1592264c3ce4ca5e`](https://github.com/Gordonfive/bempic-reference/commit/cf3485f6606d6462077e8edd1592264c3ce4ca5e),
+whose [exact-head CI succeeded](https://github.com/Gordonfive/bempic-reference/actions/runs/33569955919).
+Its immutable
+[conformance report](https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/conformance/v0.1.0-report.json)
+states `blocked-not-conformant`; its profile, proof, witnesses,
+malformed/property results, same-owner Python verifier, and 35 B warm / 75 B
+cold measurements are accepted only as provisional allocation evidence.
+The report predates the normative clarifications and public allocation, binds
+private candidate `0xffff0001/2`, and therefore still requires a rerun against
+the exact clarified specification and `0x00010000/1`. No passing row is
+silently promoted to release evidence.
+
+Current immutable application-owned object-identity evidence is recorded from
+[`oceanmail@cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600`](https://github.com/Gordonfive/oceanmail/commit/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600),
+with [successful exact-head CI](https://github.com/Gordonfive/oceanmail/actions/runs/33569928056),
+the immutable
+[application profile](https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/docs/BEMPIC-APPLICATION-PROFILE.md),
+and its [fixture](https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/tests/fixtures/bempic-application-profile-v1.json).
+OceanMail owns those application semantics; BEMPIC continues to treat
+`object_id` as opaque. This resolves the missing application-profile artifact,
+not the still-required BEMPIC V11 sender/receiver conflict evidence.

@@ -151,9 +151,18 @@ indexes 0 through 99. Each message has one UTF-8 `text/plain` body containing
 is `2026-01-01T00:00:00Z` plus the index in seconds; sender and recipient are
 `sender@example.test` and `recipient@example.test`; subject is `Message ` plus
 the zero-padded index. V02 appends index 100 with the same construction. The
-selected experimental codec profile will publish the canonical manifest bytes
-and checkpoint values; that unresolved selection is recorded in V01/V02
-`blocked_by`.
+selected experimental codec is public tuple `0x00010000/1` and its profile is
+[`bempic-compact-operation-v0.1`](codecs/EXPERIMENTAL-COMPACT-v0.1.md).
+V01 and V02 remain blocked on regeneration of their canonical manifest bytes,
+representation IDs, checkpoint values, operations, and bundle digests for that
+public tuple; the catalog records `public-codec-vector-regeneration`.
+
+[REQ-VEC-007] A bundle claiming the experimental compact profile MUST identify
+codec `0x00010000`, revision `1`, the exact profile digest, and the exact
+specification commit. It MUST regenerate every tuple-bound byte, representation
+ID, descriptor, collection digest, operation, and bundle digest. Evidence for
+the Reference private candidate `0xffff0001/2` MUST NOT be presented as a
+public-tuple vector, even when an encoded length is unchanged.
 
 ## Mandatory codec boundary vectors
 

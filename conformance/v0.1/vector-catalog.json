@@ -6,14 +6,14 @@
       "subject": "empty and equal synchronization",
       "cases": ["empty", "equal-warm-100", "equal-cold-100"],
       "assertions": ["no-object-payload", "warm-no-change-metric", "cold-no-change-metric"],
-      "blocked_by": ["experimental-codec-selection"]
+      "blocked_by": ["public-codec-vector-regeneration"]
     },
     {
       "id": "V02",
       "subject": "known checkpoint append",
       "cases": ["known-checkpoint-100-plus-1"],
       "assertions": ["new-manifest-only", "zero-retransmitted-prior-manifest-bytes"],
-      "blocked_by": ["experimental-codec-selection"]
+      "blocked_by": ["public-codec-vector-regeneration"]
     },
     {
       "id": "V03",

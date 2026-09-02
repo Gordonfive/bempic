@@ -1,0 +1,161 @@
+{
+  "format": "bempic-experimental-codec-allocation-v0.1",
+  "decision": "allocate-provisional-experimental",
+  "allocation": {
+    "name": "bempic-compact-operation-v0.1",
+    "id": 65536,
+    "id_hex": "0x00010000",
+    "revision": 1,
+    "status": "experimental",
+    "owner": "Gordonfive/bempic maintainers",
+    "contact": "https://github.com/Gordonfive/bempic/issues",
+    "approved": false,
+    "mandatory": false,
+    "stable_wire_promise": false,
+    "production_security_promise": false
+  },
+  "collision_check": {
+    "range_class": "experimental",
+    "range_first": 65536,
+    "range_last": 2147483647,
+    "allocations_before_request": [],
+    "selected_first_free_id": 65536,
+    "collision_free": true
+  },
+  "profile": {
+    "path": "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md",
+    "sha256": "bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc642dc731127",
+    "canonical_parameters_hex": "",
+    "supported_representation_schema_fingerprints": [
+      "d8906a1cefbf89e4f29b4a0f636cfbfa1e9c6301e7e3a4fe213c090066f8e797"
+    ],
+    "operation_schema_fingerprint": "c4a686e7e9c6a40a5f187259a376b26cfc1d355179fd9fff487e105aeeac7302"
+  },
+  "private_candidate_provenance": {
+    "repository": "Gordonfive/bempic-reference",
+    "commit": "cf3485f6606d6462077e8edd1592264c3ce4ca5e",
+    "commit_url": "https://github.com/Gordonfive/bempic-reference/commit/cf3485f6606d6462077e8edd1592264c3ce4ca5e",
+    "private_id": 4294901761,
+    "private_id_hex": "0xffff0001",
+    "private_revision": 2,
+    "implementation_commit_reported": "38c01eb41d96a02c97478650efbde859888e6908",
+    "ci_url": "https://github.com/Gordonfive/bempic-reference/actions/runs/33569955919",
+    "ci_conclusion": "success",
+    "artifacts": {
+      "profile": {
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/docs/EXPERIMENTAL-COMPACT-CODEC-v0.1.md",
+        "sha256": "0633ed81272a89d085ceb8ae01aef82ac1749a9babe2fac9b59d0d1f3529fce8"
+      },
+      "size_proof_and_measurements": {
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/benchmarks/results/compact-codec-evidence-2026-09-01.json",
+        "sha256": "fd3461c674921b9730c773f0eef01d34dcc8e60a472ca1bb2ec1f3027de2f525"
+      },
+      "draft_vectors": {
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/test-vectors/v0.1-compact-candidate/vectors.json",
+        "sha256": "5edd10847be60cef384be726d7f3d83c6d78618ec38ce56db469cf24e794b8fb"
+      },
+      "independent_language_verifier": {
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/scripts/verify_conformance.py",
+        "sha256": "75c00d8e7af789a889669910cf945eaa7596d81054b6105a916475df02583dc4",
+        "independent_ownership": false
+      },
+      "malformed_property_report": {
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/conformance/fuzz-report.json",
+        "sha256": "5716f157c23fa631e748acb48f20f68ae28326b6251e4ecf1c0c77458155401d",
+        "random_malformed_cases": 50000,
+        "structured_malformed_cases": 175,
+        "exact_size_property_cases": 4100,
+        "unresolved_findings": 0
+      },
+      "conformance_report": {
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/conformance/v0.1.0-report.json",
+        "sha256": "40bbb7544a8b2c1eee1e9ac74fbb2fd0d73c9f8d8a5cbe505fb5abe3b33d1ba1",
+        "observed_status": "blocked-not-conformant",
+        "accepted_as_release_evidence": false
+      },
+      "license": {
+        "spdx": "Apache-2.0",
+        "url": "https://github.com/Gordonfive/bempic-reference/blob/cf3485f6606d6462077e8edd1592264c3ce4ca5e/LICENSE"
+      }
+    }
+  },
+  "req_reg_003": {
+    "stable_name": "pass",
+    "owner_and_contact": "pass",
+    "exact_id_and_initial_revision": "pass",
+    "public_profile": "pass",
+    "canonical_parameters": "pass",
+    "field_and_collection_bounds": "pass",
+    "maximum_encoded_size_tables": "pass",
+    "draft_worst_case_proof": "pass",
+    "draft_valid_and_invalid_vectors": "pass",
+    "security_analysis": "pass",
+    "license_analysis": "pass",
+    "registry_collision_check": "pass",
+    "experimental_replacement_warning": "pass",
+    "result": "pass"
+  },
+  "maximum_encoded_sizes": {
+    "CAPABILITIES": 34360,
+    "SUMMARY": 33078,
+    "OFFER": 186787,
+    "REQUEST": 39184,
+    "DATA": 1048574,
+    "RECEIPT": 33339,
+    "FAILURE": 33324,
+    "generic_content_ceiling": 1048569,
+    "data_payload_ceiling": 1048524,
+    "data_payload_one_past_rejected": 1048525,
+    "outer_record_ceiling": 1048576,
+    "outer_one_past_rejected": 1048577
+  },
+  "private_candidate_measurements": {
+    "fixture": "V01-prescribed-100-message",
+    "warm_no_change_bempic_bytes": 35,
+    "cold_no_change_bempic_bytes": 75,
+    "warm_threshold": 64,
+    "cold_threshold": 128,
+    "mathematical_width_preserved_for_public_id": true,
+    "accepted_as_public_tuple_release_evidence": false,
+    "public_tuple_regeneration_required": true
+  },
+  "public_tuple_transition": {
+    "source_private_tuple": "0xffff0001/2",
+    "allocated_public_tuple": "0x00010000/1",
+    "id_change_changes_encoded_records": true,
+    "regenerate": [
+      "static-capability-expansion-and-profile-binding",
+      "generic-tuple-bearing-operation-bytes",
+      "representation-ids",
+      "descriptors",
+      "collection-digests",
+      "vectors-and-bundle-digests",
+      "independent-verification-results"
+    ]
+  },
+  "oceanmail_application_evidence": {
+    "repository": "Gordonfive/oceanmail",
+    "commit": "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600",
+    "commit_url": "https://github.com/Gordonfive/oceanmail/commit/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600",
+    "ci_url": "https://github.com/Gordonfive/oceanmail/actions/runs/33569928056",
+    "ci_conclusion": "success",
+    "profile_url": "https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/docs/BEMPIC-APPLICATION-PROFILE.md",
+    "profile_sha256": "b2e485c08d67ad0839c134829643905936dc2263bd52eaf5d88ddc71ee29d624",
+    "fixture_url": "https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/tests/fixtures/bempic-application-profile-v1.json",
+    "fixture_sha256": "2693e4007697f381f2ff5e500686876bbe1a90a9a3fa75c312a8edff6fb334fe",
+    "adr_url": "https://github.com/Gordonfive/oceanmail/blob/cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600/docs/adr/0003-bempic-object-identity-and-receipts.md",
+    "application_profile_current": true,
+    "accepted_as_complete_bempic_v11_release_evidence": false
+  },
+  "remaining_blockers": [
+    "public-codec-vector-regeneration",
+    "complete-v01-v15-and-codec-boundary-evidence",
+    "independent-implementation-ownership",
+    "b2f-oracle",
+    "m4p-binding-review",
+    "protocol-name",
+    "security-profile",
+    "bempic-reference-implementation-and-evidence",
+    "final-release-candidate-verification"
+  ]
+}

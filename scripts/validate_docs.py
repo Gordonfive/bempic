@@ -39,6 +39,7 @@ REQUIRED_FILES = (
     "docs/CONFORMANCE-MATRIX.md",
     "docs/TEST-VECTORS.md",
     "docs/REGISTRIES.md",
+    "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md",
     "docs/METRICS.md",
     "docs/M4P-CONFIRMATION.md",
     "docs/RELEASE-RECORD.md",
@@ -51,6 +52,7 @@ REQUIRED_FILES = (
     "schemas/v0.1/fingerprints.json",
     "schemas/v0.1/jcs-canonicalization-vectors.json",
     "conformance/v0.1/codec-registry.json",
+    "conformance/v0.1/experimental-codec-allocation.json",
     "conformance/v0.1/vector-catalog.json",
     "conformance/v0.1/metrics.json",
     "conformance/v0.1/release-record-template.json",
@@ -142,6 +144,7 @@ def validate_consistency() -> list[str]:
             "not yet released or tagged",
             "DCCL is prior art",
             "bempic-reference",
+            "0x00010000/1",
         ),
         "README.md": (
             "v0.1.0 release candidate",
@@ -156,6 +159,7 @@ def validate_consistency() -> list[str]:
             "MUST NOT be tagged yet",
             "Required work in `bempic-reference`",
             "CONFORMANCE-MATRIX.md",
+            "cf3485f6606d6462077e8edd1592264c3ce4ca5e",
         ),
         "docs/RELEASE-NOTES-v0.1.0.md": (
             "does not exist and must not be created yet",

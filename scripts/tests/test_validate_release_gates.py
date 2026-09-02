@@ -87,16 +87,80 @@ class ReleaseGateValidatorTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         gates.validate_codec_registry()
 
-    def test_allocatable_codec_statuses_are_accepted(self) -> None:
+    def test_reviewed_codec_allocation_is_pinned(self) -> None:
         registry = copy.deepcopy(gates.load_json("conformance/v0.1/codec-registry.json"))
-        registry["allocations"] = [
-            {"id": 1, "revision": 1, "status": "approved"},
-            {"id": 1, "revision": 2, "status": "mandatory"},
-            {"id": 65536, "revision": 1, "status": "experimental"},
-            {"id": 65536, "revision": 2, "status": "deprecated"},
-        ]
+        registry["allocations"][0]["id"] = 65537
         with patch.object(gates, "load_json", return_value=registry):
-            gates.validate_codec_registry()
+            with self.assertRaisesRegex(ValueError, "reviewed compact codec"):
+                gates.validate_codec_registry()
+
+        registry = copy.deepcopy(gates.load_json("conformance/v0.1/codec-registry.json"))
+        registry["allocations"][0]["status"] = "approved"
+        with patch.object(gates, "load_json", return_value=registry):
+            with self.assertRaises(ValueError):
+                gates.validate_codec_registry()
+
+    def test_allocation_package_public_tuple_is_pinned(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["allocation"]["revision"] = 2
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "public tuple or status"):
+                gates.validate_experimental_codec_allocation()
+
+    def test_private_candidate_cannot_be_promoted_to_release_evidence(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["private_candidate_provenance"]["artifacts"][
+            "conformance_report"
+        ]["accepted_as_release_evidence"] = True
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "cannot become release evidence"):
+                gates.validate_experimental_codec_allocation()
+
+    def test_private_candidate_requires_public_vector_regeneration(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["private_candidate_measurements"][
+            "public_tuple_regeneration_required"
+        ] = False
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "changed or promoted"):
+                gates.validate_experimental_codec_allocation()
+
+    def test_compact_data_payload_ceiling_is_pinned(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["maximum_encoded_sizes"]["data_payload_ceiling"] = 1048526
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "DATA payload ceiling"):
+                gates.validate_experimental_codec_allocation()
+
+    def test_same_owner_verifier_cannot_claim_independent_ownership(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["private_candidate_provenance"]["artifacts"][
+            "independent_language_verifier"
+        ]["independent_ownership"] = True
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "independent ownership"):
+                gates.validate_experimental_codec_allocation()
+
+    def test_oceanmail_profile_cannot_replace_v11_evidence(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["oceanmail_application_evidence"][
+            "accepted_as_complete_bempic_v11_release_evidence"
+        ] = True
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "over-promoted"):
+                gates.validate_experimental_codec_allocation()
 
     def test_blocked_reference_checkpoint_cannot_be_promoted(self) -> None:
         release = copy.deepcopy(
