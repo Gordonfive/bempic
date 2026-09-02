@@ -94,7 +94,10 @@ uvarint MUST be canonical. The decoder MUST check the outer ceiling, canonical
 length, fixed widths, bounds, and nesting before allocating proportional to
 remote input or returning an operation. It MUST reject trailing bytes,
 truncation, unknown tags or forms, overlong integers, and a 1,048,577-octet
-outer input before body allocation.
+outer input before body allocation. For generic form it MUST additionally
+enforce `7 + generic_content_length <= 1,048,576` before reconstructing or
+decoding the fixed-width content. Thus generic content is at most 1,048,569
+octets even though the compact outer envelope has two otherwise unused octets.
 
 Unknown optional and critical record extensions retain core behavior: a
 bounded unknown optional value is skipped without side effects; an unknown
@@ -149,8 +152,12 @@ stated UTF-8-octet bound.
 The bounds are: 8 protocols, 16 schemas, 16 codec preferences, 32 extensions,
 1,024 extension-value or codec-parameter octets, 128 offer descriptors, 128
 request selections, 1,000,000 collection entries, 64 failure-scope octets, and
-256 diagnostic UTF-8 octets. Nesting is fixed to operation, bounded collection,
-and descriptor/selection/extension depth; values are not recursive.
+256 diagnostic UTF-8 octets. A generic `DATA` record is further limited to a
+1,048,524-octet payload: form (1), representation ID (32), offset (8), payload
+length (4), payload, and zero-extension count (1) consume the 1,048,569-octet
+generic-content ceiling. A negotiated maximum may be lower. Nesting is fixed
+to operation, bounded collection, and descriptor/selection/extension depth;
+values are not recursive.
 
 [REQ-COMPACT-004] Encoders and decoders MUST enforce the specification's core
 bounds and the field widths and collection bounds in this section. UTF-8 and
@@ -232,6 +239,15 @@ For a generic operation whose previous fixed-envelope reached maximum is
 `M_fixed`, the direct content maximum is `M_fixed - 7`, the body maximum is
 `1 + (M_fixed - 7)`, and the complete maximum is
 `1 + V(body) + body`.
+
+The profile deliberately retains `M_fixed <= 1,048,576` as an independent
+generic-content constraint; it does not refill bytes saved by the compact outer
+envelope. For `DATA`, this gives a 1,048,524-octet payload, 1,048,569 octets of
+generic content, a 1,048,570-octet compact body, and a 1,048,574-octet complete
+record. A 1,048,525-octet payload is the semantic one-past profile-bound input
+and is rejected before allocation; a compact record with a 1,048,526-octet
+payload would fill the outer ceiling but is nonconforming because its
+reconstructed generic content exceeds this declared profile bound.
 
 | Operation | Direct generic content | Complete maximum | Private-candidate witness SHA-256 (allocation provenance) |
 |---|---:|---:|---|

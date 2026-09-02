@@ -71,7 +71,7 @@ assert(next === 2 ** 32, "codec registry does not cover uint32");
 assert(registry.allocations.length === 1, "expected one reviewed v0.1 codec allocation");
 const compact = registry.allocations[0];
 const compactProfileSha256 =
-  "08c8af34d57870a421b8ecb4505ed9be176f9448a18879ceadfe0df9b30b297f";
+  "bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc642dc731127";
 assert(compact.id === 65536 && compact.id_hex === "0x00010000" &&
   compact.revision === 1 && compact.status === "experimental",
 "compact public tuple changed");
@@ -105,6 +105,12 @@ assert(allocation.private_candidate_measurements.warm_no_change_bempic_bytes ===
   allocation.private_candidate_measurements.accepted_as_public_tuple_release_evidence === false &&
   allocation.private_candidate_measurements.public_tuple_regeneration_required === true,
 "private measurements changed or were promoted");
+assert(allocation.maximum_encoded_sizes.DATA === 1048574 &&
+  allocation.maximum_encoded_sizes.generic_content_ceiling === 1048569 &&
+  allocation.maximum_encoded_sizes.data_payload_ceiling === 1048524 &&
+  allocation.maximum_encoded_sizes.data_payload_one_past_rejected === 1048525 &&
+  allocation.maximum_encoded_sizes.outer_record_ceiling === 1048576,
+"compact DATA payload ceiling or maximum changed");
 assert(allocation.oceanmail_application_evidence.commit ===
   "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600" &&
   allocation.oceanmail_application_evidence.application_profile_current === true &&

@@ -45,7 +45,7 @@ V08_STORAGE_SURFACES = ["memory", "representation-file", "durable-store"]
 COMPACT_CODEC_ID = 65536
 COMPACT_CODEC_REVISION = 1
 COMPACT_PROFILE = "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md"
-COMPACT_PROFILE_SHA256 = "08c8af34d57870a421b8ecb4505ed9be176f9448a18879ceadfe0df9b30b297f"
+COMPACT_PROFILE_SHA256 = "bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc642dc731127"
 COMPACT_PRIVATE_COMMIT = "cf3485f6606d6462077e8edd1592264c3ce4ca5e"
 COMPACT_PRIVATE_TUPLE = "0xffff0001/2"
 OCEANMAIL_PROFILE_COMMIT = "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600"
@@ -451,6 +451,21 @@ def validate_experimental_codec_allocation() -> None:
         value != "pass" for value in req_reg_003.values()
     ):
         fail("REQ-REG-003 allocation checklist is incomplete")
+    if data.get("maximum_encoded_sizes") != {
+        "CAPABILITIES": 34360,
+        "SUMMARY": 33078,
+        "OFFER": 186787,
+        "REQUEST": 39184,
+        "DATA": 1048574,
+        "RECEIPT": 33339,
+        "FAILURE": 33324,
+        "generic_content_ceiling": 1048569,
+        "data_payload_ceiling": 1048524,
+        "data_payload_one_past_rejected": 1048525,
+        "outer_record_ceiling": 1048576,
+        "outer_one_past_rejected": 1048577,
+    }:
+        fail("compact maximum-size table or DATA payload ceiling changed")
 
     provenance = data.get("private_candidate_provenance", {})
     if (

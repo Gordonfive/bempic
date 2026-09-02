@@ -131,6 +131,15 @@ class ReleaseGateValidatorTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "changed or promoted"):
                 gates.validate_experimental_codec_allocation()
 
+    def test_compact_data_payload_ceiling_is_pinned(self) -> None:
+        allocation = copy.deepcopy(
+            gates.load_json("conformance/v0.1/experimental-codec-allocation.json")
+        )
+        allocation["maximum_encoded_sizes"]["data_payload_ceiling"] = 1048526
+        with patch.object(gates, "load_json", return_value=allocation):
+            with self.assertRaisesRegex(ValueError, "DATA payload ceiling"):
+                gates.validate_experimental_codec_allocation()
+
     def test_same_owner_verifier_cannot_claim_independent_ownership(self) -> None:
         allocation = copy.deepcopy(
             gates.load_json("conformance/v0.1/experimental-codec-allocation.json")

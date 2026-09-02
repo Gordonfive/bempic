@@ -24,7 +24,7 @@
   },
   "profile": {
     "path": "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md",
-    "sha256": "08c8af34d57870a421b8ecb4505ed9be176f9448a18879ceadfe0df9b30b297f",
+    "sha256": "bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc642dc731127",
     "canonical_parameters_hex": "",
     "supported_representation_schema_fingerprints": [
       "d8906a1cefbf89e4f29b4a0f636cfbfa1e9c6301e7e3a4fe213c090066f8e797"
@@ -103,6 +103,9 @@
     "DATA": 1048574,
     "RECEIPT": 33339,
     "FAILURE": 33324,
+    "generic_content_ceiling": 1048569,
+    "data_payload_ceiling": 1048524,
+    "data_payload_one_past_rejected": 1048525,
     "outer_record_ceiling": 1048576,
     "outer_one_past_rejected": 1048577
   },

@@ -9,7 +9,7 @@
     "id": 65536,
     "revision": 1,
     "status": "experimental",
-    "profile_digest": "sha256:08c8af34d57870a421b8ecb4505ed9be176f9448a18879ceadfe0df9b30b297f",
+    "profile_digest": "sha256:bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc642dc731127",
     "size_proof_digest": "sha256:fd3461c674921b9730c773f0eef01d34dcc8e60a472ca1bb2ec1f3027de2f525",
     "allocation_evidence": "conformance/v0.1/experimental-codec-allocation.json",
     "approved": false,
