@@ -77,6 +77,7 @@ DCCL, adopt its wire format or encryption, require C++, or require Protobuf.
 - [Experimental compact codec profile](docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md)
 - [Experimental allocation evidence](conformance/v0.1/experimental-codec-allocation.json)
 - [Required metrics](docs/METRICS.md)
+- [B2F/LZHUF oracle decision and comparison profile](docs/B2F-ORACLE.md)
 - [M4P confirmation requirement](docs/M4P-CONFIRMATION.md)
 - [Release-record requirements](docs/RELEASE-RECORD.md)
 - [Canonical schema descriptors](schemas/README.md)

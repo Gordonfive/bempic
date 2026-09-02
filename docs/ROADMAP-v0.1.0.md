@@ -65,9 +65,12 @@ passing results by documentation alone.
   byte with the primary implementation;
 - [ ] reproduce every required behavior of the transitional Python proof or
   link an accepted decision documenting the normative difference;
-- [ ] publish deterministic raw, MIME, B2F/LZHUF, candidate codec, interrupted
-  restart, and persistent-resume measurements required by
-  [`METRICS.md`](METRICS.md), with dependency/license details;
+- [ ] publish the synthetic corpus and qualified process-separated or
+  permissively licensed oracle package required by
+  [`B2F-ORACLE.md`](B2F-ORACLE.md), then publish deterministic raw, MIME,
+  B2F/LZHUF, candidate codec, interrupted-restart, and persistent-resume
+  measurements required by [`METRICS.md`](METRICS.md), with exact
+  dependency/license details;
 - [ ] execute every row of the normative 24-row V08 interruption/restart/storage
   covering array, publish its pair-coverage proof and exact trace fields, and
   retain the separate before/after V14 durable-transition evidence;
@@ -101,6 +104,19 @@ to regenerate encoded records, representation IDs, checkpoint and collection
 digests, vectors, and verification for allocated `0x00010000/1` and the exact
 clarified specification commit. Mandatory V01–V15/codec-boundary evidence,
 independent ownership, B2F, and external M4P approval remain incomplete.
+
+### Current B2F oracle decision
+
+The exact comparison profile and candidate/license audit are now published in
+[`B2F-ORACLE.md`](B2F-ORACLE.md) and
+[`b2f-oracle-decision.json`](../conformance/v0.1/b2f-oracle-decision.json).
+No candidate currently combines an immutable standalone artifact, exact ARSFI
+byte behavior, the prescribed 250-octet full envelope, a redistributable corpus,
+independent reproduction, and a complete legal execution model. The closest
+process-separated candidate is GPL-2.0-or-later `paclink-unix` `lzhuf_1`; it is
+not copied or linked here and still lacks the required pinned standalone build
+and corpus evidence. The B2F gate remains blocked; its 10% median and 5%
+per-fixture thresholds are unchanged.
 
 ### Current OceanMail application evidence
 
@@ -172,9 +188,11 @@ the prototype.
   caused by lost durability knowledge is counted explicitly.
 - [ ] Every completed representation passes length, digest, ID, schema, and
   decode validation before a positive receipt.
-- [ ] B2F comparison results are reproducible. The median prescribed text
-  corpus target is at least 10% fewer total BEMPIC bytes; any fixture more than
-  5% above B2F has an accepted, measured resumption/metering justification.
+- [ ] The selected B2F oracle, synthetic corpus, exact transcript, licenses,
+  raw results, and independent reproduction satisfy
+  [`B2F-ORACLE.md`](B2F-ORACLE.md). The median prescribed text corpus target is
+  at least 10% fewer total BEMPIC bytes; any fixture more than 5% above B2F has
+  an accepted, measured resumption/metering justification.
 - [ ] M4P reviewers or maintainers confirm the proposed application binding
   does not duplicate M4P network responsibilities, with every field and trace
   required by [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md).

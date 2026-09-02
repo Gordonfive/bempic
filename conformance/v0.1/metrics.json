@@ -51,6 +51,20 @@
     "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
     "bempic_total_bytes=bempic_operation_bytes_send+bempic_operation_bytes_receive"
   ],
+  "b2f_comparison": {
+    "profile": "bempic-v0.1-b2f-text-single-message-v1",
+    "decision_artifact": "conformance/v0.1/b2f-oracle-decision.json",
+    "decision_status": "blocked-no-qualified-oracle",
+    "selected_oracle": null,
+    "corpus_digest": null,
+    "results_claimable": false,
+    "directional_identity": "b2f_total_bytes=b2f_send_bytes+b2f_receive_bytes",
+    "candidate_reduction_percent": "100*(b2f_total_bytes-bempic_total_bytes)/b2f_total_bytes",
+    "candidate_increase_percent": "100*(bempic_total_bytes-b2f_total_bytes)/b2f_total_bytes",
+    "ratio_representation": "signed-integer-numerator-and-positive-integer-denominator",
+    "median": "exact-median-of-per-fixture-reduction-rationals",
+    "thresholds_changed": false
+  },
   "thresholds": [
     {"id": "warm-no-change", "vector": "V01", "case": "equal-warm-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 64, "aggregation": "each-run"},
     {"id": "cold-no-change", "vector": "V01", "case": "equal-cold-100", "metric": "bempic_total_bytes", "operator": "<=", "value": 128, "aggregation": "each-run"},

@@ -134,8 +134,8 @@ BEMPIC should improve or generalize the areas B2F does not target: service-neutr
 ### Reuse directly where appropriate
 
 - Mature compression and digest libraries rather than custom algorithms.
-- The ARSFI Winlink compression implementation or an independently compatible implementation as a **benchmark oracle**, subject to its BSD-style license and notices; it is not a required BEMPIC runtime dependency.
-- `wl2k-go` as an MIT-licensed independent B2F interoperability reference and comparator, not as the BEMPIC architecture.
+- The ARSFI Winlink compression implementation or an independently compatible implementation as a **benchmark oracle**, subject to its exact three-clause BSD license and notices; it is not a required BEMPIC runtime dependency. The later audit in [`B2F-ORACLE.md`](B2F-ORACLE.md) found that the archive is authoritative source but not a complete standalone oracle.
+- `wl2k-go` as an independent B2F interoperability reference and comparator, not as the BEMPIC architecture. Its root is MIT-licensed, but the later audit found an explicit unresolved antecedent-code notice in `lzhuf/COPYRIGHT`; the LZHUF package is therefore not approved here for incorporation or linking on the root license alone.
 - Existing fuzzing, property-testing, and deterministic network-simulation libraries where their dependency cost is justified.
 
 No third-party source should be copied into this specification repository
@@ -549,8 +549,8 @@ Primary specifications and maintained implementations reviewed for this plan:
 - [Winlink Open B2F — Message Structure and B2 Forwarding Protocol](https://winlink.org/B2F)
 - [Winlink Data Flow and Data Packaging](https://winlink.org/sites/default/files/downloads/winlink_data_flow_and_data_packaging.pdf)
 - [F6FBB forwarding protocol](https://www.f6fbb.org/protocole.html)
-- [ARSFI Winlink Compression source](https://github.com/ARSFI/Winlink-Compression)
-- [wl2k-go independent B2F implementation](https://github.com/la5nta/wl2k-go)
+- [ARSFI Winlink Compression source at audited commit](https://github.com/ARSFI/Winlink-Compression/tree/dbe96569817018e66e0e5f6add40eed12adc9fd7)
+- [wl2k-go independent B2F implementation at audited release commit](https://github.com/la5nta/wl2k-go/tree/efde6fbcb7bc8d6519fd8018ec544c793d4ef48d)
 - [RFC 9171 — Bundle Protocol Version 7](https://www.rfc-editor.org/rfc/rfc9171.html)
 - [RFC 5326 — Licklider Transmission Protocol](https://www.rfc-editor.org/rfc/rfc5326.html)
 - [CCSDS 727.0-B-5 — CCSDS File Delivery Protocol, Issue 5 with Editorial Change 1](https://ccsds.org/Pubs/727x0b5e1.pdf)

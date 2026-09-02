@@ -72,7 +72,9 @@ Before publication, replace these placeholders:
   size-proof, vector, license, and independent release evidence: `PENDING`
 - V01–V15 and normative conformance-matrix results: `PENDING`
 - Required metric-record digest and threshold evaluation: `PENDING`
-- Benchmark result digest and B2F comparator version: `PENDING`
+- B2F oracle decision: `blocked-no-qualified-oracle`; comparison profile and
+  source/license audit published, corpus/executable/results: `PENDING`
+- Benchmark result digest and selected B2F comparator version: `PENDING`
 - M4P boundary review: `PENDING`
 - Release CI URL: `PENDING`
 

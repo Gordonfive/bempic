@@ -58,6 +58,17 @@ assurance. The independent verifier, B2F oracle, M4P confirmation,
 protocol-name decision, complete sibling implementation evidence, and final
 release candidate results remain unresolved.
 
+The B2F legal/technical decision is recorded in
+[`B2F-ORACLE.md`](B2F-ORACLE.md) and its
+[`machine-readable artifact`](../conformance/v0.1/b2f-oracle-decision.json).
+Its decision status is `blocked-no-qualified-oracle`: ARSFI is authoritative and permissively licensed but does
+not publish a complete standalone oracle; `paclink-unix` offers a GPL-2.0-or-
+later process executable but lacks the pinned standalone build, prescribed
+corpus, full-envelope, and cross-implementation evidence; and `wl2k-go`/Pat
+retain an explicit LZHUF copyright-provenance caveat. The release template
+records this decision without claiming results, and the B2F blocker and both
+compactness thresholds remain unchanged.
+
 The audited, non-passing Reference checkpoint is
 [`bempic-reference@cf3485f6606d6462077e8edd1592264c3ce4ca5e`](https://github.com/Gordonfive/bempic-reference/commit/cf3485f6606d6462077e8edd1592264c3ce4ca5e),
 whose [exact-head CI succeeded](https://github.com/Gordonfive/bempic-reference/actions/runs/33569955919).

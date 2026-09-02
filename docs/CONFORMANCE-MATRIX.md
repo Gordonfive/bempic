@@ -70,10 +70,12 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-VEC-005 | `docs/TEST-VECTORS.md` updates | GR, compatibility statement, released-bundle immutability check |
 | REQ-VEC-006 | `docs/TEST-VECTORS.md` V08 array | catalog validator, 24 complete row traces, pair-coverage proof |
 | REQ-VEC-007 | `docs/TEST-VECTORS.md` public codec tuple | public-tuple bundle metadata, regenerated IDs/digests, private-tuple rejection |
+| REQ-VEC-008 | `docs/TEST-VECTORS.md` external B2F corpus | corpus manifest, exact raw/prepared/expected artifacts, licenses, digest and independent reproduction |
 | REQ-CLAIM-001 | `docs/CONFORMANCE.md` claims | CR claim metadata schema validation |
 | REQ-CONF-001 | `docs/CONFORMANCE.md` semantic core | CR checklist with V01–V15 links |
 | REQ-CONF-002 | `docs/CONFORMANCE.md` interruptions | V08/V14 transition coverage report |
 | REQ-CONF-003 | `docs/CONFORMANCE.md` pairwise coverage | V08 24-row evidence and V14 before/after fault report |
+| REQ-CONF-004 | `docs/CONFORMANCE.md` B2F evidence | selected oracle, corpus, raw MR, license review and independent byte comparison |
 | REQ-CLAIM-002 | `docs/CONFORMANCE.md` major-zero wording | RR/CR forbidden-claim lint |
 | REQ-REG-001 | `docs/REGISTRIES.md` prototype codec | registry and prototype-advertisement inspection |
 | REQ-REG-002 | `docs/REGISTRIES.md` ID ranges | registry validator and V13 invalid-ID cases |
@@ -95,6 +97,12 @@ means an independently reproducible static or artifact check, not an assertion.
 | REQ-METRIC-008 | `docs/METRICS.md` B2F | oracle decision, licenses, raw corpus MR, justification GR |
 | REQ-METRIC-009 | `docs/METRICS.md` reproducibility | content-addressed MR and independent rerun |
 | REQ-METRIC-010 | `docs/METRICS.md` semantic workload | raw per-representation fixture records, shared endpoint-role binding, descriptor exclusion, and independently recomputed directional identity |
+| REQ-B2F-001 | `docs/B2F-ORACLE.md` source preparation | exact raw MIME, semantic, prepared-B2 and BEMPIC fixture artifacts |
+| REQ-B2F-002 | `docs/B2F-ORACLE.md` LZHUF image | pinned ARSFI behavior, parameters, image structure and independent byte/decode evidence |
+| REQ-B2F-003 | `docs/B2F-ORACLE.md` B2F envelope | directional transcript reconstruction and byte identity |
+| REQ-B2F-004 | `docs/B2F-ORACLE.md` calculations | exact per-fixture rationals, median recomputation and reproducibility metadata |
+| REQ-B2F-005 | `docs/B2F-ORACLE.md` decision | blocked decision artifact, unchanged thresholds and complete next-package evidence |
+| REQ-B2F-006 | `docs/B2F-ORACLE.md` oracle record | input/output digests, decoded prefix fields, independent decode and expected-byte equality |
 | REQ-M4P-001 | `docs/M4P-CONFIRMATION.md` authority | external immutable confirmation in RR |
 | REQ-M4P-002 | `docs/M4P-CONFIRMATION.md` contract | M4P contract checklist and upstream links |
 | REQ-M4P-003 | `docs/M4P-CONFIRMATION.md` ownership | affirmative external boundary statement and GR |

@@ -14,8 +14,11 @@ deferred by an accepted decision before `v0.1.0` is tagged.
   or a stable-wire promise.
 - **Independent verifier:** Which implementation, language, and ownership will
   provide decoder/vector independence from the primary reference codec?
-- **B2F oracle:** Which licensed implementation and version will produce the
-  reproducible B2F/LZHUF comparison, and what notices are required?
+- **B2F oracle:** The legal/technical audit in
+  [`B2F-ORACLE.md`](B2F-ORACLE.md) selected no current candidate. Which next
+  package will provide the prescribed synthetic corpus, immutable standalone
+  executable, exact ARSFI-compatible output and 250-octet B2F envelope,
+  process/link/redistribution/CI license review, and independent reproduction?
 - **M4P binding review:** What exact opaque-record API, maximum-opportunity,
   persistence, duplicate, and cost-reporting guarantees will the first binding
   consume? The external record must satisfy
@@ -31,7 +34,7 @@ record. The minimum decision evidence is:
 |---|---|
 | Experimental codec release evidence | Regenerated `0x00010000/1` vector bundle, compatibility/security/license review, independent verification, and governance acceptance; private-tuple artifacts are allocation provenance only |
 | Independent verifier | Independently maintained source commit, owner, implementation language, toolchain/dependencies, vector-bundle digest, byte/failure comparison, and green CI |
-| B2F oracle | Exact implementation/version/source, license and required notices, deterministic invocation and envelope rules, corpus digest, and reproducible raw results |
+| B2F oracle | Every item in the `REQ-B2F-005` next package: exact executable/source/build identity and digest, mode-specific license/notices, prescribed corpus digest, ARSFI byte equality, 250-octet transcript, two-platform and independent reproduction, and raw exact-rational results |
 | M4P binding review | The external confirmation and traces required by [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md) |
 | Protocol name | Governance decision selecting the durable display name/expansion and updating public documents consistently; no schema, negotiation, or byte change is implied |
 
