@@ -58,6 +58,19 @@ assurance. The independent verifier, B2F oracle, M4P confirmation,
 protocol-name decision, complete sibling implementation evidence, and final
 release candidate results remain unresolved.
 
+The M4P technical review package is locally complete at
+[`m4p-binding-review-package.json`](../conformance/v0.1/m4p-binding-review-package.json)
+against authoritative specification commit
+[`2eca9e8f57d43dab250cc26c1bbf2d255e3331de`](https://github.com/Poseidons-Forge/m4p-spec/commit/2eca9e8f57d43dab250cc26c1bbf2d255e3331de).
+It defines the proposed complete opaque-record boundary, closed normalized
+submission results, layer ownership, alternate-source/carrier resume,
+receipt/lost-receipt behavior, conservative uncertain-acceptance accounting,
+and six V09/V10/V12 traces. Its status is
+`ready-for-external-review-not-submitted`; no upstream URL, reviewer, approval,
+answers digest, concrete implementation mapping, or passing trace digest exists.
+The release template records the package while keeping `m4p-binding-review`
+blocked.
+
 The B2F legal/technical decision is recorded in
 [`B2F-ORACLE.md`](B2F-ORACLE.md) and its
 [`machine-readable artifact`](../conformance/v0.1/b2f-oracle-decision.json).

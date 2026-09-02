@@ -49,6 +49,8 @@ BEMPIC does not define routing, addressing, discovery, mesh coordination,
 store-carry-forward, forwarding, generic fragmentation/reassembly, network
 deduplication, network TTL, cross-modality behavior, or DataLink abstraction.
 M4P owns those concerns for OceanMail.
+The current M4P specification explicitly omits custody transfer; BEMPIC does
+not add or claim a custody layer in response.
 
 BEMPIC also does not define modem framing, FEC, ARQ, retransmission, modulation,
 RF turnaround, or hardware control. DataLink adapters and modems own them.

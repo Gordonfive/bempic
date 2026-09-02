@@ -90,6 +90,16 @@ production-security, B2F, M4P, independent-ownership, or release claim. Its
 security class is public cleartext with no application protection. No codec is
 approved for public production use.
 
+### M4P application Message Type binding
+
+M4P application Message Type IDs are not BEMPIC registry IDs. The authoritative
+M4P specification assigns their catalog to each application or deployment and
+defines different transport semantics for Status, Event, Request, and Response
+ranges. This repository has not allocated or selected an M4P application
+Message Type for BEMPIC. The class/pairing question and any eventual
+deployment-owned allocation remain part of the externally blocked
+[`M4P binding review`](M4P-CONFIRMATION.md).
+
 ### Status progression
 
 The statuses are `experimental`, `approved`, `mandatory`, `deprecated`, and

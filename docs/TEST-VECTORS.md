@@ -216,6 +216,25 @@ Fixture direction is derived only from the immutable endpoint-role binding:
 fixture artifacts remain listed for reproducibility but contribute zero until
 their selection event.
 
+### M4P binding traces
+
+[REQ-VEC-009] A bundle claiming M4P carrier-binding evidence MUST identify
+binding profile `bempic-m4p-opaque-record-v0.1-review`, its machine-package
+digest, the exact M4P source and implementation commits, the deployment-owned
+Message Type mapping, and the concrete API mapping. It MUST execute
+`M4P-V09-AUTHORIZED-SOURCE`, `M4P-V09-CROSS-MODALITY`,
+`M4P-V10-DUPLICATE`, `M4P-V10-LOST-FINAL-RECEIPT`, `M4P-V12-BUDGET`, and
+`M4P-V12-CONNECTION-LOSS` with every ordered step and pass assertion in
+[`m4p-binding-review-package.json`](../conformance/v0.1/m4p-binding-review-package.json).
+The trace must record complete record bytes/digest, local submission and
+delivery references, resolved source `ClientUID`, M4P Message identity,
+submission result, BEMPIC budget before/after, exact BEMPIC counters, every
+available lower-layer observation with scope, durable state, emitted BEMPIC
+receipt, and final result. A lower-layer indication cannot substitute for a
+BEMPIC receipt. These prescribed traces are requirements, not current execution
+evidence; they remain blocked by external M4P confirmation and a concrete
+binding run.
+
 ## Updating vectors
 
 Changing expected bytes requires a codec revision. Changing semantic outcomes

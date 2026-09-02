@@ -94,6 +94,17 @@ upstream implementation and documentation links.
 
 M4P is the intended open mesh/network layer for OceanMail.
 
+The current audit pins authoritative M4P specification commit
+[`2eca9e8f57d43dab250cc26c1bbf2d255e3331de`](https://github.com/Poseidons-Forge/m4p-spec/commit/2eca9e8f57d43dab250cc26c1bbf2d255e3331de).
+That proposal-draft source defines `ClientUID` application addressing,
+mission-scoped compact addresses, MIID deduplication, TTL, fragmentation,
+store-carry-forward, cross-modality scheduling, and a DataLink fact boundary.
+It explicitly omits custody transfer and does not yet publish the concrete
+application API, safe complete application-payload maximum, or
+application-visible cost/restart contract needed by BEMPIC. Those are questions
+for external review, not behaviors BEMPIC may fill in locally; see
+[`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md).
+
 M4P already provides much of what earlier BEMPIC drafts attempted to own:
 
 - decentralized peer/network coordination;
@@ -103,7 +114,7 @@ M4P already provides much of what earlier BEMPIC drafts attempted to own:
 - network-level deduplication;
 - TTL/expiration;
 - priorities and scheduling;
-- forwarding deferral/cancel-on-seen suppression;
+- forwarding deferral and evidence-driven suppression;
 - DataLink abstraction;
 - optional evidence such as link quality.
 

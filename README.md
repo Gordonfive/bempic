@@ -31,9 +31,10 @@ OceanMail  ->  BEMPIC  ->  M4P  ->  DataLink adapters
 - BEMPIC owns compact application objects, synchronization, persistent
   cross-contact resume, exact integrity, semantic receipts, and byte budgets.
 - M4P owns routing, addressing, mesh coordination, forwarding,
-  store-carry-forward, generic fragmentation, network deduplication, network
-  TTL, cross-modality behavior, and DataLink abstraction.
-- DataLink adapters/modems own link framing, FEC, ARQ, retransmission,
+  store-carry-forward, retained-record resend scheduling, generic fragmentation,
+  network deduplication, network TTL, cross-modality behavior, and DataLink
+  abstraction.
+- DataLink adapters/modems own link framing, FEC, ARQ, frame retransmission,
   modulation, and hardware behavior.
 
 BEMPIC does not duplicate M4P or modem reliability. Its persistent byte prefix
@@ -78,7 +79,8 @@ DCCL, adopt its wire format or encryption, require C++, or require Protobuf.
 - [Experimental allocation evidence](conformance/v0.1/experimental-codec-allocation.json)
 - [Required metrics](docs/METRICS.md)
 - [B2F/LZHUF oracle decision and comparison profile](docs/B2F-ORACLE.md)
-- [M4P confirmation requirement](docs/M4P-CONFIRMATION.md)
+- [M4P binding review package and confirmation requirement](docs/M4P-CONFIRMATION.md)
+- [Machine-readable M4P review evidence](conformance/v0.1/m4p-binding-review-package.json)
 - [Release-record requirements](docs/RELEASE-RECORD.md)
 - [Canonical schema descriptors](schemas/README.md)
 - [v0.1.0 roadmap and tag gates](docs/ROADMAP-v0.1.0.md)

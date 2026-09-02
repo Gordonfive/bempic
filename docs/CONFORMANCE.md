@@ -167,6 +167,19 @@ missing fixture, unavailable required counter, framing difference, or
 unresolved license/provenance field is a blocked threshold, not a skip, zero,
 estimate, or pass.
 
+### M4P binding evidence
+
+[REQ-CONF-005] A carrier binding conformer claiming M4P support MUST bind its
+report to the exact M4P source, implementation, BEMPIC binding profile, machine
+review-package digest, deployment Message Type allocation, and normalized API
+mapping. It MUST pass all six prescribed V09/V10/V12 M4P traces, demonstrate
+that only complete records cross the boundary, reject unresolved or
+unauthorized sources before BEMPIC mutation, preserve application idempotency,
+and keep every M4P/DataLink indication separate from a BEMPIC receipt. Missing
+external confirmation, an unanswered blocking question, a null safe record
+ceiling, a skipped trace, or an unavailable concrete implementation mapping is
+blocked evidence rather than a pass or not-applicable result.
+
 ## Evidence
 
 A conformance report is machine-readable and includes:

@@ -22,6 +22,9 @@ passing results by documentation alone.
 - [x] Define codec allocation/status rules, maximum-size proof evidence, the
   V01–V15 catalog, metric semantics, external M4P confirmation, a release-record
   template, and a machine-validated normative conformance matrix.
+- [x] Publish the local M4P technical review package with immutable primary
+  sources, exact opaque-record API proposal, ownership, open questions, and
+  prescribed V09/V10/V12 traces; no external confirmation is claimed.
 - [ ] Resolve every `release-blocking` item in
   [`OPEN-QUESTIONS.md`](OPEN-QUESTIONS.md).
 - [ ] Review normative terms for contradictions and approve the specification
@@ -77,8 +80,9 @@ passing results by documentation alone.
 - [ ] demonstrate zero deferred attachment payload before selection, exact
   budget enforcement, no resend of a fully durable prefix, and zero-byte quote
   error for deterministic no-fault plans;
-- [ ] expose an opaque-record carrier trait and demonstrate a mock M4P binding
-  without implementing routing, fragmentation, deduplication, or TTL; and
+- [ ] expose the reviewed complete-record carrier trait and demonstrate all six
+  prescribed M4P V09/V10/V12 traces without implementing routing,
+  fragmentation, network deduplication, TTL, or DataLink behavior; and
 - [ ] record one immutable passing commit SHA and green CI URL in the v0.1.0
   release PR in this repository.
 
@@ -104,6 +108,26 @@ to regenerate encoded records, representation IDs, checkpoint and collection
 digests, vectors, and verification for allocated `0x00010000/1` and the exact
 clarified specification commit. Mandatory V01–V15/codec-boundary evidence,
 independent ownership, B2F, and external M4P approval remain incomplete.
+
+### Current M4P binding review package
+
+The local technical package is
+[`m4p-binding-review-package.json`](../conformance/v0.1/m4p-binding-review-package.json),
+with the proposed contract and source audit in
+[`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md). It pins the current authoritative
+M4P source at
+[`2eca9e8f57d43dab250cc26c1bbf2d255e3331de`](https://github.com/Poseidons-Forge/m4p-spec/commit/2eca9e8f57d43dab250cc26c1bbf2d255e3331de),
+records that M4P explicitly omits custody transfer, and defines six expected
+V09/V10/V12 traces. The package is `ready-for-external-review-not-submitted`.
+No upstream issue, email, or post was created; reviewer identity, approval,
+answers, implementation mapping, and execution digests remain null. The M4P
+gate and dependent vector evidence remain blocked.
+
+The unresolved questions cover the safe complete-record maximum, application
+Message Type and Request/Response mapping, concrete API and restart
+persistence, backpressure/cancellation/expiry/cost signals, address
+scope/federation, mixed M4P versions, long-lived delivery beyond the encodable
+TTL, and delivery from an unresolved source `ClientUID`.
 
 ### Current B2F oracle decision
 

@@ -51,6 +51,18 @@ The following counters are unsigned integer octets unless noted otherwise:
 newly committed in the run. Matching overlap, replay, and previously durable
 bytes are not useful bytes.
 
+[REQ-METRIC-011] An M4P binding result MUST record its normalized submission
+status for each attempted complete operation. `accepted` adds the operation
+length once to the BEMPIC send direction; proven non-acceptance adds zero and
+releases the preflight reservation; `acceptance-unknown` conservatively adds
+the operation length once and retains that budget debit; and a later fresh-M4P-
+instance replay adds the length again. Carrier and physical byte counters must
+remain `unavailable` for the current review profile unless an externally
+confirmed implementation contract exposes exact or estimated values with
+units, direction, layer boundary, included headers/retransmissions, and an
+admission rule. M4P packet, Transmission, fragment, receipt-envelope, and
+DataLink bytes never enter `bempic_operation_bytes` or `semantic_bytes`.
+
 ## Semantic-workload metrics
 
 Every measurement scope binds two enduring fixture roles, `endpoint-a` and

@@ -64,15 +64,24 @@ continuity, integrity state, semantic receipts, and BEMPIC-byte accounting.
 
 M4P owns peer and network addressing, discovery, route selection, mesh
 coordination, store-carry-forward, forwarding, generic fragmentation and
-reassembly, network-level deduplication, network TTL, cross-modality behavior,
-and the DataLink abstraction. BEMPIC operations are opaque application payloads
-to M4P. [REQ-LAYER-001] BEMPIC MUST NOT infer application delivery from M4P forwarding or
-packet delivery.
+reassembly, retained-record resend scheduling, network-level deduplication,
+network TTL, cross-modality behavior, and the DataLink abstraction. BEMPIC
+operations are opaque application payloads to M4P. [REQ-LAYER-001] BEMPIC MUST NOT infer application delivery from M4P forwarding or
+packet delivery. The current M4P specification explicitly omits custody
+transfer; BEMPIC therefore claims no M4P custody guarantee.
 
-DataLink adapters and modems own waveforms, framing, FEC, ARQ, retransmission,
-adaptive modulation, and link turnaround. BEMPIC prefix resumption exists only
+DataLink adapters and modems own waveforms, framing, FEC, ARQ, frame
+retransmission, adaptive modulation, and link turnaround. BEMPIC prefix resumption exists only
 to continue an application representation after a contact or path is gone; it
 is not a second per-frame reliability protocol.
+
+[REQ-LAYER-003] A BEMPIC-to-M4P binding MUST implement the complete-record
+interface, closed submission results, resolved-and-authorized `ClientUID`
+ingress rule, receipt separation, budget/connection-loss behavior, and trace
+requirements in [`docs/M4P-CONFIRMATION.md`](docs/M4P-CONFIRMATION.md). M4P
+receives one complete encoded operation as an opaque application payload and
+returns one complete reassembled payload; no M4P address, route, fragment,
+opportunity, TTL, or link field becomes a BEMPIC semantic field.
 
 OceanMail owns address policy, external-service integration, gateway scoring,
 relay participation, prioritization, quotas, billing, user approval, content
@@ -558,6 +567,9 @@ estimate when selecting operations. The binding or DataLink enforces a hard
 lower-layer budget; BEMPIC only enforces it directly when the binding provides
 an exact pre-admission cost contract. Carrier budgeting never changes core
 operation semantics or introduces transport-specific fields into a message.
+The reviewed M4P v0.1 proposal currently exposes no application-level
+opportunity or cost by default, so those counters remain unavailable unless an
+externally confirmed implementation mapping defines exact scope and units.
 
 ## 13. Version, schema, codec, and extension negotiation
 
@@ -635,7 +647,7 @@ attacker-controlled text.
 
 [REQ-LAYER-002] A v0.1 implementation MUST NOT claim core conformance for behavior that depends
 on BEMPIC performing routing, peer discovery, mesh coordination, forwarding,
-network custody, network TTL, generic fragmentation/reassembly, generic
+custody transfer, network TTL, generic fragmentation/reassembly, generic
 network deduplication, modem ARQ/FEC, RF scheduling, Internet mail delivery,
 service authorization, billing, content transformation, or UI policy.
 

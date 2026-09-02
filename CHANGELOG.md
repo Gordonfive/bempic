@@ -34,6 +34,10 @@ releases correct or clarify without intentionally changing protocol semantics.
   defining exact MIME/B2 preparation, LZHUF behavior, framing, directional byte
   scope, rational calculations, candidate licensing, and the evidence package
   required to unblock oracle selection.
+- A machine-readable M4P binding review package and unsubmitted review-request
+  draft pinning authoritative source, a complete opaque-record interface,
+  ownership, normalized results, six V09/V10/V12 traces, and eight blocking
+  external questions.
 
 ### Changed
 
@@ -42,6 +46,11 @@ releases correct or clarify without intentionally changing protocol semantics.
   executable, exact envelope, corpus, licensing, and independent-verification
   requirements. The existing 10% median and 5% per-fixture B2F thresholds
   remain release-blocking and unchanged.
+- Reconciled the BEMPIC/M4P boundary with current M4P source: M4P owns network
+  behavior but explicitly omits custody transfer; M4P delivery evidence is not
+  a BEMPIC receipt; unknown acceptance is conservatively budgeted; and external
+  confirmation, implementation mapping, safe record maximum, and trace results
+  remain blocked.
 
 - Replaced the codec-selection blocker with public-tuple vector regeneration:
   the Reference private candidate `0xffff0001/2` supports allocation only, and

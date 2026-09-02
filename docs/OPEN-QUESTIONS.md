@@ -19,11 +19,15 @@ deferred by an accepted decision before `v0.1.0` is tagged.
   package will provide the prescribed synthetic corpus, immutable standalone
   executable, exact ARSFI-compatible output and 250-octet B2F envelope,
   process/link/redistribution/CI license review, and independent reproduction?
-- **M4P binding review:** What exact opaque-record API, maximum-opportunity,
-  persistence, duplicate, and cost-reporting guarantees will the first binding
-  consume? The external record must satisfy
-  [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md); it must be coordinated upstream,
-  not invented here.
+- **M4P binding external confirmation:** The local technical package now pins
+  `bempic-m4p-opaque-record-v0.1-review`, M4P specification commit
+  `2eca9e8f57d43dab250cc26c1bbf2d255e3331de`, the complete-record interface,
+  ownership, normalized results, and six required traces. External review must
+  still resolve the safe complete-record maximum, application Message Type and
+  Request/Response mapping, concrete API/restart guarantees,
+  cancellation/backpressure/expiry/cost signals, address scope/federation,
+  mixed versions, long-lived delivery, and unresolved-source handling. The
+  review request is drafted locally but has not been posted or sent.
 - **Protocol name:** Keep `BEMPIC` without an expansion, or adopt a durable
   expansion? The acronym's expansion has no wire consequence.
 
@@ -35,7 +39,7 @@ record. The minimum decision evidence is:
 | Experimental codec release evidence | Regenerated `0x00010000/1` vector bundle, compatibility/security/license review, independent verification, and governance acceptance; private-tuple artifacts are allocation provenance only |
 | Independent verifier | Independently maintained source commit, owner, implementation language, toolchain/dependencies, vector-bundle digest, byte/failure comparison, and green CI |
 | B2F oracle | Every item in the `REQ-B2F-005` next package: exact executable/source/build identity and digest, mode-specific license/notices, prescribed corpus digest, ARSFI byte equality, 250-octet transcript, two-platform and independent reproduction, and raw exact-rational results |
-| M4P binding review | The external confirmation and traces required by [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md) |
+| M4P binding external confirmation | Immutable affirmative review by an authorized M4P reviewer answering all eight questions in [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md), a concrete implementation/API mapping and safe maximum, plus six passing V09/V10/V12 traces bound to the review-package digest |
 | Protocol name | Governance decision selecting the durable display name/expansion and updating public documents consistently; no schema, negotiation, or byte change is implied |
 
 A decision that merely postpones a blocker can satisfy the release only if it

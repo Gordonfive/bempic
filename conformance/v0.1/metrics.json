@@ -51,6 +51,28 @@
     "semantic_bytes=semantic_bytes_send+semantic_bytes_receive",
     "bempic_total_bytes=bempic_operation_bytes_send+bempic_operation_bytes_receive"
   ],
+  "m4p_binding_accounting": {
+    "profile": "bempic-m4p-opaque-record-v0.1-review",
+    "decision_artifact": "conformance/v0.1/m4p-binding-review-package.json",
+    "submission_status_field": "status",
+    "bempic_tx_charge": {
+      "accepted": "record-octets-once",
+      "acceptance-unknown": "record-octets-once-conservative-debit",
+      "proven-not-accepted": "zero",
+      "fresh-replay": "record-octets-again"
+    },
+    "carrier_bytes": "unavailable-unless-externally-confirmed-implementation-contract",
+    "physical_bytes": "unavailable-unless-externally-confirmed-implementation-contract",
+    "excluded_from_bempic_and_semantic_bytes": [
+      "m4p-packet",
+      "m4p-transmission",
+      "m4p-fragment",
+      "m4p-receipt-envelope",
+      "datalink-framing",
+      "datalink-retransmission"
+    ],
+    "external_confirmation_complete": false
+  },
   "b2f_comparison": {
     "profile": "bempic-v0.1-b2f-text-single-message-v1",
     "decision_artifact": "conformance/v0.1/b2f-oracle-decision.json",

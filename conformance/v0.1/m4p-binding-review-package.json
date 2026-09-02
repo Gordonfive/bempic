@@ -1,0 +1,607 @@
+{
+  "format": "bempic-m4p-binding-review-package-v0.1",
+  "package_status": "ready-for-external-review-not-submitted",
+  "binding_profile": {
+    "id": "bempic-m4p-opaque-record-v0.1-review",
+    "revision": 1,
+    "approval_status": "unconfirmed",
+    "normative_document": "docs/M4P-CONFIRMATION.md",
+    "draft_review_request": "docs/review-requests/2026-09-02-m4p-v0.1-binding-review.md"
+  },
+  "external_confirmation": {
+    "status": "blocked-not-requested",
+    "upstream_url": null,
+    "reviewer": null,
+    "reviewer_authority": null,
+    "confirmed_at_utc": null,
+    "approved": false
+  },
+  "authoritative_m4p_source": {
+    "repository": "https://github.com/Poseidons-Forge/m4p-spec",
+    "commit": "2eca9e8f57d43dab250cc26c1bbf2d255e3331de",
+    "commit_url": "https://github.com/Poseidons-Forge/m4p-spec/commit/2eca9e8f57d43dab250cc26c1bbf2d255e3331de",
+    "tree": "b06d1830c6156ead535542d9ff4c0a5acbfd1545",
+    "declared_specification_version": "0.1",
+    "declared_status": "Proposal Draft",
+    "license": "CC-BY-4.0",
+    "copyright": "Copyright (c) 2026 Poseidon's Forge, Inc.",
+    "implementation_source_status": "announced-not-publicly-released",
+    "source_files": [
+      {
+        "path": "README.md",
+        "blob": "1891339cd9d71c9f1d516f7378aba1c12f1113cd",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/README.md",
+        "used_for": [
+          "license-and-attribution",
+          "implementation-source-availability"
+        ]
+      },
+      {
+        "path": "LICENSE",
+        "blob": "a5956fb9822fc725076d3bef61d58f2d12ebc01a",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/LICENSE",
+        "used_for": [
+          "license-terms"
+        ]
+      },
+      {
+        "path": "sections/01-introduction.md",
+        "blob": "898e6cac979dd863c8f7b67ca3f955feac4029b6",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/01-introduction.md",
+        "used_for": [
+          "scope",
+          "application-payload-ownership",
+          "deployment-compatibility"
+        ]
+      },
+      {
+        "path": "sections/02-protocol-overview.md",
+        "blob": "91d6310457197995739649c894f170664299a53e",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/02-protocol-overview.md",
+        "used_for": [
+          "application-interface",
+          "deliberate-omissions",
+          "no-custody-transfer"
+        ]
+      },
+      {
+        "path": "sections/03-identity-addressing.md",
+        "blob": "7f8f2879c67a783fbb6a1d412237855afadae8b2",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/03-identity-addressing.md",
+        "used_for": [
+          "clientuid-interface",
+          "mission-scoped-addresses"
+        ]
+      },
+      {
+        "path": "sections/04-message-classification.md",
+        "blob": "568e2be9cf3b1b7eccfeae76baea18c3eee64488",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/04-message-classification.md",
+        "used_for": [
+          "application-owned-message-type-allocation",
+          "request-response-class-rules"
+        ]
+      },
+      {
+        "path": "sections/05-on-wire-formats.md",
+        "blob": "74a2a5eb10b536b6518f49aee0ba885a01a38e1f",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/05-on-wire-formats.md",
+        "used_for": [
+          "packet-payload-length",
+          "padding-boundary",
+          "receipt-envelope-separation"
+        ]
+      },
+      {
+        "path": "sections/06-deduplication.md",
+        "blob": "6ae1e2ad9a6e1ad966032b077b96cf2f304ea06e",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/06-deduplication.md",
+        "used_for": [
+          "network-deduplication",
+          "fresh-m4p-message-instance-retry"
+        ]
+      },
+      {
+        "path": "sections/07-ttl-expiration.md",
+        "blob": "8c09363c77a50d4fdb4bcbaaf5085bee46a32198",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/07-ttl-expiration.md",
+        "used_for": [
+          "network-ttl",
+          "expiration"
+        ]
+      },
+      {
+        "path": "sections/08-fragmentation.md",
+        "blob": "1486b05bc182eda5307535c66ba1bdcabc73394a",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/08-fragmentation.md",
+        "used_for": [
+          "fragmentation",
+          "reassembly",
+          "fragment-nack"
+        ]
+      },
+      {
+        "path": "sections/09-transport-behavior.md",
+        "blob": "618f944e76ecc8e8ed384fe8a4d34aa9503e2b21",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/09-transport-behavior.md",
+        "used_for": [
+          "store-carry-forward",
+          "pending-address-resolution",
+          "source-resolution",
+          "message-lifecycle",
+          "mixed-version-prohibition"
+        ]
+      },
+      {
+        "path": "sections/10-datalink-abstraction.md",
+        "blob": "933f9ff9c9ce83a7dc5ae81cb4fe2da7bd8a35c8",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/10-datalink-abstraction.md",
+        "used_for": [
+          "opportunity-budget",
+          "send-outcomes",
+          "delivery-evidence",
+          "physical-link-boundary"
+        ]
+      },
+      {
+        "path": "sections/11-network-layer.md",
+        "blob": "0c323251dc8dd86f1c3e39d177dc82c5d64db771",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/11-network-layer.md",
+        "used_for": [
+          "address-resolution",
+          "network-scope"
+        ]
+      },
+      {
+        "path": "sections/C-integration-guidelines.md",
+        "blob": "cf0730133c9a4e3e71a8f85298707adff26bff05",
+        "url": "https://github.com/Poseidons-Forge/m4p-spec/blob/2eca9e8f57d43dab250cc26c1bbf2d255e3331de/sections/C-integration-guidelines.md",
+        "used_for": [
+          "uid-application-guidance",
+          "deployment-message-type-catalog"
+        ]
+      }
+    ]
+  },
+  "copyright_and_repository_boundary": {
+    "copied_m4p_code": false,
+    "copied_agpl_code": false,
+    "copied_lookup_tables_or_fixtures": false,
+    "substantial_source_text_copied": false,
+    "method": "independent-bempic-interface-derived-from-paraphrased-protocol-behavior",
+    "attribution": "M4P specification by Poseidon's Forge, Inc., CC-BY-4.0; immutable sources listed above",
+    "implementation_license_review": "not-possible-no-public-implementation-source-identified"
+  },
+  "opaque_record_interface": {
+    "boundary": "one-complete-canonical-bempic-operation-per-m4p-application-message-payload",
+    "partial_operation_submission": "forbidden",
+    "m4p_payload_interpretation": "opaque",
+    "bempic_operation_fields_visible_to_m4p": [],
+    "outbound_submit": {
+      "method": "submit_record",
+      "fields": [
+        {
+          "name": "record_bytes",
+          "source": "complete-canonical-encoded-bempic-operation",
+          "m4p_mapping": "application-message-payload"
+        },
+        {
+          "name": "destination_client_uid",
+          "source": "application-authorized-endpoint-binding",
+          "m4p_mapping": "directed-message-destination-clientuid"
+        },
+        {
+          "name": "binding_message_type_id",
+          "source": "deployment-binding-configuration-not-bempic-operation",
+          "m4p_mapping": "application-message-type-id",
+          "status": "unallocated-review-question"
+        },
+        {
+          "name": "local_submission_ref",
+          "source": "binding-local-correlation",
+          "m4p_mapping": "not-on-wire-not-forwarded"
+        }
+      ],
+      "not_passed": [
+        "m4p-client-address",
+        "m4p-node-address",
+        "m4p-network-id",
+        "m4p-message-instance-id",
+        "route",
+        "next-hop",
+        "fragment-offset",
+        "fragment-length",
+        "m4p-ttl-override",
+        "m4p-priority-override",
+        "m4p-modality-mask",
+        "m4p-authentication-fields",
+        "datalink-opportunity",
+        "physical-link-parameters"
+      ]
+    },
+    "submit_result": {
+      "fields": [
+        "local_submission_ref",
+        "status",
+        "diagnostic_code"
+      ],
+      "status_values": [
+        "accepted",
+        "not-accepted-record-too-large",
+        "not-accepted-invalid-destination",
+        "not-accepted-binding-unconfigured",
+        "not-accepted-backpressure",
+        "not-accepted-local-error",
+        "acceptance-unknown"
+      ],
+      "accepted_meaning": "complete-record-accepted-by-local-m4p-runtime-including-pending-address-resolution",
+      "accepted_does_not_mean": [
+        "packet-sent",
+        "peer-delivery",
+        "destination-application-delivery",
+        "bempic-receipt",
+        "durable-across-restart-unless-separately-confirmed"
+      ],
+      "m4p_api_mapping_status": "external-confirmation-required"
+    },
+    "inbound_delivery": {
+      "method": "receive_record",
+      "fields": [
+        {
+          "name": "record_bytes",
+          "source": "complete-reassembled-m4p-application-message-payload"
+        },
+        {
+          "name": "source_client_uid",
+          "source": "m4p-resolved-source-clientuid",
+          "nullable_when": "source-unresolved"
+        },
+        {
+          "name": "source_resolution",
+          "values": [
+            "resolved",
+            "unresolved"
+          ]
+        },
+        {
+          "name": "local_delivery_ref",
+          "source": "binding-local-correlation-not-on-wire"
+        }
+      ],
+      "adapter_validation": [
+        "configured-message-type",
+        "resolved-authorized-source",
+        "complete-record",
+        "bempic-size-bound"
+      ],
+      "unresolved_or_unauthorized_source": "reject-before-bempic-state-mutation-and-emit-no-bempic-receipt"
+    },
+    "lower_layer_observations": {
+      "consumed_as_bempic_receipt": [],
+      "application_required": [],
+      "diagnostic_only_if_exposed": [
+        "m4p-sent",
+        "m4p-busy",
+        "m4p-failed",
+        "m4p-timed-out",
+        "m4p-link-accepted",
+        "m4p-delivered-to-peers",
+        "m4p-peer-holding-evidence",
+        "m4p-expiration"
+      ]
+    },
+    "capacity_and_cost": {
+      "bempic_outer_record_ceiling_octets": 1048576,
+      "m4p_packet_payload_length_ceiling_octets": 65535,
+      "m4p_safe_complete_application_record_ceiling_octets": null,
+      "safe_ceiling_status": "unresolved-external-confirmation-required",
+      "m4p_opportunity_visibility_to_bempic": "none-prescribed",
+      "carrier_byte_cost_visibility_to_bempic": "unavailable-in-current-authoritative-application-interface",
+      "physical_byte_cost_visibility_to_bempic": "unavailable-in-current-authoritative-application-interface",
+      "required_behavior": "binding-rejects-before-bempic-state-mutation-above-reviewed-safe-ceiling",
+      "bempic_tx_charge": {
+        "accepted": "record-octets-once",
+        "acceptance-unknown": "record-octets-once-conservative-debit",
+        "proven-not-accepted": "zero",
+        "fresh-replay": "record-octets-again"
+      }
+    }
+  },
+  "ownership": [
+    {
+      "concern": "application-object-semantics-and-source-authorization",
+      "owner": "application-oceanmail",
+      "bempic_behavior": "consumes-opaque-application-identifiers-and-authorized-endpoint-binding"
+    },
+    {
+      "concern": "bempic-operation-encoding-selection-prefix-resume-bounded-operation-replay-integrity-and-semantic-receipts",
+      "owner": "bempic",
+      "m4p_behavior": "treats-record-bytes-as-opaque-payload"
+    },
+    {
+      "concern": "clientuid-to-client-address-resolution-and-mission-scoped-addressing",
+      "owner": "m4p",
+      "bempic_behavior": "uses-only-authorized-clientuid-binding"
+    },
+    {
+      "concern": "routing-forwarding-mesh-coordination-and-store-carry-forward",
+      "owner": "m4p",
+      "bempic_behavior": "none"
+    },
+    {
+      "concern": "retained-record-resend-spacing-and-opportunity-scheduling",
+      "owner": "m4p",
+      "bempic_behavior": "does-not-schedule-or-count-m4p-record-resends"
+    },
+    {
+      "concern": "network-ttl-and-expiration",
+      "owner": "m4p",
+      "bempic_behavior": "does-not-set-or-reimplement-network-ttl"
+    },
+    {
+      "concern": "generic-fragmentation-refragmentation-reassembly-and-fragment-nack",
+      "owner": "m4p",
+      "bempic_behavior": "submits-and-receives-only-complete-operations"
+    },
+    {
+      "concern": "network-message-instance-deduplication",
+      "owner": "m4p",
+      "bempic_behavior": "separate-application-idempotency-for-fresh-m4p-message-instances"
+    },
+    {
+      "concern": "m4p-packet-transmission-and-resend-byte-accounting",
+      "owner": "m4p",
+      "bempic_behavior": "records-only-if-exposed-with-reviewed-scope-and-units"
+    },
+    {
+      "concern": "datalink-framing-fec-arq-frame-retransmission-and-physical-bytes",
+      "owner": "datalink-adapter-or-modem",
+      "bempic_behavior": "records-only-labeled-reported-costs"
+    },
+    {
+      "concern": "custody-transfer",
+      "owner": "none-m4p-deliberately-omits-it",
+      "bempic_behavior": "does-not-claim-or-implement-network-custody"
+    }
+  ],
+  "resume_and_failure_rules": {
+    "alternate_authorized_source": "receiver-requests-authoritative-durable-prefix-from-any-application-authorized-source-clientuid-holding-identical-representation-id",
+    "alternate_m4p_carrier_or_path": "m4p-selects-route-link-and-modality-without-changing-bempic-prefix-state",
+    "alternate_non_m4p_carrier": "outside-this-binding-but-bempic-prefix-and-endpoint-role-rules-remain-unchanged",
+    "budget_exhaustion": "bempic-emits-no-partial-operation-and-pauses-before-submit-when-the-next-complete-operation-exceeds-the-bempic-scope-budget",
+    "m4p_opportunity_exhaustion": "m4p-fragments-or-defers-internally-and-does-not-expose-partial-bempic-operation-delivery",
+    "binding_connection_loss_before_acceptance": "no-bempic-send-is-recorded-when-not-accepted-is-proven",
+    "binding_connection_loss_after_or_during_acceptance": "return-acceptance-unknown-and-permit-bounded-fresh-m4p-message-instance-replay-of-the-identical-bempic-operation",
+    "m4p_link_loss_after_acceptance": "m4p-retains-schedules-and-expires-under-its-own-rules-with-no-bempic-transport-duplicate",
+    "automatic_retry_bound": "application-or-carrier-policy",
+    "restart_persistence": "unconfirmed-m4p-guarantee-bempic-keeps-its-own-durable-state"
+  },
+  "receipt_rules": {
+    "positive_bempic_receipt_precondition": "bempic-state-durably-committed",
+    "transport": "new-complete-bempic-receipt-operation-in-a-fresh-m4p-application-message-instance",
+    "m4p_delivery_evidence_is_bempic_receipt": false,
+    "lost_final_receipt": [
+      "sender-does-not-advance-without-bempic-receipt",
+      "sender-may-replay-triggering-bempic-operation-as-fresh-m4p-message-instance",
+      "receiver-applies-no-duplicate-application-effect",
+      "receiver-reemits-the-same-bempic-receipt-idempotency-identity",
+      "sender-advances-exactly-once"
+    ]
+  },
+  "binding_traces": [
+    {
+      "id": "M4P-V09-AUTHORIZED-SOURCE",
+      "vector": "V09",
+      "case": "alternate-authorized-source",
+      "steps": [
+        "source-a-submits-complete-data-operation-as-fresh-m4p-message",
+        "receiver-durably-commits-prefix-k",
+        "contact-ends-without-complete-representation",
+        "receiver-submits-complete-request-for-prefix-k-to-authorized-source-b-clientuid",
+        "source-b-proves-identical-representation-id-and-submits-data-starting-at-k",
+        "receiver-verifies-commits-and-emits-bempic-receipt"
+      ],
+      "pass": [
+        "source-clientuids-differ-and-both-are-authorized",
+        "representation-id-and-endpoint-role-binding-unchanged",
+        "first-resumed-offset-equals-k",
+        "retransmitted-durable-prefix-bytes-zero",
+        "m4p-addresses-routes-and-fragments-absent-from-bempic-trace"
+      ],
+      "mapped_m4p_sources": [
+        "sections/03-identity-addressing.md",
+        "sections/09-transport-behavior.md"
+      ]
+    },
+    {
+      "id": "M4P-V09-CROSS-MODALITY",
+      "vector": "V09",
+      "case": "alternate-carrier",
+      "steps": [
+        "m4p-delivers-prefix-over-first-datalink",
+        "receiver-durably-commits-prefix-k",
+        "first-datalink-disappears",
+        "m4p-forwards-fresh-complete-request-and-data-operations-over-another-path-or-modality",
+        "receiver-resumes-at-k-and-commits"
+      ],
+      "pass": [
+        "bempic-record-interface-unchanged",
+        "representation-id-and-prefix-state-unchanged",
+        "retransmitted-durable-prefix-bytes-zero",
+        "route-modality-fragment-and-link-fields-not-added-to-bempic"
+      ],
+      "mapped_m4p_sources": [
+        "sections/08-fragmentation.md",
+        "sections/09-transport-behavior.md",
+        "sections/10-datalink-abstraction.md"
+      ]
+    },
+    {
+      "id": "M4P-V10-DUPLICATE",
+      "vector": "V10",
+      "case": "duplicate-data",
+      "steps": [
+        "m4p-suppresses-network-duplicate-with-the-same-m4p-message-identity",
+        "binding-delivers-identical-bempic-operation-carried-by-a-fresh-m4p-message-instance",
+        "bempic-runs-application-idempotency-check"
+      ],
+      "pass": [
+        "no-duplicate-application-effect",
+        "matching-duplicate-payload-counted-once-at-bempic-ingress-when-delivered",
+        "m4p-network-duplicate-not-counted-as-bempic-rx-bytes-when-not-delivered"
+      ],
+      "mapped_m4p_sources": [
+        "sections/06-deduplication.md",
+        "sections/09-transport-behavior.md"
+      ]
+    },
+    {
+      "id": "M4P-V10-LOST-FINAL-RECEIPT",
+      "vector": "V10",
+      "case": "lost-final-receipt",
+      "steps": [
+        "receiver-durably-commits-bempic-state",
+        "receiver-submits-complete-bempic-receipt-as-fresh-m4p-message",
+        "receipt-is-not-delivered-before-m4p-expiration-or-loss",
+        "sender-replays-triggering-bempic-operation-as-fresh-m4p-message-instance",
+        "receiver-reemits-idempotent-bempic-receipt",
+        "sender-records-receipt-exactly-once"
+      ],
+      "pass": [
+        "no-m4p-indication-treated-as-bempic-receipt",
+        "no-duplicate-application-effect",
+        "same-bempic-receipt-idempotency-identity",
+        "fresh-m4p-message-identity-on-each-application-replay"
+      ],
+      "mapped_m4p_sources": [
+        "sections/06-deduplication.md",
+        "sections/07-ttl-expiration.md",
+        "sections/10-datalink-abstraction.md"
+      ]
+    },
+    {
+      "id": "M4P-V12-BUDGET",
+      "vector": "V12",
+      "case": "exact-and-one-byte-short",
+      "steps": [
+        "precompute-complete-bempic-operation-size-n",
+        "with-bempic-budget-n-minus-one-emit-nothing-and-pause",
+        "with-bempic-budget-n-submit-one-complete-record",
+        "m4p-independently-packs-fragments-or-defers-within-datalink-opportunities"
+      ],
+      "pass": [
+        "no-partial-bempic-operation-submitted",
+        "bempic-directional-accounting-identity-exact",
+        "m4p-and-physical-bytes-excluded-from-bempic-budget",
+        "carrier-or-physical-cost-unavailable-unless-explicitly-reported"
+      ],
+      "mapped_m4p_sources": [
+        "sections/08-fragmentation.md",
+        "sections/10-datalink-abstraction.md"
+      ]
+    },
+    {
+      "id": "M4P-V12-CONNECTION-LOSS",
+      "vector": "V12",
+      "case": "binding-connection-loss",
+      "steps": [
+        "precompute-complete-bempic-operation-size",
+        "invoke-binding-submit",
+        "inject-loss-before-known-result",
+        "return-acceptance-unknown",
+        "reopen-bempic-durable-state-and-boundedly-replay-identical-operation-as-fresh-m4p-message-instance"
+      ],
+      "pass": [
+        "no-partial-operation",
+        "no-false-receipt",
+        "no-unproven-durable-m4p-acceptance-claim",
+        "duplicate-application-effect-zero-if-first-submit-was-accepted"
+      ],
+      "mapped_m4p_sources": [
+        "sections/09-transport-behavior.md",
+        "sections/10-datalink-abstraction.md"
+      ]
+    }
+  ],
+  "deliberate_non_duplication": [
+    "client-address-allocation-and-resolution",
+    "network-routing-or-next-hop-selection",
+    "mesh-coordination",
+    "store-carry-forward-scheduling",
+    "retained-record-resend-and-spacing",
+    "network-ttl-or-expiration",
+    "generic-fragmentation-reassembly-or-fragment-nack",
+    "network-message-instance-deduplication",
+    "cross-modality-forwarding",
+    "datalink-framing-fec-arq-or-frame-retransmission",
+    "physical-byte-accounting",
+    "network-custody-transfer"
+  ],
+  "open_review_questions": [
+    {
+      "id": "M4P-Q01",
+      "topic": "maximum-complete-application-record",
+      "status": "open-blocking",
+      "question": "What maximum complete application payload can M4P accept, persist, fragment, reassemble, and deliver given a 16-bit per-packet payload length and 15-bit fragment offset?",
+      "why_blocking": "bempic-allows-operations-up-to-1048576-octets-and-no-safe-m4p-ceiling-can-be-inferred"
+    },
+    {
+      "id": "M4P-Q02",
+      "topic": "application-message-type-allocation-and-class",
+      "status": "open-blocking",
+      "question": "Which deployment-owned directed Message Type IDs and Request or Response mapping may carry independent bidirectional BEMPIC operations without violating the one-response rule?",
+      "why_blocking": "m4p-defines-ranges-not-application-allocations-and-has-no-directed-event-class"
+    },
+    {
+      "id": "M4P-Q03",
+      "topic": "application-api-results-persistence-and-restart",
+      "status": "open-blocking",
+      "question": "Which implementation API maps to the normalized submit results, and what accepted-message state survives process or node restart?",
+      "why_blocking": "current-authoritative-source-specifies-transport-behavior-not-a-concrete-client-api-or-restart-durability"
+    },
+    {
+      "id": "M4P-Q04",
+      "topic": "cancellation-backpressure-expiry-and-cost-signals",
+      "status": "open-blocking",
+      "question": "Which bounded application-visible signals exist for backpressure, cancellation, expiry, carrier bytes, or physical bytes, and what exact scope and units do they have?",
+      "why_blocking": "current-application-boundary-does-not-prescribe-these-signals"
+    },
+    {
+      "id": "M4P-Q05",
+      "topic": "address-scope-and-federation",
+      "status": "open-blocking",
+      "question": "May a BEMPIC authorized-source set span M4P network_id deployments, and if not, what external federation boundary is required?",
+      "why_blocking": "m4p-addresses-are-deployment-scoped-and-runtime-cross-network-reassignment-is-deferred"
+    },
+    {
+      "id": "M4P-Q06",
+      "topic": "mixed-m4p-versions",
+      "status": "open-blocking",
+      "question": "Must a BEMPIC deployment reject a contact before submission when peers do not share one fleet-wide M4P version?",
+      "why_blocking": "m4p-wire-does-not-negotiate-versions-and-mixed-version-interoperability-is-out-of-scope"
+    },
+    {
+      "id": "M4P-Q07",
+      "topic": "long-lived-delivery",
+      "status": "open-blocking",
+      "question": "What application-visible expiry or retry rule permits a fresh M4P message instance after the approximately 7.4-hour maximum TTL without duplicating M4P store-carry-forward?",
+      "why_blocking": "bempic-progress-may-outlive-one-m4p-message-but-the-current-source-does-not-prescribe-an-application-expiry-callback"
+    },
+    {
+      "id": "M4P-Q08",
+      "topic": "unresolved-source-clientuid",
+      "status": "open-blocking",
+      "question": "Can an implementation delay or replay local application delivery after a source ClientUID mapping is resolved, or must the binding quarantine and await a later fresh M4P message?",
+      "why_blocking": "m4p-allows-delivery-with-source-marked-unresolved-while-bempic-authorized-source-checking-must-fail-closed"
+    }
+  ],
+  "release_effect": {
+    "m4p_review_package_complete": true,
+    "external_confirmation_complete": false,
+    "v09_release_evidence_complete": false,
+    "v10_release_evidence_complete": false,
+    "v12_release_evidence_complete": false,
+    "m4p_binding_gate": "blocked",
+    "unrelated_gates_changed": false
+  }
+}

@@ -99,13 +99,15 @@
       "subject": "alternate resume source and carrier",
       "cases": ["alternate-authorized-source", "alternate-carrier"],
       "assertions": ["identical-prepared-bytes", "zero-fully-durable-prefix-retransmission", "resume-metrics-recorded"],
+      "m4p_binding_trace_ids": ["M4P-V09-AUTHORIZED-SOURCE", "M4P-V09-CROSS-MODALITY"],
       "blocked_by": ["m4p-binding-review"]
     },
     {
       "id": "V10",
       "subject": "duplicates",
       "cases": ["duplicate-offer", "duplicate-data", "duplicate-page", "duplicate-receipt", "lost-final-receipt"],
-      "assertions": ["idempotent-state", "duplicate-bytes-counted", "no-duplicate-application-effect"]
+      "assertions": ["idempotent-state", "duplicate-bytes-counted", "no-duplicate-application-effect"],
+      "m4p_binding_trace_ids": ["M4P-V10-DUPLICATE", "M4P-V10-LOST-FINAL-RECEIPT"]
     },
     {
       "id": "V11",
@@ -130,7 +132,8 @@
       "operation_types": ["CAPABILITIES", "SUMMARY", "OFFER", "REQUEST", "DATA", "RECEIPT", "FAILURE"],
       "budget_domains": ["total", "send", "receive"],
       "relative_budgets": [-1, 0],
-      "assertions": ["complete-operation-only", "zero-quote-error", "directional-accounting-identity"]
+      "assertions": ["complete-operation-only", "zero-quote-error", "directional-accounting-identity"],
+      "m4p_binding_trace_ids": ["M4P-V12-BUDGET", "M4P-V12-CONNECTION-LOSS"]
     },
     {
       "id": "V13",

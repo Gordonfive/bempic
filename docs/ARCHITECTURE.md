@@ -48,11 +48,15 @@ opaque-record carrier contract and does not absorb the carrier's network role.
 
 ## Carrier contract
 
-A carrier binding exposes complete-record send/receive, an available payload or
-opportunity limit, integrity/reliability capabilities, and actual or estimated
-cost when known. M4P is the production carrier for OceanMail. A deterministic
-simulator or local byte-stream adapter may be used for testing but is not an
-M4P substitute or a normative direct network stack.
+A carrier binding exposes complete-record send/receive and may expose a payload
+limit, opportunity, integrity/reliability capability, or actual/estimated cost
+only when its reviewed contract defines one. The current proposed M4P binding
+exposes only the complete-record interface and normalized submission results;
+the safe complete-record maximum, concrete application API, restart durability,
+and application-visible opportunity/cost signals await external confirmation
+in [`M4P-CONFIRMATION.md`](M4P-CONFIRMATION.md). A deterministic simulator or
+local byte-stream adapter may be used for testing but is not an M4P substitute
+or a normative direct network stack.
 
 BEMPIC treats a carrier delivery outcome only as evidence that an operation was
 handled by the carrier. It never converts that outcome into an application
@@ -64,6 +68,9 @@ M4P may persist packets for forwarding. BEMPIC separately persists application
 representation progress because that progress must survive the loss of an M4P
 packet, route, peer, contact, or carrier. These stores have different identity,
 retention, and completion rules and [REQ-ARCH-001] MUST NOT be conflated.
+M4P's current specification explicitly omits custody transfer, so stored M4P
+traffic is not a custody promise and cannot replace BEMPIC commit or receipt
+state.
 
 ## Reliability boundary
 

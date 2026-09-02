@@ -33,7 +33,33 @@
     "independent_reproduction": null,
     "thresholds_changed": false
   },
-  "m4p_confirmation": {"upstream_url": null, "m4p_commit": null, "reviewer": null, "confirmed_at_utc": null, "binding_trace_digest": null},
+  "m4p_confirmation": {
+    "review_package_status": "ready-for-external-review-not-submitted",
+    "review_package": "conformance/v0.1/m4p-binding-review-package.json",
+    "review_package_digest": "sha256:2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459",
+    "binding_profile": "bempic-m4p-opaque-record-v0.1-review",
+    "binding_revision": 1,
+    "package_m4p_commit": "2eca9e8f57d43dab250cc26c1bbf2d255e3331de",
+    "package_m4p_tree": "b06d1830c6156ead535542d9ff4c0a5acbfd1545",
+    "external_confirmation_status": "blocked-not-requested",
+    "upstream_url": null,
+    "reviewed_m4p_commit": null,
+    "reviewer": null,
+    "reviewer_authority": null,
+    "confirmed_at_utc": null,
+    "answers_digest": null,
+    "binding_trace_digest": null,
+    "required_trace_ids": [
+      "M4P-V09-AUTHORIZED-SOURCE",
+      "M4P-V09-CROSS-MODALITY",
+      "M4P-V10-DUPLICATE",
+      "M4P-V10-LOST-FINAL-RECEIPT",
+      "M4P-V12-BUDGET",
+      "M4P-V12-CONNECTION-LOSS"
+    ],
+    "all_required_traces_passed": false,
+    "approved": false
+  },
   "bempic_reference": {"repository": "Gordonfive/bempic-reference", "commit": null, "ci_run": null},
   "current_reference_evidence": {
     "evidence_commit": "cf3485f6606d6462077e8edd1592264c3ce4ca5e",

@@ -249,6 +249,97 @@ class ReleaseGateValidatorTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "B2F oracle"):
                 gates.validate_release_template()
 
+    def test_m4p_package_cannot_claim_external_confirmation(self) -> None:
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        package["external_confirmation"].update(
+            {
+                "status": "confirmed",
+                "upstream_url": "https://example.invalid/review",
+                "reviewer": "invented",
+                "reviewer_authority": "invented",
+                "confirmed_at_utc": "2026-09-02T00:00:00Z",
+                "approved": True,
+            }
+        )
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "external confirmation"):
+                gates.validate_m4p_binding_review_package()
+
+    def test_m4p_safe_record_ceiling_cannot_be_inferred(self) -> None:
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        package["opaque_record_interface"]["capacity_and_cost"][
+            "m4p_safe_complete_application_record_ceiling_octets"
+        ] = 65535
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "capacity, opportunity, cost"):
+                gates.validate_m4p_binding_review_package()
+
+    def test_m4p_message_type_cannot_be_allocated_locally(self) -> None:
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        package["opaque_record_interface"]["outbound_submit"]["fields"][2][
+            "status"
+        ] = "allocated"
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "Message Type"):
+                gates.validate_m4p_binding_review_package()
+
+    def test_m4p_custody_and_receipt_boundaries_are_pinned(self) -> None:
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        custody = next(
+            item for item in package["ownership"]
+            if item["concern"] == "custody-transfer"
+        )
+        custody["owner"] = "m4p"
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "ownership boundary"):
+                gates.validate_m4p_binding_review_package()
+
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        package["receipt_rules"]["m4p_delivery_evidence_is_bempic_receipt"] = True
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "receipt separation"):
+                gates.validate_m4p_binding_review_package()
+
+    def test_m4p_trace_and_question_sets_are_pinned(self) -> None:
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        package["binding_traces"].pop()
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "trace IDs"):
+                gates.validate_m4p_binding_review_package()
+
+        package = copy.deepcopy(gates.load_json(gates.M4P_PACKAGE_PATH))
+        package["open_review_questions"][0]["status"] = "resolved"
+        with patch.object(gates, "load_json", return_value=package):
+            with self.assertRaisesRegex(ValueError, "open review questions"):
+                gates.validate_m4p_binding_review_package()
+
+    def test_m4p_vector_and_metric_alignment_are_pinned(self) -> None:
+        catalog = copy.deepcopy(
+            gates.load_json("conformance/v0.1/vector-catalog.json")
+        )
+        next(item for item in catalog["catalog"] if item["id"] == "V10")[
+            "m4p_binding_trace_ids"
+        ].pop()
+        with patch.object(gates, "load_json", return_value=catalog):
+            with self.assertRaisesRegex(ValueError, "V10 m4p_binding_trace_ids"):
+                gates.validate_vector_catalog()
+
+        metrics = copy.deepcopy(gates.load_json("conformance/v0.1/metrics.json"))
+        metrics["m4p_binding_accounting"]["external_confirmation_complete"] = True
+        with patch.object(gates, "load_json", return_value=metrics):
+            with self.assertRaisesRegex(ValueError, "M4P binding accounting"):
+                gates.validate_metrics()
+
+    def test_release_template_cannot_promote_m4p_confirmation(self) -> None:
+        release = copy.deepcopy(
+            gates.load_json("conformance/v0.1/release-record-template.json")
+        )
+        release["m4p_confirmation"]["external_confirmation_status"] = "confirmed"
+        release["m4p_confirmation"]["approved"] = True
+        with patch.object(gates, "load_json", return_value=release):
+            with self.assertRaisesRegex(ValueError, "M4P package"):
+                gates.validate_release_template()
+
 
 if __name__ == "__main__":
     unittest.main()

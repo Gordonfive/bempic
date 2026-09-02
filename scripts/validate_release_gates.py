@@ -55,6 +55,65 @@ B2F_PROFILE = "bempic-v0.1-b2f-text-single-message-v1"
 B2F_ARSFI_COMMIT = "dbe96569817018e66e0e5f6add40eed12adc9fd7"
 B2F_WL2K_COMMIT = "efde6fbcb7bc8d6519fd8018ec544c793d4ef48d"
 B2F_PACLINK_COMMIT = "cc7b2f9474959a70856cabaf812bfce53d2da145"
+M4P_PACKAGE_PATH = "conformance/v0.1/m4p-binding-review-package.json"
+M4P_PACKAGE_SHA256 = "2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459"
+M4P_PROFILE = "bempic-m4p-opaque-record-v0.1-review"
+M4P_COMMIT = "2eca9e8f57d43dab250cc26c1bbf2d255e3331de"
+M4P_TREE = "b06d1830c6156ead535542d9ff4c0a5acbfd1545"
+M4P_TRACE_IDS = [
+    "M4P-V09-AUTHORIZED-SOURCE",
+    "M4P-V09-CROSS-MODALITY",
+    "M4P-V10-DUPLICATE",
+    "M4P-V10-LOST-FINAL-RECEIPT",
+    "M4P-V12-BUDGET",
+    "M4P-V12-CONNECTION-LOSS",
+]
+M4P_TRACE_IDS_BY_VECTOR = {
+    "V09": M4P_TRACE_IDS[0:2],
+    "V10": M4P_TRACE_IDS[2:4],
+    "V12": M4P_TRACE_IDS[4:6],
+}
+M4P_SUBMIT_STATUSES = [
+    "accepted",
+    "not-accepted-record-too-large",
+    "not-accepted-invalid-destination",
+    "not-accepted-binding-unconfigured",
+    "not-accepted-backpressure",
+    "not-accepted-local-error",
+    "acceptance-unknown",
+]
+M4P_OPEN_TOPICS = [
+    "maximum-complete-application-record",
+    "application-message-type-allocation-and-class",
+    "application-api-results-persistence-and-restart",
+    "cancellation-backpressure-expiry-and-cost-signals",
+    "address-scope-and-federation",
+    "mixed-m4p-versions",
+    "long-lived-delivery",
+    "unresolved-source-clientuid",
+]
+EXPECTED_M4P_ACCOUNTING = {
+    "profile": M4P_PROFILE,
+    "decision_artifact": M4P_PACKAGE_PATH,
+    "submission_status_field": "status",
+    "bempic_tx_charge": {
+        "accepted": "record-octets-once",
+        "acceptance-unknown": "record-octets-once-conservative-debit",
+        "proven-not-accepted": "zero",
+        "fresh-replay": "record-octets-again",
+    },
+    "carrier_bytes": "unavailable-unless-externally-confirmed-implementation-contract",
+    "physical_bytes": "unavailable-unless-externally-confirmed-implementation-contract",
+    "excluded_from_bempic_and_semantic_bytes": [
+        "m4p-packet",
+        "m4p-transmission",
+        "m4p-fragment",
+        "m4p-receipt-envelope",
+        "datalink-framing",
+        "datalink-retransmission",
+    ],
+    "external_confirmation_complete": False,
+}
 
 
 def expected_v08_coverage_rows() -> list[dict[str, str]]:
@@ -154,11 +213,13 @@ EXPECTED_VECTOR_REQUIREMENTS = {
     "V09": {
         "cases": ["alternate-authorized-source", "alternate-carrier"],
         "assertions": ["identical-prepared-bytes", "zero-fully-durable-prefix-retransmission", "resume-metrics-recorded"],
+        "m4p_binding_trace_ids": M4P_TRACE_IDS_BY_VECTOR["V09"],
         "blocked_by": ["m4p-binding-review"],
     },
     "V10": {
         "cases": ["duplicate-offer", "duplicate-data", "duplicate-page", "duplicate-receipt", "lost-final-receipt"],
         "assertions": ["idempotent-state", "duplicate-bytes-counted", "no-duplicate-application-effect"],
+        "m4p_binding_trace_ids": M4P_TRACE_IDS_BY_VECTOR["V10"],
     },
     "V11": {
         "cases": ["corrupt-final-byte", "conflicting-overlap", "gap", "false-length-short", "false-length-long", "false-digest", "false-representation-id", "object-id-metadata-conflict"],
@@ -180,6 +241,7 @@ EXPECTED_VECTOR_REQUIREMENTS = {
         "budget_domains": ["total", "send", "receive"],
         "relative_budgets": [-1, 0],
         "assertions": ["complete-operation-only", "zero-quote-error", "directional-accounting-identity"],
+        "m4p_binding_trace_ids": M4P_TRACE_IDS_BY_VECTOR["V12"],
     },
     "V13": {
         "cases": ["compatible-tuple", "incompatible-protocol", "incompatible-schema", "incompatible-codec", "preference-tie", "stale-cache-recovery", "unknown-optional-extension", "unknown-critical-extension"],
@@ -647,6 +709,8 @@ def validate_metrics() -> None:
         fail("semantic_bytes definition differs from the normative catalog")
     if data.get("identities") != EXPECTED_METRIC_IDENTITIES:
         fail("metric identities differ from the normative catalog")
+    if data.get("m4p_binding_accounting") != EXPECTED_M4P_ACCOUNTING:
+        fail("M4P binding accounting differs from the normative review package")
     if data.get("b2f_comparison") != EXPECTED_B2F_COMPARISON:
         fail("B2F comparison metadata differs from the normative decision")
     if data.get("thresholds") != EXPECTED_METRIC_THRESHOLDS:
@@ -806,6 +870,246 @@ def validate_b2f_oracle_decision() -> None:
         fail("paclink-unix process/license boundary changed")
 
 
+def validate_m4p_binding_review_package() -> None:
+    data = load_json(M4P_PACKAGE_PATH)
+    if data.get("format") != "bempic-m4p-binding-review-package-v0.1":
+        fail("unexpected M4P binding review package format")
+    if data.get("package_status") != "ready-for-external-review-not-submitted":
+        fail("M4P review package status changed or was promoted")
+    profile = data.get("binding_profile", {})
+    if profile != {
+        "id": M4P_PROFILE,
+        "revision": 1,
+        "approval_status": "unconfirmed",
+        "normative_document": "docs/M4P-CONFIRMATION.md",
+        "draft_review_request": "docs/review-requests/2026-09-02-m4p-v0.1-binding-review.md",
+    }:
+        fail("M4P binding profile identity or review paths changed")
+    if data.get("external_confirmation") != {
+        "status": "blocked-not-requested",
+        "upstream_url": None,
+        "reviewer": None,
+        "reviewer_authority": None,
+        "confirmed_at_utc": None,
+        "approved": False,
+    }:
+        fail("M4P external confirmation was changed or promoted")
+
+    source = data.get("authoritative_m4p_source", {})
+    if (
+        source.get("repository") != "https://github.com/Poseidons-Forge/m4p-spec"
+        or source.get("commit") != M4P_COMMIT
+        or source.get("tree") != M4P_TREE
+        or source.get("declared_specification_version") != "0.1"
+        or source.get("declared_status") != "Proposal Draft"
+        or source.get("license") != "CC-BY-4.0"
+        or source.get("implementation_source_status")
+        != "announced-not-publicly-released"
+    ):
+        fail("M4P authoritative source identity or status changed")
+    expected_blobs = {
+        "README.md": "1891339cd9d71c9f1d516f7378aba1c12f1113cd",
+        "LICENSE": "a5956fb9822fc725076d3bef61d58f2d12ebc01a",
+        "sections/01-introduction.md": "898e6cac979dd863c8f7b67ca3f955feac4029b6",
+        "sections/02-protocol-overview.md": "91d6310457197995739649c894f170664299a53e",
+        "sections/03-identity-addressing.md": "7f8f2879c67a783fbb6a1d412237855afadae8b2",
+        "sections/04-message-classification.md": "568e2be9cf3b1b7eccfeae76baea18c3eee64488",
+        "sections/05-on-wire-formats.md": "74a2a5eb10b536b6518f49aee0ba885a01a38e1f",
+        "sections/06-deduplication.md": "6ae1e2ad9a6e1ad966032b077b96cf2f304ea06e",
+        "sections/07-ttl-expiration.md": "8c09363c77a50d4fdb4bcbaaf5085bee46a32198",
+        "sections/08-fragmentation.md": "1486b05bc182eda5307535c66ba1bdcabc73394a",
+        "sections/09-transport-behavior.md": "618f944e76ecc8e8ed384fe8a4d34aa9503e2b21",
+        "sections/10-datalink-abstraction.md": "933f9ff9c9ce83a7dc5ae81cb4fe2da7bd8a35c8",
+        "sections/11-network-layer.md": "0c323251dc8dd86f1c3e39d177dc82c5d64db771",
+        "sections/C-integration-guidelines.md": "cf0730133c9a4e3e71a8f85298707adff26bff05",
+    }
+    source_files = source.get("source_files", [])
+    actual_blobs = {item.get("path"): item.get("blob") for item in source_files}
+    if actual_blobs != expected_blobs or len(source_files) != len(expected_blobs):
+        fail("M4P source file or blob inventory changed")
+    for item in source_files:
+        if M4P_COMMIT not in item.get("url", "") or not item.get("used_for"):
+            fail("M4P source record lacks an immutable URL or use")
+
+    copyright_boundary = data.get("copyright_and_repository_boundary", {})
+    forbidden_copy_flags = (
+        "copied_m4p_code",
+        "copied_agpl_code",
+        "copied_lookup_tables_or_fixtures",
+        "substantial_source_text_copied",
+    )
+    if any(copyright_boundary.get(field) is not False for field in forbidden_copy_flags):
+        fail("M4P source/code copying boundary changed")
+    if copyright_boundary.get("implementation_license_review") != (
+        "not-possible-no-public-implementation-source-identified"
+    ):
+        fail("M4P implementation license status changed without evidence")
+
+    interface = data.get("opaque_record_interface", {})
+    if (
+        interface.get("boundary")
+        != "one-complete-canonical-bempic-operation-per-m4p-application-message-payload"
+        or interface.get("partial_operation_submission") != "forbidden"
+        or interface.get("m4p_payload_interpretation") != "opaque"
+        or interface.get("bempic_operation_fields_visible_to_m4p") != []
+    ):
+        fail("M4P opaque complete-record boundary changed")
+    outbound = interface.get("outbound_submit", {})
+    outbound_fields = [item.get("name") for item in outbound.get("fields", [])]
+    if outbound.get("method") != "submit_record" or outbound_fields != [
+        "record_bytes",
+        "destination_client_uid",
+        "binding_message_type_id",
+        "local_submission_ref",
+    ]:
+        fail("M4P outbound binding fields changed")
+    if outbound.get("fields", [None, None, {}])[2].get("status") != (
+        "unallocated-review-question"
+    ):
+        fail("M4P application Message Type was allocated without review")
+    prohibited_outbound_fields = {
+        "m4p-client-address", "m4p-node-address", "m4p-network-id",
+        "m4p-message-instance-id", "route", "next-hop", "fragment-offset",
+        "fragment-length", "m4p-ttl-override", "m4p-priority-override",
+        "m4p-modality-mask", "m4p-authentication-fields",
+        "datalink-opportunity", "physical-link-parameters",
+    }
+    if set(outbound.get("not_passed", [])) != prohibited_outbound_fields:
+        fail("M4P prohibited outbound field set changed")
+
+    submit = interface.get("submit_result", {})
+    if (
+        submit.get("fields") != ["local_submission_ref", "status", "diagnostic_code"]
+        or submit.get("status_values") != M4P_SUBMIT_STATUSES
+        or submit.get("m4p_api_mapping_status") != "external-confirmation-required"
+        or "bempic-receipt" not in submit.get("accepted_does_not_mean", [])
+        or "durable-across-restart-unless-separately-confirmed"
+        not in submit.get("accepted_does_not_mean", [])
+    ):
+        fail("M4P normalized submit result changed or overclaimed")
+    inbound = interface.get("inbound_delivery", {})
+    if (
+        inbound.get("method") != "receive_record"
+        or [item.get("name") for item in inbound.get("fields", [])]
+        != ["record_bytes", "source_client_uid", "source_resolution", "local_delivery_ref"]
+        or inbound.get("adapter_validation") != [
+            "configured-message-type",
+            "resolved-authorized-source",
+            "complete-record",
+            "bempic-size-bound",
+        ]
+        or inbound.get("unresolved_or_unauthorized_source")
+        != "reject-before-bempic-state-mutation-and-emit-no-bempic-receipt"
+    ):
+        fail("M4P inbound delivery or authorization boundary changed")
+    if interface.get("lower_layer_observations", {}).get(
+        "consumed_as_bempic_receipt"
+    ) != []:
+        fail("M4P lower-layer evidence was promoted to a BEMPIC receipt")
+    capacity = interface.get("capacity_and_cost", {})
+    if (
+        capacity.get("bempic_outer_record_ceiling_octets") != 1048576
+        or capacity.get("m4p_packet_payload_length_ceiling_octets") != 65535
+        or capacity.get("m4p_safe_complete_application_record_ceiling_octets")
+        is not None
+        or capacity.get("safe_ceiling_status")
+        != "unresolved-external-confirmation-required"
+        or capacity.get("m4p_opportunity_visibility_to_bempic")
+        != "none-prescribed"
+        or capacity.get("carrier_byte_cost_visibility_to_bempic")
+        != "unavailable-in-current-authoritative-application-interface"
+        or capacity.get("physical_byte_cost_visibility_to_bempic")
+        != "unavailable-in-current-authoritative-application-interface"
+        or capacity.get("bempic_tx_charge")
+        != EXPECTED_M4P_ACCOUNTING["bempic_tx_charge"]
+    ):
+        fail("M4P capacity, opportunity, cost, or accounting boundary changed")
+
+    owners = {item.get("concern"): item.get("owner") for item in data.get("ownership", [])}
+    if (
+        len(owners) != 11
+        or len(data.get("ownership", [])) != 11
+        or owners.get("application-object-semantics-and-source-authorization")
+        != "application-oceanmail"
+        or owners.get("bempic-operation-encoding-selection-prefix-resume-bounded-operation-replay-integrity-and-semantic-receipts")
+        != "bempic"
+        or owners.get("clientuid-to-client-address-resolution-and-mission-scoped-addressing")
+        != "m4p"
+        or owners.get("routing-forwarding-mesh-coordination-and-store-carry-forward")
+        != "m4p"
+        or owners.get("retained-record-resend-spacing-and-opportunity-scheduling")
+        != "m4p"
+        or owners.get("network-ttl-and-expiration") != "m4p"
+        or owners.get("generic-fragmentation-refragmentation-reassembly-and-fragment-nack")
+        != "m4p"
+        or owners.get("network-message-instance-deduplication") != "m4p"
+        or owners.get("m4p-packet-transmission-and-resend-byte-accounting")
+        != "m4p"
+        or owners.get("datalink-framing-fec-arq-frame-retransmission-and-physical-bytes")
+        != "datalink-adapter-or-modem"
+        or owners.get("custody-transfer") != "none-m4p-deliberately-omits-it"
+    ):
+        fail("M4P ownership boundary changed")
+
+    receipts = data.get("receipt_rules", {})
+    if (
+        receipts.get("m4p_delivery_evidence_is_bempic_receipt") is not False
+        or receipts.get("transport")
+        != "new-complete-bempic-receipt-operation-in-a-fresh-m4p-application-message-instance"
+        or len(receipts.get("lost_final_receipt", [])) != 5
+    ):
+        fail("M4P receipt separation or lost-receipt rules changed")
+    restart = data.get("resume_and_failure_rules", {})
+    if (
+        restart.get("alternate_authorized_source")
+        != "receiver-requests-authoritative-durable-prefix-from-any-application-authorized-source-clientuid-holding-identical-representation-id"
+        or restart.get("budget_exhaustion")
+        != "bempic-emits-no-partial-operation-and-pauses-before-submit-when-the-next-complete-operation-exceeds-the-bempic-scope-budget"
+        or restart.get("restart_persistence")
+        != "unconfirmed-m4p-guarantee-bempic-keeps-its-own-durable-state"
+    ):
+        fail("M4P resume, budget, or restart rule changed")
+
+    traces = data.get("binding_traces", [])
+    if [trace.get("id") for trace in traces] != M4P_TRACE_IDS:
+        fail("M4P trace IDs or order changed")
+    source_paths = set(expected_blobs)
+    for trace in traces:
+        if (
+            trace.get("vector") not in M4P_TRACE_IDS_BY_VECTOR
+            or trace.get("id") not in M4P_TRACE_IDS_BY_VECTOR[trace["vector"]]
+            or not trace.get("steps")
+            or not trace.get("pass")
+            or not set(trace.get("mapped_m4p_sources", [])).issubset(source_paths)
+        ):
+            fail(f"incomplete or mismapped M4P trace {trace.get('id')}")
+
+    questions = data.get("open_review_questions", [])
+    if (
+        [item.get("id") for item in questions]
+        != [f"M4P-Q{index:02d}" for index in range(1, 9)]
+        or [item.get("topic") for item in questions] != M4P_OPEN_TOPICS
+        or any(item.get("status") != "open-blocking" for item in questions)
+        or any(not item.get("question") or not item.get("why_blocking") for item in questions)
+    ):
+        fail("M4P open review questions changed, closed, or became incomplete")
+    if data.get("release_effect") != {
+        "m4p_review_package_complete": True,
+        "external_confirmation_complete": False,
+        "v09_release_evidence_complete": False,
+        "v10_release_evidence_complete": False,
+        "v12_release_evidence_complete": False,
+        "m4p_binding_gate": "blocked",
+        "unrelated_gates_changed": False,
+    }:
+        fail("M4P release effect changed or promoted incomplete evidence")
+    canonical = json.dumps(
+        data, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    if hashlib.sha256(canonical).hexdigest() != M4P_PACKAGE_SHA256:
+        fail("M4P review package canonical digest changed")
+
+
 def validate_release_template() -> None:
     data = load_json("conformance/v0.1/release-record-template.json")
     if data.get("format") != "bempic-release-record-v0.1":
@@ -855,6 +1159,28 @@ def validate_release_template() -> None:
         "thresholds_changed": False,
     }:
         fail("release template B2F oracle changed or was promoted")
+    m4p = data.get("m4p_confirmation", {})
+    if m4p != {
+        "review_package_status": "ready-for-external-review-not-submitted",
+        "review_package": M4P_PACKAGE_PATH,
+        "review_package_digest": f"sha256:{M4P_PACKAGE_SHA256}",
+        "binding_profile": M4P_PROFILE,
+        "binding_revision": 1,
+        "package_m4p_commit": M4P_COMMIT,
+        "package_m4p_tree": M4P_TREE,
+        "external_confirmation_status": "blocked-not-requested",
+        "upstream_url": None,
+        "reviewed_m4p_commit": None,
+        "reviewer": None,
+        "reviewer_authority": None,
+        "confirmed_at_utc": None,
+        "answers_digest": None,
+        "binding_trace_digest": None,
+        "required_trace_ids": M4P_TRACE_IDS,
+        "all_required_traces_passed": False,
+        "approved": False,
+    }:
+        fail("release template M4P package or blocked confirmation state changed")
     codec = data.get("codec", {})
     if codec != {
         "id": COMPACT_CODEC_ID,
@@ -901,16 +1227,21 @@ def validate_clarification_alignment() -> None:
             "A deferred or unselected representation contributes zero until selected",
             "Repeated requests, contacts, duplicates, retransmissions, matching overlap, and restart/resume do not add semantic bytes",
             "Encoded representation payload, compression or security expansion",
+            "[REQ-LAYER-003]",
+            "M4P specification explicitly omits custody transfer",
+            "complete-record interface",
         ),
         "docs/CONFORMANCE.md": (
             "[REQ-CONF-003]",
             "[REQ-CONF-004]",
+            "[REQ-CONF-005]",
             "exact 24 rows",
             "72-row full Cartesian product is not required",
             "memory",
             "representation-file",
             "durable-store",
             "floor(L*p/100)",
+            "all six prescribed V09/V10/V12 M4P traces",
         ),
         "docs/TEST-VECTORS.md": (
             "[REQ-VEC-006]",
@@ -921,6 +1252,9 @@ def validate_clarification_alignment() -> None:
             "0xffff0001/2",
             "[REQ-VEC-008]",
             B2F_PROFILE,
+            "[REQ-VEC-009]",
+            M4P_PROFILE,
+            "M4P-V12-CONNECTION-LOSS",
         ),
         "docs/METRICS.md": (
             "[REQ-METRIC-010]",
@@ -932,12 +1266,17 @@ def validate_clarification_alignment() -> None:
             "The same `(direction, representation_id)` MUST appear at most once per scope",
             B2F_PROFILE,
             "neither threshold is weakened, removed, or treated as not applicable",
+            "[REQ-METRIC-011]",
+            "acceptance-unknown",
+            "Carrier and physical byte counters must remain `unavailable`",
         ),
         "docs/ROADMAP-v0.1.0.md": (
             COMPACT_PRIVATE_COMMIT,
             "blocked-not-conformant",
             "35 B/75 B",
             OCEANMAIL_PROFILE_COMMIT,
+            M4P_COMMIT,
+            "ready-for-external-review-not-submitted",
         ),
         "docs/RELEASE-RECORD.md": (
             COMPACT_PRIVATE_COMMIT,
@@ -945,6 +1284,9 @@ def validate_clarification_alignment() -> None:
             OCEANMAIL_PROFILE_COMMIT,
             "blocked-no-qualified-oracle",
             B2F_DECISION_PATH,
+            M4P_PACKAGE_PATH,
+            M4P_COMMIT,
+            "ready-for-external-review-not-submitted",
         ),
         "docs/REGISTRIES.md": (
             "0x00010000/1",
@@ -971,6 +1313,37 @@ def validate_clarification_alignment() -> None:
             B2F_PACLINK_COMMIT,
             "250-octet",
             "GPL/AGPL code must not be linked",
+        ),
+        "docs/M4P-CONFIRMATION.md": (
+            "[REQ-M4P-001]",
+            "[REQ-M4P-008]",
+            M4P_PROFILE,
+            M4P_COMMIT,
+            "ready for external review; not submitted; not confirmed",
+            "M4P explicitly omits custody transfer",
+            "acceptance-unknown",
+            "M4P-V09-AUTHORIZED-SOURCE",
+            "M4P-V10-LOST-FINAL-RECEIPT",
+            "M4P-V12-CONNECTION-LOSS",
+            "record_bytes",
+            "destination_client_uid",
+            "binding_message_type_id",
+            "local_submission_ref",
+            "not-accepted-record-too-large",
+            "not-accepted-invalid-destination",
+            "not-accepted-binding-unconfigured",
+            "not-accepted-backpressure",
+            "not-accepted-local-error",
+            "source_client_uid",
+            "source_resolution",
+            "65,535-octet ceiling",
+            "Retained-record resend, spacing, and opportunity scheduling",
+        ),
+        "docs/review-requests/2026-09-02-m4p-v0.1-binding-review.md": (
+            "Do not post or send without explicit authorization",
+            M4P_COMMIT,
+            "eight numbered questions",
+            "not asking you to approve BEMPIC itself",
         ),
     }
     for relative, markers in required_markers.items():
@@ -1004,6 +1377,7 @@ def main() -> int:
         validate_vector_catalog()
         validate_metrics()
         validate_b2f_oracle_decision()
+        validate_m4p_binding_review_package()
         validate_release_template()
         validate_clarification_alignment()
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -1013,6 +1387,7 @@ def main() -> int:
         "release-gate validation passed: "
         f"{must_paragraphs} MUST paragraphs, 15 vectors, 24 V08 coverage rows, "
         "18 required metrics, 8 metric thresholds, blocked B2F oracle decision, "
+        "review-ready unconfirmed M4P package with 6 traces, "
         "complete codec-ID range, "
         "experimental compact allocation 0x00010000/1 "
         "coverage, release state not-ready"

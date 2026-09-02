@@ -218,6 +218,96 @@ assert(vectors.external_benchmarks.length === 1 &&
   vectors.external_benchmarks[0].corpus_digest === null,
 "external B2F benchmark was promoted without evidence");
 
+const m4pCommit = "2eca9e8f57d43dab250cc26c1bbf2d255e3331de";
+const m4pTree = "b06d1830c6156ead535542d9ff4c0a5acbfd1545";
+const m4pProfile = "bempic-m4p-opaque-record-v0.1-review";
+const m4pTraceIds = [
+  "M4P-V09-AUTHORIZED-SOURCE",
+  "M4P-V09-CROSS-MODALITY",
+  "M4P-V10-DUPLICATE",
+  "M4P-V10-LOST-FINAL-RECEIPT",
+  "M4P-V12-BUDGET",
+  "M4P-V12-CONNECTION-LOSS",
+];
+const m4p = readJson("conformance/v0.1/m4p-binding-review-package.json");
+const m4pCanonicalDigest = createHash("sha256")
+  .update(Buffer.from(canonicalize(m4p), "utf8"))
+  .digest("hex");
+assert(m4pCanonicalDigest ===
+  "2154cbe49417a06647138ac8e3034280dfcbf6a135d55260f1e80ed3c58ca459",
+"M4P review package canonical digest changed");
+assert(m4p.package_status === "ready-for-external-review-not-submitted" &&
+  m4p.binding_profile.id === m4pProfile &&
+  m4p.binding_profile.approval_status === "unconfirmed" &&
+  m4p.external_confirmation.status === "blocked-not-requested" &&
+  m4p.external_confirmation.upstream_url === null &&
+  m4p.external_confirmation.reviewer === null &&
+  m4p.external_confirmation.approved === false,
+"M4P package status or external confirmation was promoted");
+assert(m4p.authoritative_m4p_source.commit === m4pCommit &&
+  m4p.authoritative_m4p_source.tree === m4pTree &&
+  m4p.authoritative_m4p_source.license === "CC-BY-4.0" &&
+  m4p.authoritative_m4p_source.implementation_source_status ===
+    "announced-not-publicly-released" &&
+  m4p.authoritative_m4p_source.source_files.length === 14 &&
+  m4p.authoritative_m4p_source.source_files.every((source) =>
+    source.url.includes(m4pCommit) && source.blob.length === 40),
+"M4P source identity, license, or immutable inventory changed");
+assert(m4p.copyright_and_repository_boundary.copied_m4p_code === false &&
+  m4p.copyright_and_repository_boundary.copied_agpl_code === false &&
+  m4p.copyright_and_repository_boundary.copied_lookup_tables_or_fixtures === false &&
+  m4p.copyright_and_repository_boundary.substantial_source_text_copied === false,
+"M4P copyright/repository boundary changed");
+const m4pInterface = m4p.opaque_record_interface;
+assert(m4pInterface.boundary ===
+  "one-complete-canonical-bempic-operation-per-m4p-application-message-payload" &&
+  m4pInterface.partial_operation_submission === "forbidden" &&
+  m4pInterface.m4p_payload_interpretation === "opaque" &&
+  m4pInterface.bempic_operation_fields_visible_to_m4p.length === 0,
+"M4P opaque complete-record interface changed");
+assert(m4pInterface.submit_result.status_values.join(",") === [
+  "accepted", "not-accepted-record-too-large", "not-accepted-invalid-destination",
+  "not-accepted-binding-unconfigured", "not-accepted-backpressure",
+  "not-accepted-local-error", "acceptance-unknown",
+].join(",") &&
+  m4pInterface.submit_result.m4p_api_mapping_status ===
+    "external-confirmation-required" &&
+  m4pInterface.lower_layer_observations.consumed_as_bempic_receipt.length === 0,
+"M4P submit results or receipt separation changed");
+assert(m4pInterface.capacity_and_cost.bempic_outer_record_ceiling_octets === 1048576 &&
+  m4pInterface.capacity_and_cost.m4p_packet_payload_length_ceiling_octets === 65535 &&
+  m4pInterface.capacity_and_cost.m4p_safe_complete_application_record_ceiling_octets === null &&
+  m4pInterface.capacity_and_cost.safe_ceiling_status ===
+    "unresolved-external-confirmation-required" &&
+  m4pInterface.capacity_and_cost.m4p_opportunity_visibility_to_bempic ===
+    "none-prescribed",
+"M4P maximum or opportunity uncertainty was silently resolved");
+assert(m4p.receipt_rules.m4p_delivery_evidence_is_bempic_receipt === false &&
+  m4p.ownership.find((item) => item.concern === "custody-transfer").owner ===
+    "none-m4p-deliberately-omits-it" &&
+  m4p.binding_traces.map((trace) => trace.id).join(",") === m4pTraceIds.join(",") &&
+  m4p.open_review_questions.length === 8 &&
+  m4p.open_review_questions.every((question) => question.status === "open-blocking") &&
+  m4p.release_effect.m4p_binding_gate === "blocked" &&
+  m4p.release_effect.unrelated_gates_changed === false,
+"M4P ownership, traces, questions, or release blocker changed");
+for (const [vectorId, traceIds] of Object.entries({
+  V09: m4pTraceIds.slice(0, 2),
+  V10: m4pTraceIds.slice(2, 4),
+  V12: m4pTraceIds.slice(4, 6),
+})) {
+  assert(vectors.catalog.find((entry) => entry.id === vectorId)
+    .m4p_binding_trace_ids.join(",") === traceIds.join(","),
+  `${vectorId} M4P trace mapping changed`);
+}
+assert(metrics.m4p_binding_accounting.profile === m4pProfile &&
+  metrics.m4p_binding_accounting.external_confirmation_complete === false &&
+  metrics.m4p_binding_accounting.bempic_tx_charge["acceptance-unknown"] ===
+    "record-octets-once-conservative-debit" &&
+  metrics.m4p_binding_accounting.carrier_bytes ===
+    "unavailable-unless-externally-confirmed-implementation-contract",
+"M4P accounting boundary changed or was promoted");
+
 const release = readJson("conformance/v0.1/release-record-template.json");
 assert(release.release_state === "not-ready" && release.tag === null,
   "release template made a premature release claim");
@@ -246,7 +336,19 @@ assert(release.b2f_oracle.decision_status === "blocked-no-qualified-oracle" &&
   release.b2f_oracle.results_digest === null &&
   release.b2f_oracle.thresholds_changed === false,
 "release record B2F oracle changed or was promoted");
+assert(release.m4p_confirmation.review_package_status ===
+  "ready-for-external-review-not-submitted" &&
+  release.m4p_confirmation.review_package_digest ===
+    `sha256:${m4pCanonicalDigest}` &&
+  release.m4p_confirmation.package_m4p_commit === m4pCommit &&
+  release.m4p_confirmation.external_confirmation_status === "blocked-not-requested" &&
+  release.m4p_confirmation.upstream_url === null &&
+  release.m4p_confirmation.reviewer === null &&
+  release.m4p_confirmation.required_trace_ids.join(",") === m4pTraceIds.join(",") &&
+  release.m4p_confirmation.all_required_traces_passed === false &&
+  release.m4p_confirmation.approved === false,
+"release record M4P package or blocked confirmation state changed");
 
 console.log(`Independent Node verification passed (Node ${process.version}).`);
 for (const result of fingerprintResults) console.log(`fingerprint MATCH ${result}`);
-console.log("codec ranges cover uint32; compact 0x00010000/1 profile MATCH; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; B2F oracle blocked; release not-ready");
+console.log("codec ranges cover uint32; compact 0x00010000/1 profile MATCH; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; B2F oracle blocked; M4P package unconfirmed with 6 traces; release not-ready");

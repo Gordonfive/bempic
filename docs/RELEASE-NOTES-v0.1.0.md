@@ -52,7 +52,10 @@ mutation.
 - Mutable mailbox state and multi-writer conflicts are out of scope.
 - The core has contiguous-prefix resume, not missing-range selective repair.
 - No production cryptographic suite is standardized.
-- No permanent codec or M4P binding is frozen.
+- No permanent codec or externally confirmed M4P binding is frozen. The local
+  M4P technical package is ready for review but not submitted or approved; its
+  safe maximum, Message Type/API mapping, restart and expiry behavior, and six
+  V09/V10/V12 execution traces remain pending.
 - The retained Python proof uses non-normative generation-0 bytes and does not
   implement the complete v0.1 contract.
 - The latest immutable `bempic-reference` report is
@@ -75,7 +78,9 @@ Before publication, replace these placeholders:
 - B2F oracle decision: `blocked-no-qualified-oracle`; comparison profile and
   source/license audit published, corpus/executable/results: `PENDING`
 - Benchmark result digest and selected B2F comparator version: `PENDING`
-- M4P boundary review: `PENDING`
+- M4P boundary review: local package
+  `ready-for-external-review-not-submitted`; external confirmation and trace
+  results: `PENDING`
 - Release CI URL: `PENDING`
 
 The complete gate list is
