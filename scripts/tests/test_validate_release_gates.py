@@ -47,6 +47,14 @@ class ReleaseGateValidatorTests(unittest.TestCase):
         decision = copy.deepcopy(
             gates.load_json("conformance/v0.1/b2f-oracle-decision.json")
         )
+        decision["comparison_profile"]["prepared_b2_image"]["line_endings"] = "lf"
+        with patch.object(gates, "load_json", return_value=decision):
+            with self.assertRaisesRegex(ValueError, "prepared-image construction"):
+                gates.validate_b2f_oracle_decision()
+
+        decision = copy.deepcopy(
+            gates.load_json("conformance/v0.1/b2f-oracle-decision.json")
+        )
         decision["comparison_profile"]["b2f_envelope"][
             "data_block_payload_octets"
         ] = 125

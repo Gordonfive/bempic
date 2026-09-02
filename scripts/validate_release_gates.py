@@ -694,9 +694,18 @@ def validate_b2f_oracle_decision() -> None:
     }:
         fail("B2F raw MIME preparation differs from the normative profile")
     prepared = profile.get("prepared_b2_image", {})
-    if prepared.get("header_order") != [
-        "Mid", "Date", "Type", "From", "To", "Cc", "Subject", "Mbo", "Body"
-    ] or prepared.get("oracle_may_rewrite") is not False:
+    if prepared != {
+        "encoding": "ascii",
+        "line_endings": "crlf",
+        "header_order": [
+            "Mid", "Date", "Type", "From", "To", "Cc", "Subject", "Mbo", "Body"
+        ],
+        "type_value": "Private",
+        "date_format": "YYYY/MM/DD HH:MM",
+        "body_length_unit": "octets-excluding-terminating-crlf",
+        "ending": "empty-header-line-then-body-then-crlf",
+        "oracle_may_rewrite": False,
+    }:
         fail("B2 prepared-image construction differs from the normative profile")
 
     lzhuf = profile.get("lzhuf", {})
