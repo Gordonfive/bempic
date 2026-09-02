@@ -30,6 +30,13 @@ BEMPIC should not simply become B2F because BEMPIC is intended to be service-neu
 
 B2F remains the required initial performance baseline. It already proposes messages before payload, advertises compressed and uncompressed size, batches proposal/turn exchanges, packages attachments without MIME/base64 on the constrained transfer, and supports simple compressed-file offset recovery. BEMPIC must measure an actual improvement or document the specific metering/resumption benefit that justifies any additional bytes.
 
+The normative comparison envelope and source/license audit are in
+[`B2F-ORACLE.md`](B2F-ORACLE.md). That audit corrects an important shorthand:
+ARSFI's exact archive has three-clause BSD terms, while `wl2k-go`'s root MIT
+license does not erase the explicit uncertainty recorded in its
+`lzhuf/COPYRIGHT`. Neither project is silently adopted as a dependency, and no
+GPL implementation is copied or linked.
+
 ## IETF Bundle Protocol / DTN
 
 Delay/Disruption Tolerant Networking provides important conceptual prior art:

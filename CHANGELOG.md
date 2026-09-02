@@ -30,8 +30,18 @@ releases correct or clarify without intentionally changing protocol semantics.
   `bempic-compact-operation-v0.1`, with the complete public profile,
   machine-readable `REQ-REG-003` evidence audit, immutable Reference candidate
   provenance, and drift regression validation.
+- A normative B2F/LZHUF comparison profile and machine-readable oracle decision
+  defining exact MIME/B2 preparation, LZHUF behavior, framing, directional byte
+  scope, rational calculations, candidate licensing, and the evidence package
+  required to unblock oracle selection.
 
 ### Changed
+
+- Audited ARSFI, `wl2k-go`, Pat, `paclink-unix`, and F6FBB oracle paths and
+  selected none: no candidate currently satisfies the combined immutable
+  executable, exact envelope, corpus, licensing, and independent-verification
+  requirements. The existing 10% median and 5% per-fixture B2F thresholds
+  remain release-blocking and unchanged.
 
 - Replaced the codec-selection blocker with public-tuple vector regeneration:
   the Reference private candidate `0xffff0001/2` supports allocation only, and

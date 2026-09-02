@@ -1,0 +1,364 @@
+{
+  "format": "bempic-b2f-oracle-decision-v0.1",
+  "decision": {
+    "status": "blocked-no-qualified-oracle",
+    "selected_oracle": null,
+    "release_gate": "blocked",
+    "thresholds_changed": false,
+    "results_claimable": false,
+    "reason_codes": [
+      "no-complete-immutable-executable-and-envelope",
+      "no-prescribed-content-addressed-corpus-results",
+      "no-independent-byte-for-byte-reproduction",
+      "candidate-license-or-distribution-boundaries-incomplete"
+    ]
+  },
+  "comparison_profile": {
+    "id": "bempic-v0.1-b2f-text-single-message-v1",
+    "fixture_scope": "one-message-per-independent-no-fault-run",
+    "batching": "forbidden",
+    "raw_input": {
+      "format": "rfc5322-mime-exact-bytes",
+      "line_endings": "crlf",
+      "content_type": "text/plain; charset=us-ascii",
+      "content_transfer_encoding": "7bit",
+      "body": "non-empty-single-part",
+      "attachments": 0,
+      "bcc": "forbidden",
+      "transport_trace_fields": "forbidden",
+      "measured_as_b2f_bytes": false
+    },
+    "fixed_fixture_fields": [
+      "date_utc_minute",
+      "from",
+      "ordered_to",
+      "ordered_cc",
+      "subject",
+      "mime_message_id",
+      "b2_mid",
+      "b2_mbo",
+      "body_bytes"
+    ],
+    "prepared_b2_image": {
+      "encoding": "ascii",
+      "line_endings": "crlf",
+      "header_order": [
+        "Mid",
+        "Date",
+        "Type",
+        "From",
+        "To",
+        "Cc",
+        "Subject",
+        "Mbo",
+        "Body"
+      ],
+      "type_value": "Private",
+      "date_format": "YYYY/MM/DD HH:MM",
+      "body_length_unit": "octets-excluding-terminating-crlf",
+      "ending": "empty-header-line-then-body-then-crlf",
+      "oracle_may_rewrite": false
+    },
+    "lzhuf": {
+      "variant": "FBB-LZHUF_1-with-B2-prefix",
+      "behavior_reference": {
+        "repository": "ARSFI/Winlink-Compression",
+        "commit": "dbe96569817018e66e0e5f6add40eed12adc9fd7",
+        "path": "WinlinkSupport.vb",
+        "git_blob_sha1": "1430cf408b28d9345e6b4a75c1c97fdaebb3661d",
+        "entry_point": "Compression.Encode(input, output, prependCRC=True)"
+      },
+      "lzss_ring_octets": 2048,
+      "lookahead_octets": 60,
+      "match_threshold": 2,
+      "initial_ring_octet": 32,
+      "adaptive_huffman_symbols": 314,
+      "adaptive_huffman_rebuild_frequency": 32768,
+      "crc": {
+        "name": "CRC-16/XMODEM",
+        "polynomial": 4129,
+        "initial": 0,
+        "reflect_input": false,
+        "reflect_output": false,
+        "xor_output": 0,
+        "stored_byte_order": "little-endian",
+        "coverage": "four-octet-length-plus-compressed-bitstream"
+      },
+      "uncompressed_length": {
+        "octets": 4,
+        "byte_order": "little-endian",
+        "signed": false
+      },
+      "image_order": [
+        "crc16-two-octets",
+        "uncompressed-length-four-octets",
+        "lzhuf-bitstream"
+      ]
+    },
+    "b2f_envelope": {
+      "start": "first-octet-of-fc-proposal",
+      "end": "checksum-octet-following-eot",
+      "offset": 0,
+      "proposal_template": "FC EM {mid} {uncompressed_size} {compressed_size} 0\\r",
+      "proposal_prompt_template": "F> {uppercase-two-digit-hex-checksum}\\r",
+      "proposal_checksum": "twos-complement-modulo-256-of-proposal-including-cr",
+      "acceptance": "FS +\\r",
+      "binary_header": "01 header-length subject 00 ascii-0 00",
+      "binary_header_length": "subject-octets-plus-3",
+      "data_block_payload_octets": 250,
+      "data_block": "02 length data",
+      "termination": "04 twos-complement-modulo-256-of-all-transmitted-image-data",
+      "directions": {
+        "send": "proposal-prompt-binary-header-data-blocks-eot-checksum",
+        "receive": "acceptance",
+        "identity": "b2f_total_bytes=b2f_send_bytes+b2f_receive_bytes"
+      },
+      "included": [
+        "fc-proposal",
+        "proposal-checksum-line",
+        "fs-acceptance",
+        "binary-header",
+        "data-block-prefixes",
+        "complete-lzhuf-image",
+        "eot",
+        "transfer-checksum"
+      ],
+      "excluded": [
+        "raw-mime-bytes",
+        "mime-and-b2-preparation-work",
+        "login-greeting-sid",
+        "pq-pr-authentication",
+        "comments",
+        "line-echo",
+        "later-turn-ff-fq-session-close",
+        "modem-carrier-link-framing",
+        "fec",
+        "lower-layer-acknowledgements",
+        "lower-layer-retransmissions",
+        "failed-or-resumed-attempts"
+      ]
+    },
+    "calculations": {
+      "candidate_reduction_percent": "100*(b2f_total_bytes-bempic_total_bytes)/b2f_total_bytes",
+      "candidate_increase_percent": "100*(bempic_total_bytes-b2f_total_bytes)/b2f_total_bytes",
+      "representation": "signed-integer-numerator-and-positive-integer-denominator",
+      "median": "exact-median-of-per-fixture-reduction-rationals",
+      "even_median": "arithmetic-mean-of-two-middle-rationals",
+      "forbidden_aggregations": [
+        "ratio-of-aggregate-byte-totals",
+        "ratio-of-two-medians"
+      ]
+    }
+  },
+  "required_corpus_manifest": {
+    "status": "not-yet-published",
+    "digest": null,
+    "required_per_fixture": [
+      "fixture_id",
+      "license-and-provenance",
+      "raw_mime_path-length-sha256",
+      "semantic_record-path-length-sha256",
+      "prepared_b2_path-length-sha256",
+      "bempic_semantic_fixture-path-length-sha256",
+      "fixed_fixture_fields",
+      "expected_lzhuf_path-length-sha256",
+      "expected_transcript-path-directional-lengths-sha256"
+    ]
+  },
+  "required_result_fields": [
+    "specification_commit",
+    "corpus_manifest_sha256",
+    "fixture_id",
+    "bempic_codec_id_revision_profile_sha256",
+    "bempic_implementation_commit",
+    "oracle_source_commit_or_release",
+    "oracle_executable_sha256",
+    "oracle_license",
+    "oracle_acquisition_and_build_provenance",
+    "operating_system_architecture",
+    "invocation_environment-exit-code",
+    "stdout_stderr_sha256",
+    "parser_version",
+    "raw_mime_length_sha256",
+    "semantic_record_length_sha256",
+    "prepared_b2_length_sha256",
+    "lzhuf_image_length_sha256-crc16-decoded-length",
+    "b2f_send_bytes",
+    "b2f_receive_bytes",
+    "b2f_total_bytes",
+    "bempic_operation_bytes_send",
+    "bempic_operation_bytes_receive",
+    "bempic_total_bytes",
+    "candidate_reduction_percent-rational",
+    "candidate_increase_percent-rational",
+    "independent_decode-and-byte-equality",
+    "threshold_evaluation"
+  ],
+  "thresholds": [
+    {
+      "id": "b2f-median-compactness",
+      "metric": "candidate_reduction_percent",
+      "operator": ">=",
+      "value": 10,
+      "aggregation": "median"
+    },
+    {
+      "id": "b2f-per-fixture-regression",
+      "metric": "candidate_increase_percent",
+      "operator": "<=",
+      "value": 5,
+      "aggregation": "each-run-or-accepted-justification"
+    }
+  ],
+  "primary_sources": [
+    {
+      "authority": "Winlink Development Team",
+      "title": "Open B2F -- Winlink Message Structure and B2 Forwarding Protocol",
+      "url": "https://winlink.org/B2F",
+      "retrieved_utc": "2026-09-02",
+      "octets": 37310,
+      "sha256": "cd6c5ab26753c6f8184334ba3d829ddcf5401731fa8738434501e7c3214aeafc",
+      "publisher_revision": "February 2018",
+      "mutable_publisher_url": true
+    },
+    {
+      "authority": "Winlink Development Team",
+      "title": "Winlink Data Flow and Data Packaging",
+      "url": "https://winlink.org/sites/default/files/downloads/winlink_data_flow_and_data_packaging.pdf",
+      "retrieved_utc": "2026-09-02",
+      "octets": 64355,
+      "sha256": "9336299e64401d23ad8027b4b710c3db0cd3eddf36490c0e246dc3fba83cbe7b",
+      "publisher_year": 2017,
+      "mutable_publisher_url": true
+    },
+    {
+      "authority": "F6FBB",
+      "title": "FBB forwarding protocol",
+      "url": "https://www.f6fbb.org/protocole.html",
+      "retrieved_utc": "2026-09-02",
+      "octets": 21088,
+      "sha256": "07c49a1a5062b1d9129f58b35920297fa57dfb8f95fc2ea1f7a1486fae95c4de",
+      "immutable_snapshot": "https://github.com/la5nta/wl2k-go/blob/efde6fbcb7bc8d6519fd8018ec544c793d4ef48d/docs/F6FBB-B2F/protocole.html",
+      "mutable_publisher_url": true
+    },
+    {
+      "authority": "ARSFI/Winlink Development Team",
+      "repository": "ARSFI/Winlink-Compression",
+      "commit": "dbe96569817018e66e0e5f6add40eed12adc9fd7",
+      "source_git_blob_sha1": "1430cf408b28d9345e6b4a75c1c97fdaebb3661d",
+      "license_git_blob_sha1": "efe089297e5090bbbcf41ff644e37b8736fd19f6"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "arsfi-winlink-compression",
+      "repository": "ARSFI/Winlink-Compression",
+      "commit": "dbe96569817018e66e0e5f6add40eed12adc9fd7",
+      "authority": "publisher-identified-winlink-source",
+      "language": "VB.NET",
+      "license": "BSD-3-Clause-text",
+      "copyright": "Amateur Radio Safety Foundation, Inc.",
+      "build_runtime_dependencies": ["dotnet-vb-compiler", "dotnet-base-class-library"],
+      "platform_support": "not-declared",
+      "independent_executable": false,
+      "incorporation": "allowed-with-license-and-notice-but-not-done",
+      "linking": "allowed-with-license-and-notice-but-not-done",
+      "redistribution": "allowed-with-license-and-notice-but-not-done",
+      "ci_use": "possible-after-pinned-build-is-defined",
+      "qualified": false,
+      "deficiencies": ["no-project-or-lock", "no-cli", "no-release-binary", "no-full-b2f-envelope", "no-independent-corpus-evidence"]
+    },
+    {
+      "id": "wl2k-go",
+      "repository": "la5nta/wl2k-go",
+      "release": "v1.0.1",
+      "commit": "efde6fbcb7bc8d6519fd8018ec544c793d4ef48d",
+      "authority": "independent-interoperable-client-framework",
+      "language": "Go",
+      "license": "MIT-root-with-explicit-lzhuf-provenance-caveat",
+      "copyright": "Martin Hebnes Pedersen and antecedent LZHUF authors",
+      "build_runtime_dependencies": ["Go-1.24", "go.mod-dependencies"],
+      "platform_support": "library-dependent",
+      "independent_executable": false,
+      "incorporation": "not-approved-for-lzhuf-without-rights-clarification",
+      "linking": "not-approved-for-lzhuf-without-rights-clarification",
+      "redistribution": "not-approved-for-lzhuf-without-rights-clarification",
+      "ci_use": "not-approved-as-linked-dependency",
+      "qualified": false,
+      "deficiencies": ["no-cli", "lzhuf-copyright-provenance-unresolved", "125-octet-blocks-not-profile-250", "no-prescribed-corpus-full-transcript-evidence"]
+    },
+    {
+      "id": "pat",
+      "repository": "la5nta/pat",
+      "release": "v1.0.0",
+      "commit": "2e6a8d14baf0268f4e2aa4d01784a54ca935cf52",
+      "authority": "independent-interoperable-client",
+      "language": "Go",
+      "license": "MIT-root-with-inherited-wl2k-go-lzhuf-caveat",
+      "copyright": "Martin Hebnes Pedersen and contributors",
+      "build_runtime_dependencies": ["Go-1.24", "wl2k-go-v1.0.1", "go.mod-dependencies"],
+      "platform_support": ["darwin-amd64", "linux-amd64", "linux-arm64", "linux-armhf", "linux-i386", "windows-i386"],
+      "independent_executable": true,
+      "incorporation": "not-approved",
+      "linking": "not-approved",
+      "redistribution": "not-approved-by-this-decision",
+      "ci_use": "process-separated-only-after-deterministic-interface-and-provenance-resolution",
+      "qualified": false,
+      "deficiencies": ["no-offline-oracle-command", "runtime-mailbox-clock-id-session-state", "inherited-lzhuf-provenance", "125-octet-blocks-not-profile-250"]
+    },
+    {
+      "id": "paclink-unix-lzhuf-1",
+      "repository": "nwdigitalradio/paclink-unix",
+      "commit": "cc7b2f9474959a70856cabaf812bfce53d2da145",
+      "authority": "independent-interoperable-client",
+      "language": "C",
+      "license": "GPL-2.0-or-later",
+      "copyright": "Nicholas S. Castellano, contributors, and antecedent LZHUF authors",
+      "build_runtime_dependencies": ["unix-or-linux", "c-toolchain", "autoconf", "automake", "libtool", "project-dependencies"],
+      "platform_support": ["unix", "linux"],
+      "independent_executable": true,
+      "invocation_candidate": "lzhuf_1 e1 input output",
+      "incorporation": "forbidden-project-policy",
+      "linking": "forbidden-project-policy",
+      "redistribution": "not-by-bempic",
+      "ci_use": "separately-obtained-process-only",
+      "qualified": false,
+      "deficiencies": ["no-pinned-standalone-release-binary", "no-hermetic-cross-platform-build", "no-arsfi-corpus-cross-check", "no-full-b2f-envelope-output"]
+    },
+    {
+      "id": "f6fbb-b2compress-linfbb",
+      "repository": null,
+      "release": null,
+      "authority": "named-by-f6fbb-and-winlink-publications",
+      "language": "historical-binary-or-c",
+      "license": null,
+      "copyright": null,
+      "build_runtime_dependencies": null,
+      "platform_support": null,
+      "independent_executable": true,
+      "incorporation": "not-approved",
+      "linking": "not-approved",
+      "redistribution": "not-approved",
+      "ci_use": "not-approved",
+      "qualified": false,
+      "deficiencies": ["no-content-addressed-artifact", "no-applicable-license", "no-exact-invocation", "no-reproducibility-evidence"]
+    }
+  ],
+  "legal_boundaries": {
+    "incorporating_source": "requires-compatible-license-provenance-and-notices",
+    "linking_library": "requires-compatible-license-and-complete-provenance-gpl-agpl-forbidden",
+    "separate_executable": "must-remain-separately-obtained-process-and-separately-licensed",
+    "fixture_generation_only": "requires-redistribution-rights-content-addressing-and-independent-reproduction",
+    "implementation_from_publications": "independently-authored-no-source-table-fixture-or-substantial-text-copying"
+  },
+  "required_next_package": [
+    "synthetic-redistributable-content-addressed-corpus",
+    "qualified-standalone-executable-and-executable-sha256",
+    "immutable-source-release-build-runtime-and-platform-provenance",
+    "arsfi-byte-equality-for-corpus-and-boundaries",
+    "independent-decode-malformed-and-full-transcript-evidence",
+    "two-platform-250-octet-block-transcript-reproduction",
+    "mode-specific-license-review-and-notices",
+    "raw-per-fixture-results-exact-rationals-and-independent-aggregate-reproduction"
+  ]
+}

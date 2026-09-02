@@ -16,6 +16,65 @@ class ReleaseGateValidatorTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "threshold definitions"):
                 gates.validate_metrics()
 
+    def test_b2f_metric_profile_cannot_drift_or_pass(self) -> None:
+        metrics = copy.deepcopy(gates.load_json("conformance/v0.1/metrics.json"))
+        metrics["b2f_comparison"]["selected_oracle"] = "convenient-tool"
+        metrics["b2f_comparison"]["results_claimable"] = True
+        with patch.object(gates, "load_json", return_value=metrics):
+            with self.assertRaisesRegex(ValueError, "B2F comparison metadata"):
+                gates.validate_metrics()
+
+    def test_b2f_decision_cannot_select_candidate_or_change_threshold(self) -> None:
+        decision = copy.deepcopy(
+            gates.load_json("conformance/v0.1/b2f-oracle-decision.json")
+        )
+        decision["decision"]["selected_oracle"] = "paclink-unix-lzhuf-1"
+        decision["decision"]["status"] = "selected"
+        decision["candidates"][3]["qualified"] = True
+        with patch.object(gates, "load_json", return_value=decision):
+            with self.assertRaisesRegex(ValueError, "blocked decision"):
+                gates.validate_b2f_oracle_decision()
+
+        decision = copy.deepcopy(
+            gates.load_json("conformance/v0.1/b2f-oracle-decision.json")
+        )
+        decision["thresholds"][0]["value"] = 0
+        with patch.object(gates, "load_json", return_value=decision):
+            with self.assertRaisesRegex(ValueError, "thresholds changed"):
+                gates.validate_b2f_oracle_decision()
+
+    def test_b2f_framing_and_license_boundaries_are_pinned(self) -> None:
+        decision = copy.deepcopy(
+            gates.load_json("conformance/v0.1/b2f-oracle-decision.json")
+        )
+        decision["comparison_profile"]["b2f_envelope"][
+            "data_block_payload_octets"
+        ] = 125
+        with patch.object(gates, "load_json", return_value=decision):
+            with self.assertRaisesRegex(ValueError, "framing envelope"):
+                gates.validate_b2f_oracle_decision()
+
+        decision = copy.deepcopy(
+            gates.load_json("conformance/v0.1/b2f-oracle-decision.json")
+        )
+        paclink = next(
+            item
+            for item in decision["candidates"]
+            if item["id"] == "paclink-unix-lzhuf-1"
+        )
+        paclink["linking"] = "allowed"
+        with patch.object(gates, "load_json", return_value=decision):
+            with self.assertRaisesRegex(ValueError, "process/license boundary"):
+                gates.validate_b2f_oracle_decision()
+
+    def test_external_b2f_catalog_cannot_be_unblocked(self) -> None:
+        catalog = copy.deepcopy(gates.load_json("conformance/v0.1/vector-catalog.json"))
+        catalog["external_benchmarks"][0]["status"] = "pass"
+        catalog["external_benchmarks"][0]["selected_oracle"] = "unreviewed"
+        with patch.object(gates, "load_json", return_value=catalog):
+            with self.assertRaisesRegex(ValueError, "external B2F benchmark"):
+                gates.validate_vector_catalog()
+
     def test_semantic_bytes_definition_and_required_counters_are_pinned(self) -> None:
         metrics = copy.deepcopy(gates.load_json("conformance/v0.1/metrics.json"))
         metrics["semantic_bytes_definition"]["excluded"].remove("duplicates")
@@ -169,6 +228,17 @@ class ReleaseGateValidatorTests(unittest.TestCase):
         release["current_reference_evidence"]["accepted_as_release_evidence"] = True
         with patch.object(gates, "load_json", return_value=release):
             with self.assertRaisesRegex(ValueError, "cannot be accepted"):
+                gates.validate_release_template()
+
+    def test_release_template_cannot_promote_b2f_oracle(self) -> None:
+        release = copy.deepcopy(
+            gates.load_json("conformance/v0.1/release-record-template.json")
+        )
+        release["b2f_oracle"]["decision_status"] = "selected"
+        release["b2f_oracle"]["identity"] = "unreviewed"
+        release["b2f_oracle"]["results_digest"] = "sha256:invented"
+        with patch.object(gates, "load_json", return_value=release):
+            with self.assertRaisesRegex(ValueError, "B2F oracle"):
                 gates.validate_release_template()
 
 

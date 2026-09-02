@@ -182,6 +182,20 @@ overflow, NaN/infinity policy where relevant, and canonical negative-zero
 behavior. A codec with no approximate numeric fields explicitly records that
 the precision vectors are not applicable.
 
+## External B2F corpus bundle
+
+[REQ-VEC-008] The prescribed B2F text corpus MUST be a synthetic,
+redistributable, content-addressed bundle conforming to
+[`bempic-v0.1-b2f-text-single-message-v1`](B2F-ORACLE.md). Its manifest MUST
+bind each fixture ID to exact raw RFC 5322/MIME, semantic-record, prepared-B2,
+BEMPIC-semantic-fixture, expected LZHUF-image, and expected directional B2F
+transcript paths, octet lengths, SHA-256 digests, fixed header values, and
+licenses. It MUST include the calculation profile ID and digest, corpus digest,
+generator commit, and independent reproduction. Until that bundle and a
+qualified oracle are published, `external-text-corpus` remains blocked and no
+private mail, implementation-generated timestamp or identifier, mutable URL,
+or unlicensed upstream fixture may substitute for it.
+
 ## State traces
 
 State vectors are ordered operation traces. Each step records operation bytes,

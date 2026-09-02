@@ -155,5 +155,17 @@
       "advertised_retryable_flags": [false, true],
       "assertions": ["exact-failure-code", "retry-classification", "bounded-retry", "scoped-mutation"]
     }
+  ],
+  "external_benchmarks": [
+    {
+      "id": "external-text-corpus",
+      "profile": "bempic-v0.1-b2f-text-single-message-v1",
+      "decision_artifact": "conformance/v0.1/b2f-oracle-decision.json",
+      "status": "blocked",
+      "selected_oracle": null,
+      "corpus_digest": null,
+      "blocked_by": ["b2f-oracle-selection", "prescribed-corpus-publication", "independent-reproduction"],
+      "threshold_ids": ["b2f-median-compactness", "b2f-per-fixture-regression"]
+    }
   ]
 }

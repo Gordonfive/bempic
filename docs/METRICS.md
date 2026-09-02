@@ -139,14 +139,17 @@ no partial operation. Every V05 case MUST have
 authoritative retained-prefix knowledge MUST have
 `retransmitted_durable_prefix_bytes = 0`.
 
-[REQ-METRIC-008] The prescribed text-corpus comparison MUST report total BEMPIC
-bytes for the candidate codec and total bytes for the selected B2F/LZHUF oracle
-under identical semantic input and declared envelope rules. The median candidate
-result MUST be at least 10 percent smaller than B2F. Any fixture whose candidate
-result exceeds B2F by more than 5 percent MUST have an accepted, measured
-resumption or metering justification. Selection and licensing of the B2F oracle
-remain release-blocking; no result may be claimed until that decision is
-recorded.
+[REQ-METRIC-008] The prescribed text-corpus comparison MUST implement
+[`bempic-v0.1-b2f-text-single-message-v1`](B2F-ORACLE.md), report exact
+directional and total BEMPIC and B2F bytes for identical content-addressed
+semantic input, and publish the profile's raw MIME, prepared B2, LZHUF image,
+framed transcript, digest, tool, and exact-rational calculation evidence. The
+median of the per-fixture `candidate_reduction_percent` rationals MUST be at
+least 10 percent. A fixture whose `candidate_increase_percent` exceeds 5 percent
+MUST have an accepted, measured resumption or metering justification. The
+machine-readable oracle decision currently selects no implementation, so both
+thresholds remain blocked and no B2F result may be claimed; neither threshold
+is weakened, removed, or treated as not applicable.
 
 No pass threshold is yet assigned to first-body, resume-control, carrier, link,
 time, or energy metrics. They are mandatory observations so a later threshold

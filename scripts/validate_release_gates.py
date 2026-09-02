@@ -22,6 +22,7 @@ NORMATIVE_DOCS = (
     "docs/CONFORMANCE.md",
     "docs/REGISTRIES.md",
     "docs/METRICS.md",
+    "docs/B2F-ORACLE.md",
     "docs/M4P-CONFIRMATION.md",
     "docs/RELEASE-RECORD.md",
     "docs/codecs/EXPERIMENTAL-COMPACT-v0.1.md",
@@ -49,6 +50,11 @@ COMPACT_PROFILE_SHA256 = "bc82364f7ac2f563bbdc0ea15f3d9b1f9127d6ac88376bf19a6dc6
 COMPACT_PRIVATE_COMMIT = "cf3485f6606d6462077e8edd1592264c3ce4ca5e"
 COMPACT_PRIVATE_TUPLE = "0xffff0001/2"
 OCEANMAIL_PROFILE_COMMIT = "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600"
+B2F_DECISION_PATH = "conformance/v0.1/b2f-oracle-decision.json"
+B2F_PROFILE = "bempic-v0.1-b2f-text-single-message-v1"
+B2F_ARSFI_COMMIT = "dbe96569817018e66e0e5f6add40eed12adc9fd7"
+B2F_WL2K_COMMIT = "efde6fbcb7bc8d6519fd8018ec544c793d4ef48d"
+B2F_PACLINK_COMMIT = "cc7b2f9474959a70856cabaf812bfce53d2da145"
 
 
 def expected_v08_coverage_rows() -> list[dict[str, str]]:
@@ -273,6 +279,58 @@ EXPECTED_METRIC_THRESHOLDS = [
     {"id": "resume-no-durable-prefix-resend", "vector": "V09", "case": "*", "metric": "retransmitted_durable_prefix_bytes", "operator": "=", "value": 0, "aggregation": "each-run-with-authoritative-prefix"},
     {"id": "b2f-median-compactness", "vector": "external-text-corpus", "case": "*", "metric": "candidate_reduction_percent", "operator": ">=", "value": 10, "aggregation": "median"},
     {"id": "b2f-per-fixture-regression", "vector": "external-text-corpus", "case": "*", "metric": "candidate_increase_percent", "operator": "<=", "value": 5, "aggregation": "each-run-or-accepted-justification"},
+]
+
+EXPECTED_B2F_COMPARISON = {
+    "profile": B2F_PROFILE,
+    "decision_artifact": B2F_DECISION_PATH,
+    "decision_status": "blocked-no-qualified-oracle",
+    "selected_oracle": None,
+    "corpus_digest": None,
+    "results_claimable": False,
+    "directional_identity": "b2f_total_bytes=b2f_send_bytes+b2f_receive_bytes",
+    "candidate_reduction_percent": "100*(b2f_total_bytes-bempic_total_bytes)/b2f_total_bytes",
+    "candidate_increase_percent": "100*(bempic_total_bytes-b2f_total_bytes)/b2f_total_bytes",
+    "ratio_representation": "signed-integer-numerator-and-positive-integer-denominator",
+    "median": "exact-median-of-per-fixture-reduction-rationals",
+    "thresholds_changed": False,
+}
+
+EXPECTED_EXTERNAL_BENCHMARKS = [
+    {
+        "id": "external-text-corpus",
+        "profile": B2F_PROFILE,
+        "decision_artifact": B2F_DECISION_PATH,
+        "status": "blocked",
+        "selected_oracle": None,
+        "corpus_digest": None,
+        "blocked_by": [
+            "b2f-oracle-selection",
+            "prescribed-corpus-publication",
+            "independent-reproduction",
+        ],
+        "threshold_ids": [
+            "b2f-median-compactness",
+            "b2f-per-fixture-regression",
+        ],
+    }
+]
+
+EXPECTED_B2F_THRESHOLDS = [
+    {
+        "id": "b2f-median-compactness",
+        "metric": "candidate_reduction_percent",
+        "operator": ">=",
+        "value": 10,
+        "aggregation": "median",
+    },
+    {
+        "id": "b2f-per-fixture-regression",
+        "metric": "candidate_increase_percent",
+        "operator": "<=",
+        "value": 5,
+        "aggregation": "each-run-or-accepted-justification",
+    },
 ]
 
 
@@ -542,6 +600,8 @@ def validate_vector_catalog() -> None:
             if by_id[vector_id].get(field) != expected_value:
                 fail(f"{vector_id} {field} differs from the normative catalog")
     validate_v08_pairwise(by_id["V08"]["coverage_rows"])
+    if data.get("external_benchmarks") != EXPECTED_EXTERNAL_BENCHMARKS:
+        fail("external B2F benchmark catalog changed or was promoted")
 
 
 def validate_v08_pairwise(rows: object) -> None:
@@ -587,8 +647,154 @@ def validate_metrics() -> None:
         fail("semantic_bytes definition differs from the normative catalog")
     if data.get("identities") != EXPECTED_METRIC_IDENTITIES:
         fail("metric identities differ from the normative catalog")
+    if data.get("b2f_comparison") != EXPECTED_B2F_COMPARISON:
+        fail("B2F comparison metadata differs from the normative decision")
     if data.get("thresholds") != EXPECTED_METRIC_THRESHOLDS:
         fail("metric threshold definitions differ from the normative catalog")
+
+
+def validate_b2f_oracle_decision() -> None:
+    data = load_json(B2F_DECISION_PATH)
+    if data.get("format") != "bempic-b2f-oracle-decision-v0.1":
+        fail("unexpected B2F oracle-decision format")
+    if data.get("decision") != {
+        "status": "blocked-no-qualified-oracle",
+        "selected_oracle": None,
+        "release_gate": "blocked",
+        "thresholds_changed": False,
+        "results_claimable": False,
+        "reason_codes": [
+            "no-complete-immutable-executable-and-envelope",
+            "no-prescribed-content-addressed-corpus-results",
+            "no-independent-byte-for-byte-reproduction",
+            "candidate-license-or-distribution-boundaries-incomplete",
+        ],
+    }:
+        fail("B2F blocked decision changed or was promoted")
+
+    profile = data.get("comparison_profile", {})
+    if (
+        profile.get("id") != B2F_PROFILE
+        or profile.get("fixture_scope")
+        != "one-message-per-independent-no-fault-run"
+        or profile.get("batching") != "forbidden"
+    ):
+        fail("B2F fixture scope differs from the normative profile")
+    raw = profile.get("raw_input", {})
+    if raw != {
+        "format": "rfc5322-mime-exact-bytes",
+        "line_endings": "crlf",
+        "content_type": "text/plain; charset=us-ascii",
+        "content_transfer_encoding": "7bit",
+        "body": "non-empty-single-part",
+        "attachments": 0,
+        "bcc": "forbidden",
+        "transport_trace_fields": "forbidden",
+        "measured_as_b2f_bytes": False,
+    }:
+        fail("B2F raw MIME preparation differs from the normative profile")
+    prepared = profile.get("prepared_b2_image", {})
+    if prepared.get("header_order") != [
+        "Mid", "Date", "Type", "From", "To", "Cc", "Subject", "Mbo", "Body"
+    ] or prepared.get("oracle_may_rewrite") is not False:
+        fail("B2 prepared-image construction differs from the normative profile")
+
+    lzhuf = profile.get("lzhuf", {})
+    behavior = lzhuf.get("behavior_reference", {})
+    if behavior != {
+        "repository": "ARSFI/Winlink-Compression",
+        "commit": B2F_ARSFI_COMMIT,
+        "path": "WinlinkSupport.vb",
+        "git_blob_sha1": "1430cf408b28d9345e6b4a75c1c97fdaebb3661d",
+        "entry_point": "Compression.Encode(input, output, prependCRC=True)",
+    }:
+        fail("B2F LZHUF behavior reference changed")
+    expected_lzhuf = {
+        "variant": "FBB-LZHUF_1-with-B2-prefix",
+        "lzss_ring_octets": 2048,
+        "lookahead_octets": 60,
+        "match_threshold": 2,
+        "initial_ring_octet": 32,
+        "adaptive_huffman_symbols": 314,
+        "adaptive_huffman_rebuild_frequency": 32768,
+    }
+    for field, expected in expected_lzhuf.items():
+        if lzhuf.get(field) != expected:
+            fail(f"B2F LZHUF {field} differs from the normative profile")
+    if lzhuf.get("crc") != {
+        "name": "CRC-16/XMODEM",
+        "polynomial": 4129,
+        "initial": 0,
+        "reflect_input": False,
+        "reflect_output": False,
+        "xor_output": 0,
+        "stored_byte_order": "little-endian",
+        "coverage": "four-octet-length-plus-compressed-bitstream",
+    }:
+        fail("B2F LZHUF CRC definition differs from the normative profile")
+
+    envelope = profile.get("b2f_envelope", {})
+    if (
+        envelope.get("start") != "first-octet-of-fc-proposal"
+        or envelope.get("end") != "checksum-octet-following-eot"
+        or envelope.get("offset") != 0
+        or envelope.get("data_block_payload_octets") != 250
+        or envelope.get("proposal_template")
+        != "FC EM {mid} {uncompressed_size} {compressed_size} 0\\r"
+        or envelope.get("acceptance") != "FS +\\r"
+    ):
+        fail("B2F framing envelope differs from the normative profile")
+    if envelope.get("directions", {}).get("identity") != (
+        "b2f_total_bytes=b2f_send_bytes+b2f_receive_bytes"
+    ):
+        fail("B2F directional identity differs from the normative profile")
+    if "complete-lzhuf-image" not in envelope.get("included", []):
+        fail("B2F envelope omits the compressed image")
+    if "modem-carrier-link-framing" not in envelope.get("excluded", []):
+        fail("B2F envelope does not separate lower-layer bytes")
+
+    calculations = profile.get("calculations", {})
+    if calculations != {
+        "candidate_reduction_percent": "100*(b2f_total_bytes-bempic_total_bytes)/b2f_total_bytes",
+        "candidate_increase_percent": "100*(bempic_total_bytes-b2f_total_bytes)/b2f_total_bytes",
+        "representation": "signed-integer-numerator-and-positive-integer-denominator",
+        "median": "exact-median-of-per-fixture-reduction-rationals",
+        "even_median": "arithmetic-mean-of-two-middle-rationals",
+        "forbidden_aggregations": [
+            "ratio-of-aggregate-byte-totals",
+            "ratio-of-two-medians",
+        ],
+    }:
+        fail("B2F exact-rational calculations differ from the normative profile")
+    if data.get("thresholds") != EXPECTED_B2F_THRESHOLDS:
+        fail("B2F decision thresholds changed")
+
+    corpus = data.get("required_corpus_manifest", {})
+    if corpus.get("status") != "not-yet-published" or corpus.get("digest") is not None:
+        fail("B2F corpus was promoted without reviewed evidence")
+    candidates = {item.get("id"): item for item in data.get("candidates", [])}
+    if set(candidates) != {
+        "arsfi-winlink-compression",
+        "wl2k-go",
+        "pat",
+        "paclink-unix-lzhuf-1",
+        "f6fbb-b2compress-linfbb",
+    } or any(item.get("qualified") is not False for item in candidates.values()):
+        fail("B2F candidate audit changed or promoted a candidate")
+    if candidates["wl2k-go"].get("commit") != B2F_WL2K_COMMIT or (
+        candidates["wl2k-go"].get("linking")
+        != "not-approved-for-lzhuf-without-rights-clarification"
+    ):
+        fail("wl2k-go provenance boundary changed")
+    paclink = candidates["paclink-unix-lzhuf-1"]
+    if (
+        paclink.get("commit") != B2F_PACLINK_COMMIT
+        or paclink.get("license") != "GPL-2.0-or-later"
+        or paclink.get("incorporation") != "forbidden-project-policy"
+        or paclink.get("linking") != "forbidden-project-policy"
+        or paclink.get("ci_use") != "separately-obtained-process-only"
+    ):
+        fail("paclink-unix process/license boundary changed")
 
 
 def validate_release_template() -> None:
@@ -625,6 +831,21 @@ def validate_release_template() -> None:
     }
     if interruption != expected_interruption:
         fail("release template interruption coverage differs from the normative catalog")
+    b2f = data.get("b2f_oracle", {})
+    if b2f != {
+        "decision_status": "blocked-no-qualified-oracle",
+        "decision_artifact": B2F_DECISION_PATH,
+        "comparison_profile": B2F_PROFILE,
+        "identity": None,
+        "version": None,
+        "executable_digest": None,
+        "license": None,
+        "corpus_digest": None,
+        "results_digest": None,
+        "independent_reproduction": None,
+        "thresholds_changed": False,
+    }:
+        fail("release template B2F oracle changed or was promoted")
     codec = data.get("codec", {})
     if codec != {
         "id": COMPACT_CODEC_ID,
@@ -674,6 +895,7 @@ def validate_clarification_alignment() -> None:
         ),
         "docs/CONFORMANCE.md": (
             "[REQ-CONF-003]",
+            "[REQ-CONF-004]",
             "exact 24 rows",
             "72-row full Cartesian product is not required",
             "memory",
@@ -688,6 +910,8 @@ def validate_clarification_alignment() -> None:
             "V08-C24",
             "public-codec-vector-regeneration",
             "0xffff0001/2",
+            "[REQ-VEC-008]",
+            B2F_PROFILE,
         ),
         "docs/METRICS.md": (
             "[REQ-METRIC-010]",
@@ -697,6 +921,8 @@ def validate_clarification_alignment() -> None:
             "`endpoint_a_binding` and `endpoint_b_binding`",
             "descriptor contribution MUST be zero",
             "The same `(direction, representation_id)` MUST appear at most once per scope",
+            B2F_PROFILE,
+            "neither threshold is weakened, removed, or treated as not applicable",
         ),
         "docs/ROADMAP-v0.1.0.md": (
             COMPACT_PRIVATE_COMMIT,
@@ -708,6 +934,8 @@ def validate_clarification_alignment() -> None:
             COMPACT_PRIVATE_COMMIT,
             "predates the normative clarifications",
             OCEANMAIL_PROFILE_COMMIT,
+            "blocked-no-qualified-oracle",
+            B2F_DECISION_PATH,
         ),
         "docs/REGISTRIES.md": (
             "0x00010000/1",
@@ -720,6 +948,20 @@ def validate_clarification_alignment() -> None:
             "0x00010000/1",
             COMPACT_PRIVATE_TUPLE,
             "no stable-wire or production-security promise",
+        ),
+        "docs/B2F-ORACLE.md": (
+            "[REQ-B2F-001]",
+            "[REQ-B2F-002]",
+            "[REQ-B2F-003]",
+            "[REQ-B2F-004]",
+            "[REQ-B2F-005]",
+            "[REQ-B2F-006]",
+            B2F_PROFILE,
+            B2F_ARSFI_COMMIT,
+            B2F_WL2K_COMMIT,
+            B2F_PACLINK_COMMIT,
+            "250-octet",
+            "GPL/AGPL code must not be linked",
         ),
     }
     for relative, markers in required_markers.items():
@@ -752,6 +994,7 @@ def main() -> int:
         validate_experimental_codec_allocation()
         validate_vector_catalog()
         validate_metrics()
+        validate_b2f_oracle_decision()
         validate_release_template()
         validate_clarification_alignment()
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -760,7 +1003,8 @@ def main() -> int:
     print(
         "release-gate validation passed: "
         f"{must_paragraphs} MUST paragraphs, 15 vectors, 24 V08 coverage rows, "
-        "18 required metrics, 8 metric thresholds, complete codec-ID range, "
+        "18 required metrics, 8 metric thresholds, blocked B2F oracle decision, "
+        "complete codec-ID range, "
         "experimental compact allocation 0x00010000/1 "
         "coverage, release state not-ready"
     )

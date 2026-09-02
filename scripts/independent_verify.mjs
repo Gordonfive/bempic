@@ -162,6 +162,61 @@ assert(metrics.semantic_bytes_definition.excluded.includes("duplicates") &&
   metrics.semantic_bytes_definition.excluded.includes("lower-layer-retransmissions"),
 "semantic_bytes exclusion set is incomplete");
 assert(metrics.thresholds.length === 8, "expected eight metric thresholds");
+assert(metrics.b2f_comparison.profile ===
+  "bempic-v0.1-b2f-text-single-message-v1" &&
+  metrics.b2f_comparison.decision_status === "blocked-no-qualified-oracle" &&
+  metrics.b2f_comparison.selected_oracle === null &&
+  metrics.b2f_comparison.results_claimable === false &&
+  metrics.b2f_comparison.thresholds_changed === false,
+"B2F metric decision changed or was promoted");
+
+const b2fDecision = readJson("conformance/v0.1/b2f-oracle-decision.json");
+assert(b2fDecision.decision.status === "blocked-no-qualified-oracle" &&
+  b2fDecision.decision.selected_oracle === null &&
+  b2fDecision.decision.release_gate === "blocked" &&
+  b2fDecision.decision.thresholds_changed === false &&
+  b2fDecision.decision.results_claimable === false,
+"B2F oracle decision changed or was promoted");
+const b2fProfile = b2fDecision.comparison_profile;
+assert(b2fProfile.id === "bempic-v0.1-b2f-text-single-message-v1" &&
+  b2fProfile.fixture_scope === "one-message-per-independent-no-fault-run" &&
+  b2fProfile.batching === "forbidden",
+"B2F fixture scope changed");
+assert(b2fProfile.lzhuf.behavior_reference.commit ===
+  "dbe96569817018e66e0e5f6add40eed12adc9fd7" &&
+  b2fProfile.lzhuf.lzss_ring_octets === 2048 &&
+  b2fProfile.lzhuf.lookahead_octets === 60 &&
+  b2fProfile.lzhuf.match_threshold === 2 &&
+  b2fProfile.lzhuf.crc.name === "CRC-16/XMODEM" &&
+  b2fProfile.lzhuf.crc.coverage === "four-octet-length-plus-compressed-bitstream",
+"B2F LZHUF behavior changed");
+assert(b2fProfile.b2f_envelope.data_block_payload_octets === 250 &&
+  b2fProfile.b2f_envelope.directions.identity ===
+    "b2f_total_bytes=b2f_send_bytes+b2f_receive_bytes" &&
+  b2fProfile.b2f_envelope.included.includes("complete-lzhuf-image") &&
+  b2fProfile.b2f_envelope.excluded.includes("modem-carrier-link-framing"),
+"B2F envelope or byte-count boundary changed");
+assert(b2fDecision.required_corpus_manifest.status === "not-yet-published" &&
+  b2fDecision.required_corpus_manifest.digest === null &&
+  b2fDecision.candidates.length === 5 &&
+  b2fDecision.candidates.every((candidate) => candidate.qualified === false),
+"B2F corpus or candidate was promoted without evidence");
+const paclink = b2fDecision.candidates.find((candidate) =>
+  candidate.id === "paclink-unix-lzhuf-1");
+assert(paclink.commit === "cc7b2f9474959a70856cabaf812bfce53d2da145" &&
+  paclink.license === "GPL-2.0-or-later" &&
+  paclink.incorporation === "forbidden-project-policy" &&
+  paclink.linking === "forbidden-project-policy" &&
+  paclink.ci_use === "separately-obtained-process-only",
+"B2F GPL process boundary changed");
+assert(b2fDecision.thresholds[0].value === 10 &&
+  b2fDecision.thresholds[1].value === 5,
+"B2F compactness thresholds changed");
+assert(vectors.external_benchmarks.length === 1 &&
+  vectors.external_benchmarks[0].status === "blocked" &&
+  vectors.external_benchmarks[0].selected_oracle === null &&
+  vectors.external_benchmarks[0].corpus_digest === null,
+"external B2F benchmark was promoted without evidence");
 
 const release = readJson("conformance/v0.1/release-record-template.json");
 assert(release.release_state === "not-ready" && release.tag === null,
@@ -184,7 +239,14 @@ assert(release.oceanmail_application_evidence.commit ===
   "cc55c1b7d5a03aa2e5cc8cd617f9d1bb7b6a3600" &&
   release.oceanmail_application_evidence.complete_v11_release_evidence === false,
 "release record OceanMail evidence changed or was over-promoted");
+assert(release.b2f_oracle.decision_status === "blocked-no-qualified-oracle" &&
+  release.b2f_oracle.identity === null &&
+  release.b2f_oracle.executable_digest === null &&
+  release.b2f_oracle.corpus_digest === null &&
+  release.b2f_oracle.results_digest === null &&
+  release.b2f_oracle.thresholds_changed === false,
+"release record B2F oracle changed or was promoted");
 
 console.log(`Independent Node verification passed (Node ${process.version}).`);
 for (const result of fingerprintResults) console.log(`fingerprint MATCH ${result}`);
-console.log("codec ranges cover uint32; compact 0x00010000/1 profile MATCH; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; release not-ready");
+console.log("codec ranges cover uint32; compact 0x00010000/1 profile MATCH; V01-V15 and 24 V08 rows present; 18 metrics; 8 thresholds; B2F oracle blocked; release not-ready");

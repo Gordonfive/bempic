@@ -156,6 +156,17 @@ cost, and full-restart versus persistent-resume cost.
 The counter names, measurement envelope, first-body definitions, aggregation,
 and pass thresholds are normative in [`METRICS.md`](METRICS.md).
 
+### B2F comparison evidence
+
+[REQ-CONF-004] A report evaluating either B2F compactness threshold MUST link
+the reviewed machine-readable oracle decision, a selected non-null oracle, the
+content-addressed corpus manifest, raw per-fixture records, exact executable and
+source identities, mode-specific license review, and independent byte-for-byte
+reproduction required by [`B2F-ORACLE.md`](B2F-ORACLE.md). A blocked oracle,
+missing fixture, unavailable required counter, framing difference, or
+unresolved license/provenance field is a blocked threshold, not a skip, zero,
+estimate, or pass.
+
 ## Evidence
 
 A conformance report is machine-readable and includes:
